@@ -68,7 +68,7 @@ const createSortingTemplate = () => {
 };
 
 // рисует сортировку
-render(siteMainElement, createSortingTemplate(), 'beforeend');
+render(siteMainElement, createSortingTemplate(), `beforeend`);
 
 // разметка списка фильмов
 const createBoardTemplate = () => {
@@ -153,7 +153,7 @@ render(siteMainElement, createBoardTemplate(), `beforeend`);
 const boardElement = siteMainElement.querySelector(`.films`);
 
 // рисует основной список фильмов
-render(boardElement, createFilmsListTemplate(), 'beforeend');
+render(boardElement, createFilmsListTemplate(), `beforeend`);
 const filmsListElement = boardElement.querySelector(`.films-list .films-list__container`);
 
 for (let i = 0; i < FILMS_COUNT; i++) {
@@ -161,7 +161,7 @@ for (let i = 0; i < FILMS_COUNT; i++) {
 }
 
 // рисует кнопку
-render(filmsListElement, createShowMoreButton(), 'afterend');
+render(filmsListElement, createShowMoreButton(), `afterend`);
 
 // рисует дополнительные списки фильмов
 render(boardElement, createBestFilmsListTemplate(), `beforeend`);
@@ -186,8 +186,8 @@ render(footerStatElement, createFilmsCounterTemplate(), `beforeend`);
 
 // разметка дополнительной информации о фильме
 const createFilmDetailsCard = () => {
-    return (
-        `<section class="film-details">
+  return (
+    `<section class="film-details">
         <form class="film-details__inner" action="" method="get">
           <div class="form-details__top-container">
             <div class="film-details__close">
@@ -356,7 +356,7 @@ const createFilmDetailsCard = () => {
           </div>
         </form>
       </section>`
-    );
+  );
 };
 
 // рисует попап с дополнительной информацией о фильме
