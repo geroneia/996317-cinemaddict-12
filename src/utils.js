@@ -7,18 +7,22 @@ export const getRandomInteger = (a = 0, b = 1) => {
 
 
 export const getShuffleSubjects = (subjects) => {
-  for (let i = subjects.length -1; i > 0; i--) {
+  for (let i = subjects.length - 1; i > 0; i--) {
     let j = Math.floor(Math.random() * (i + 1));
     [subjects[i], subjects[j]] = [subjects[j], subjects[i]];
-    const shuffledSubjects = subjects;
-    return shuffledSubjects;
   }
+  const shuffledSubjects = subjects;
+  return shuffledSubjects;
+};
+
+export const getSomeShuffledSubjects = (subjects) => {
+  return getShuffleSubjects(subjects).slice(0, getRandomInteger(1, subjects.length - 1));
 };
 
 export const humanizeAnyDate = (anyDate) => {
-  return anyDate.toLocaleString(`en-US`, {
+  return anyDate.toLocaleString(`en-GB`, {
     day: `numeric`,
     month: `long`,
-    year: 'numeric'
+    year: `numeric`
   });
 };
