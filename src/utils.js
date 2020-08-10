@@ -5,6 +5,12 @@ export const getRandomInteger = (a = 0, b = 1) => {
   return Math.floor(lower + Math.random() * (upper - lower + 1));
 };
 
+export const getRandomDecimal = (a = 0, b = 1) => {
+  const lower = Math.ceil(Math.min(a, b));
+  const upper = Math.floor(Math.max(a, b));
+  const result = lower + Math.random() * (upper - lower + 1);
+  return +result.toFixed(1);
+};
 
 export const getShuffleSubjects = (subjects) => {
   for (let i = subjects.length - 1; i > 0; i--) {
@@ -26,3 +32,6 @@ export const humanizeAnyDate = (anyDate) => {
     year: `numeric`
   });
 };
+
+// да или нет
+export const getTrueOrFaulse = () => Boolean(getRandomInteger(0, 1));

@@ -7,7 +7,8 @@ export const createCardTemplate = (card) => {
     runtime,
     genres,
     description,
-    comments
+    comments,
+    rating
   } = card;
 
   // получает год выхода для краткой информации
@@ -42,7 +43,7 @@ export const createCardTemplate = (card) => {
 
   return `<article class="film-card">
         <h3 class="film-card__title">${title}</h3>
-        <p class="film-card__rating">8.3</p>
+        <p class="film-card__rating">${rating}</p>
         <p class="film-card__info">
             <span class="film-card__year">${releaseYear}</span>
             <span class="film-card__duration">${getRuntimeInHours()}</span>

@@ -5,6 +5,7 @@ export const createFilmDetailsCard = (card) => {
   const {
     title,
     poster,
+    rating,
     ageRating,
     director,
     writers,
@@ -93,14 +94,14 @@ export const createFilmDetailsCard = (card) => {
                     </div>
   
                     <div class="film-details__rating">
-                      <p class="film-details__total-rating">8.9</p>
+                      <p class="film-details__total-rating">${rating}</p>
                     </div>
                   </div>
   
                   <table class="film-details__table">
                     <tr class="film-details__row">
                       <td class="film-details__term">Director</td>
-                      <td class="film-details__cell">${director.join(`, `)}</td>
+                      <td class="film-details__cell">${director}</td>
                     </tr>
                     <tr class="film-details__row">
                       <td class="film-details__term">Writers</td>

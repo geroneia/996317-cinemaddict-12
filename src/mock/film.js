@@ -1,4 +1,4 @@
-import {getRandomInteger, getSomeShuffledSubjects} from "../utils.js";
+import {getRandomInteger, getRandomDecimal, getSomeShuffledSubjects, getTrueOrFaulse} from "../utils.js";
 import {generateListOfComments} from "./comment.js";
 
 const DATE_OF_FIRST_FILM_PREMIERE = new Date(Date.UTC(1896, 1, 6, 3, 0, 0));
@@ -81,10 +81,16 @@ const POSTERS = [
 
 const AGE_RATINGS = [`0`, `6`, `14`, `16`, `18`];
 
-// const RANKS = [`novice`, `fan`, `movie buff`];
+// получает случайный рейтинг фильма
+const generateRating = () =>
+  getRandomDecimal(1, 9);
 
 // получает случайное название
 const generateTitle = () => TITLES[getRandomInteger(0, TITLES.length - 1)];
+
+// получает случайное имя режиссера
+const generateDirector = () =>
+  NAMES[getRandomInteger(0, NAMES.length - 1)];
 
 // получает случайные имена
 const generateCast = () =>
@@ -124,7 +130,8 @@ const generateAgeRating = () =>
 export const generateCard = () => ({
   title: generateTitle(),
   poster: generatePoster(),
-  director: generateCast(),
+  rating: generateRating(),
+  director: generateDirector(),
   writers: generateCast(),
   actors: generateCast(),
   releaseDate: generateRandomDateOfPremiere(),
@@ -134,4 +141,7 @@ export const generateCard = () => ({
   description: generateDescription(),
   ageRating: generateAgeRating(),
   comments: generateListOfComments(),
+  isAddedToWatchlist: getTrueOrFaulse(),
+  isWatched: getTrueOrFaulse(),
+  isFavorite: getTrueOrFaulse(),
 });
