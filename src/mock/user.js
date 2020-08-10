@@ -1,5 +1,17 @@
-import {getRandomInteger} from "../utils.js";
+export const generateUserRank = (cards) => {
+  const RANKS = [`novice`, `fan`, `movie buff`];
+  const getWatchedFilmsCount = () =>
+    cards.filter((card) => card.isWatched).length;
 
-const RANKS = [`novice`, `fan`, `movie buff`];
+  const watchedFilmsCount = getWatchedFilmsCount();
 
-export const generateUserRank = () => RANKS[getRandomInteger(0, RANKS.length - 1)];
+  let userRank = ``;
+  if (watchedFilmsCount > 0 && watchedFilmsCount <= 10) {
+    userRank = RANKS[0];
+  } else if (watchedFilmsCount <= 15) {
+    userRank = RANKS[1];
+  } else if (watchedFilmsCount > 16) {
+    userRank = RANKS[2];
+  }
+  return userRank;
+};

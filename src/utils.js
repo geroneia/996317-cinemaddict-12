@@ -25,6 +25,8 @@ export const getSomeShuffledSubjects = (subjects) => {
   return getShuffleSubjects(subjects).slice(0, getRandomInteger(1, subjects.length - 1));
 };
 
+export const getRandomItem = (items) => items[getRandomInteger(0, items.length - 1)];
+
 export const humanizeAnyDate = (anyDate) => {
   return anyDate.toLocaleString(`en-GB`, {
     day: `numeric`,

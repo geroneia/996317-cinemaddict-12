@@ -1,4 +1,4 @@
-import {getRandomInteger, getRandomDecimal, getSomeShuffledSubjects, getTrueOrFaulse} from "../utils.js";
+import {getRandomInteger, getRandomDecimal, getSomeShuffledSubjects, getTrueOrFaulse, getRandomItem} from "../utils.js";
 import {generateListOfComments} from "./comment.js";
 
 const DATE_OF_FIRST_FILM_PREMIERE = new Date(Date.UTC(1896, 1, 6, 3, 0, 0));
@@ -82,23 +82,19 @@ const POSTERS = [
 const AGE_RATINGS = [`0`, `6`, `14`, `16`, `18`];
 
 // получает случайный рейтинг фильма
-const generateRating = () =>
-  getRandomDecimal(1, 9);
+const generateRating = () => getRandomDecimal(1, 9);
 
 // получает случайное название
-const generateTitle = () => TITLES[getRandomInteger(0, TITLES.length - 1)];
+const generateTitle = () => getRandomItem(TITLES);
 
 // получает случайное имя режиссера
-const generateDirector = () =>
-  NAMES[getRandomInteger(0, NAMES.length - 1)];
+const generateDirector = () => getRandomItem(NAMES);
 
 // получает случайные имена
-const generateCast = () =>
-  getSomeShuffledSubjects(NAMES);
+const generateCast = () => getSomeShuffledSubjects(NAMES);
 
 // получает случайный постер
-const generatePoster = () =>
-  POSTERS[getRandomInteger(0, POSTERS.length - 1)];
+const generatePoster = () => getRandomItem(POSTERS);
 
 // получает случайную дату выхода фильма
 const generateRandomDateOfPremiere = () => {
@@ -108,24 +104,19 @@ const generateRandomDateOfPremiere = () => {
 };
 
 // получает случайную продолжительность
-const generateRuntimeInMinutes = () =>
-  getRandomInteger(60, 180);
+const generateRuntimeInMinutes = () => getRandomInteger(60, 180);
 
 // получает случайную страну
-const generateCountry = () =>
-  getSomeShuffledSubjects(COUNTRIES);
+const generateCountry = () => getSomeShuffledSubjects(COUNTRIES);
 
 // получает случайный жанр
-const generateGenre = () =>
-  getSomeShuffledSubjects(GENRES);
+const generateGenre = () => getSomeShuffledSubjects(GENRES);
 
 // получает случайное описание
-const generateDescription = () =>
-  getSomeShuffledSubjects(DESCRIPTIONS).join(` `);
+const generateDescription = () => getSomeShuffledSubjects(DESCRIPTIONS).join(` `);
 
 // получает возрастное ограничение
-const generateAgeRating = () =>
-  AGE_RATINGS[getRandomInteger(0, AGE_RATINGS.length - 1)];
+const generateAgeRating = () => getRandomItem(AGE_RATINGS);
 
 export const generateCard = () => ({
   title: generateTitle(),

@@ -16,14 +16,14 @@ import {generateFilter} from "./mock/filter.js";
 import {generateUserRank} from "./mock/user.js";
 
 
-const Display = {
-  FILMS_COUNT_PER_STEP: 5,
-  FILMS_COUNT: 25,
-  EXTRA_FILMS_COUNT: 2
+const FilmsCount = {
+  PER_STEP: 5,
+  TOTAL: 25,
+  EXTRA: 2
 };
 
 // собирает в массив результаты вызова функции, генерирующей случайную карточку фильма
-const cards = new Array(Display.FILMS_COUNT).fill(``).map(generateCard);
+const cards = new Array(FilmsCount.TOTAL).fill(``).map(generateCard);
 
 // собирает фильтры из массива карточек
 const filters = generateFilter(cards);
@@ -36,7 +36,7 @@ const render = (container, template, place) => {
 const siteHeaderElement = document.querySelector(`.header`);
 
 // рисует звание пользователя на странице
-render(siteHeaderElement, createProfileRating(generateUserRank()), `beforeend`);
+render(siteHeaderElement, createProfileRating(generateUserRank(cards)), `beforeend`);
 
 const siteMainElement = document.querySelector(`.main`);
 
@@ -57,22 +57,22 @@ const boardElement = siteMainElement.querySelector(`.films`);
 render(boardElement, createFilmsListTemplate(), `beforeend`);
 const filmsListElement = boardElement.querySelector(`.films-list .films-list__container`);
 
-for (let i = 0; i < Math.min(cards.length, Display.FILMS_COUNT_PER_STEP); i++) {
+for (let i = 0; i < Math.min(cards.length, FilmsCount.PER_STEP); i++) {
   render(filmsListElement, createCardTemplate(cards[i]), `beforeend`);
 }
 
-if (cards.length > Display.FILMS_COUNT_PER_STEP) {
-  let renderedCardCount = Display.FILMS_COUNT_PER_STEP;
+if (cards.length > FilmsCount.PER_STEP) {
+  let renderedCardCount = FilmsCount.PER_STEP;
 
   render(filmsListElement, createShowMoreButton(), `afterend`);
   const showMoreButton = boardElement.querySelector(`.films-list__show-more`);
   showMoreButton.addEventListener(`click`, (evt) => {
     evt.preventDefault();
     cards
-      .slice(renderedCardCount, renderedCardCount + Display.FILMS_COUNT_PER_STEP)
+      .slice(renderedCardCount, renderedCardCount + FilmsCount.PER_STEP)
       .forEach((card) => render(filmsListElement, createCardTemplate(card), `beforeend`));
 
-    renderedCardCount += Display.FILMS_COUNT_PER_STEP;
+    renderedCardCount += FilmsCount.PER_STEP;
 
     if (renderedCardCount >= cards.length) {
       showMoreButton.remove();
@@ -89,7 +89,7 @@ const sortedByRatingsFilms = cards.sort(function (a, b) {
   return b.rating - a.rating;
 });
 
-for (let i = 0; i < Display.EXTRA_FILMS_COUNT; i++) {
+for (let i = 0; i < FilmsCount.EXTRA; i++) {
   render(bestfilmsListElement, createCardTemplate(sortedByRatingsFilms[i]), `beforeend`);
 }
 
@@ -101,7 +101,7 @@ const sortedByommentsFilms = cards.sort(function (a, b) {
   return b.comments.length - a.comments.length;
 });
 
-for (let i = 0; i < Display.EXTRA_FILMS_COUNT; i++) {
+for (let i = 0; i < FilmsCount.EXTRA; i++) {
   render(commentedfilmsListElement, createCardTemplate(sortedByommentsFilms[i]), `beforeend`);
 }
 

@@ -1,4 +1,4 @@
-import {getRandomInteger, getSomeShuffledSubjects} from "../utils.js";
+import {getRandomInteger, getSomeShuffledSubjects, getRandomItem} from "../utils.js";
 import {NAMES} from "./film.js";
 const MAX_DAYS_GAP = 7;
 const MAX_COMMENTS_COUNT = 5;
@@ -24,10 +24,13 @@ const generateCommentDate = () => {
   return new Date(currentDate);
 };
 
+// получает сообщение
+const generateMessage = () => getSomeShuffledSubjects(MESSAGES).join(`. `);
+
 const generateComment = () => ({
-  message: getSomeShuffledSubjects(MESSAGES),
-  emoji: EMOJI[getRandomInteger(0, EMOJI.length - 1)],
-  name: NAMES[getRandomInteger(0, NAMES.length - 1)],
+  message: generateMessage(),
+  emoji: getRandomItem(EMOJI),
+  name: getRandomItem(NAMES),
   currentDate: generateCommentDate(),
 });
 
