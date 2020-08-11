@@ -36,11 +36,7 @@ export const createFilmDetailsCard = (card) => {
 
   // получает разметку списка жанров
   const createGenresTemplate = (genresList) => {
-    const genresTemplate = [];
-    for (let genre of genresList) {
-      genresTemplate.push(`<span class="film-details__genre">${genre}</span>`);
-    }
-    return genresTemplate.join(` `);
+    return genresList.map((genre) => `<span class="film-details__genre">${genre}</span>`).join(` `);
   };
 
   // отмечает чекбоксы
@@ -48,17 +44,9 @@ export const createFilmDetailsCard = (card) => {
 
 
   // получает разметку комментария
-  const createCommentTemplate = (commentsList) => {
-    const commentTemplate = [];
-    for (let comment of commentsList) {
-      const {
-        message,
-        emoji,
-        name,
-        currentDate,
-      } = comment;
 
-      commentTemplate.push(`<ul class="film-details__comments-list">
+  const createCommentTemplate = (commentsList) => {
+    return commentsList.map(({message, emoji, name, currentDate}) => `<ul class="film-details__comments-list">
     <li class="film-details__comment">
     <span class="film-details__comment-emoji">
       <img src="./images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">
@@ -71,10 +59,35 @@ export const createFilmDetailsCard = (card) => {
         <button class="film-details__comment-delete">Delete</button>
       </p>
     </div>
-  </li>`);
-    }
-    return commentTemplate;
+  </li>`).join(` `);
   };
+  // const createCommentTemplate = (commentsList) => {
+  //   const commentTemplate = [];
+  //   for (let comment of commentsList) {
+  //     const {
+  //       message,
+  //       emoji,
+  //       name,
+  //       currentDate,
+  //     } = comment;
+
+  //     commentTemplate.push(`<ul class="film-details__comments-list">
+  //   <li class="film-details__comment">
+  //   <span class="film-details__comment-emoji">
+  //     <img src="./images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">
+  //   </span>
+  //   <div>
+  //     <p class="film-details__comment-text">${message}</p>
+  //     <p class="film-details__comment-info">
+  //       <span class="film-details__comment-author">${name}</span>
+  //       <span class="film-details__comment-day">${currentDate.toLocaleDateString()}</span>
+  //       <button class="film-details__comment-delete">Delete</button>
+  //     </p>
+  //   </div>
+  // </li>`);
+  //   }
+  //   return commentTemplate;
+  // };
 
 
   return `<section class="film-details">

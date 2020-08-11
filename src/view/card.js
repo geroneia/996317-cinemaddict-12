@@ -1,3 +1,5 @@
+const MAX_SIMBOL_COUNT = 140;
+
 // разметка карточки фильма
 export const createCardTemplate = (card) => {
   const {
@@ -26,19 +28,13 @@ export const createCardTemplate = (card) => {
 
   // получает количество комментариев
 
-  const commentsCount = () => {
-    const counter = comments.length !== 1 ?
-      `${comments.length} comments` :
-      `1 comment`;
-    return counter;
-  };
+  const commentsCount = () => `${comments.length} comment` + (comments.length > 1 ? `s` : ``);
 
   // получает описание для краткого отоображения
   const getDescription = () => {
-    const croppedDescription = description.length < 140 ?
+    return description.length < MAX_SIMBOL_COUNT ?
       description :
-      `${description.slice(0, 140)}... `;
-    return croppedDescription;
+      `${description.slice(0, MAX_SIMBOL_COUNT)}... `;
   };
 
   return `<article class="film-card">

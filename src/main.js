@@ -85,9 +85,7 @@ render(boardElement, createBestFilmsListTemplate(), `beforeend`);
 
 const bestfilmsListElement = boardElement.querySelector(`.films-list--extra .films-list__container`);
 
-const sortedByRatingsFilms = cards.slice().sort(function (a, b) {
-  return b.rating - a.rating;
-});
+const sortedByRatingsFilms = cards.slice().sort((a, b) => b.rating - a.rating);
 
 for (let i = 0; i < FilmsCount.EXTRA; i++) {
   render(bestfilmsListElement, createCardTemplate(sortedByRatingsFilms[i]), `beforeend`);
@@ -96,10 +94,7 @@ for (let i = 0; i < FilmsCount.EXTRA; i++) {
 render(boardElement, createCommentedFilmsListTemplate(), `beforeend`);
 const commentedfilmsListElement = boardElement.querySelector(`.films-list--extra:last-of-type .films-list__container`);
 
-
-const sortedByommentsFilms = cards.slice().sort(function (a, b) {
-  return b.comments.length - a.comments.length;
-});
+const sortedByommentsFilms = cards.slice().sort((a, b) => b.comments.length - a.comments.length);
 
 for (let i = 0; i < FilmsCount.EXTRA; i++) {
   render(commentedfilmsListElement, createCardTemplate(sortedByommentsFilms[i]), `beforeend`);
