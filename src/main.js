@@ -85,7 +85,7 @@ render(boardElement, createBestFilmsListTemplate(), `beforeend`);
 
 const bestfilmsListElement = boardElement.querySelector(`.films-list--extra .films-list__container`);
 
-const sortedByRatingsFilms = cards.sort(function (a, b) {
+const sortedByRatingsFilms = cards.slice().sort(function (a, b) {
   return b.rating - a.rating;
 });
 
@@ -97,7 +97,7 @@ render(boardElement, createCommentedFilmsListTemplate(), `beforeend`);
 const commentedfilmsListElement = boardElement.querySelector(`.films-list--extra:last-of-type .films-list__container`);
 
 
-const sortedByommentsFilms = cards.sort(function (a, b) {
+const sortedByommentsFilms = cards.slice().sort(function (a, b) {
   return b.comments.length - a.comments.length;
 });
 

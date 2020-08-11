@@ -4,9 +4,9 @@ const MAX_DAYS_GAP = 7;
 const MAX_COMMENTS_COUNT = 5;
 
 const MESSAGES = [
-  `Interesting setting and a good cast`,
-  `Booooooooooring`,
-  `Very very old. Meh`,
+  `Interesting setting and a good cast.`,
+  `Booooooooooring.`,
+  `Very very old. Meh.`,
   `Almost two hours? Seriously?`
 ];
 
@@ -25,7 +25,7 @@ const generateCommentDate = () => {
 };
 
 // получает сообщение
-const generateMessage = () => getSomeShuffledSubjects(MESSAGES).join(`. `);
+const generateMessage = () => getSomeShuffledSubjects(MESSAGES).join(` `);
 
 const generateComment = () => ({
   message: generateMessage(),

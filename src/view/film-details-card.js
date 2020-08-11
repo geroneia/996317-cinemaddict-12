@@ -15,7 +15,10 @@ export const createFilmDetailsCard = (card) => {
     country,
     genres,
     description,
-    comments
+    comments,
+    isAddedToWatchlist,
+    isWatched,
+    isFavorite
   } = card;
 
   // получает год выхода для краткой информации
@@ -28,10 +31,7 @@ export const createFilmDetailsCard = (card) => {
   const getRuntimeInHours = () => {
     const hour = Math.floor(runtime / 60);
     const minutes = runtime % 60;
-    const duration = minutes > 0 ?
-      `${hour}h ${minutes}m` :
-      `${hour}h`;
-    return duration;
+    return minutes > 0 ? `${hour}h ${minutes}m` : `${hour}h`;
   };
 
   // получает разметку списка жанров
@@ -42,6 +42,10 @@ export const createFilmDetailsCard = (card) => {
     }
     return genresTemplate.join(` `);
   };
+
+  // отмечает чекбоксы
+  const getMark = (category) => category ? `checked` : ``;
+
 
   // получает разметку комментария
   const createCommentTemplate = (commentsList) => {
@@ -60,7 +64,7 @@ export const createFilmDetailsCard = (card) => {
       <img src="./images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">
     </span>
     <div>
-      <p class="film-details__comment-text">${message.join(` `)}</p>
+      <p class="film-details__comment-text">${message}</p>
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${name}</span>
         <span class="film-details__comment-day">${currentDate.toLocaleDateString()}</span>
@@ -136,13 +140,13 @@ export const createFilmDetailsCard = (card) => {
               </div>
   
               <section class="film-details__controls">
-                <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist">
+                <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${getMark(isAddedToWatchlist)}>
                 <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
   
-                <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched">
+                <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${getMark(isWatched)}>
                 <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
   
-                <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite">
+                <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${getMark(isFavorite)}>
                 <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
               </section>
             </div>
