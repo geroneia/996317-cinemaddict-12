@@ -81,8 +81,13 @@ const POSTERS = [
 
 const AGE_RATINGS = [`0`, `6`, `14`, `16`, `18`];
 
+const Rating = {
+  MIN: 1,
+  MAX: 9
+};
+
 // получает случайный рейтинг фильма
-const generateRating = () => getRandomDecimal(1, 9);
+const generateRating = () => getRandomDecimal(Rating.MIN, Rating.MAX);
 
 // получает случайное название
 const generateTitle = () => getRandomItem(TITLES);
