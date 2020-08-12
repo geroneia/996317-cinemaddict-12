@@ -1,3 +1,3 @@
 // разметка поличества фильмов
-export const createFilmsCounterTemplate = () =>
-  `<p>130 291 movies inside</p>`;
+export const createFilmsCounterTemplate = (cards) =>
+  `<p>${cards.length} movies inside</p>`;

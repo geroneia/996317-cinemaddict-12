@@ -1,8 +1,17 @@
+// разметка одного из фильтров
+const createFilterItemTemplate = ({name, count}) => {
+  const getUpperCaseForFirstLetter = () =>
+    name[0].toUpperCase() + name.slice(1);
+  return `<a href="#${name}" class="main-navigation__item">${getUpperCaseForFirstLetter()} <span class="main-navigation__item-count">${count}</span></a>`;
+};
+
 // разметка фильтров
-export const createFilterTemplate = () =>
-  `<div class="main-navigation__items">
+export const createFilterTemplate = (filterItems) => {
+  const filterItemsTemplate = filterItems
+  .map((filter, index) => createFilterItemTemplate(filter, index === 0))
+  .join(``);
+  return `<div class="main-navigation__items">
         <a href="#all" class="main-navigation__item main-navigation__item--active">All movies</a>
-        <a href="#watchlist" class="main-navigation__item">Watchlist <span class="main-navigation__item-count">13</span></a>
-        <a href="#history" class="main-navigation__item">History <span class="main-navigation__item-count">4</span></a>
-        <a href="#favorites" class="main-navigation__item">Favorites <span class="main-navigation__item-count">8</span></a>
-    </div>`;
+          ${filterItemsTemplate}
+        </div>`;
+};
