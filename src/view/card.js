@@ -1,7 +1,10 @@
+import {createElement} from "../utils.js";
+
 const MAX_SIMBOL_COUNT = 140;
+const MINUTES_IN_HOUR = 60;
 
 // разметка карточки фильма
-export const createCardTemplate = (card) => {
+const createCardTemplate = (card) => {
   const {
     poster,
     title,
@@ -10,7 +13,10 @@ export const createCardTemplate = (card) => {
     genres,
     description,
     comments,
-    rating
+    rating,
+    isAddedToWatchlist,
+    isWatched,
+    isFavorite
   } = card;
 
   // получает год выхода для краткой информации
@@ -18,16 +24,14 @@ export const createCardTemplate = (card) => {
 
   // получает продолжительность в часах
   const getRuntimeInHours = () => {
-    const hour = Math.floor(runtime / 60);
-    const minutes = runtime % 60;
-    const duration = minutes > 0 ?
+    const hour = Math.floor(runtime / MINUTES_IN_HOUR);
+    const minutes = runtime % MINUTES_IN_HOUR;
+    return minutes > 0 ?
       `${hour}h ${minutes}m` :
       `${hour}h`;
-    return duration;
   };
 
   // получает количество комментариев
-
   const commentsCount = () => `${comments.length} comment` + (comments.length > 1 ? `s` : ``);
 
   // получает описание для краткого отоображения
@@ -36,6 +40,9 @@ export const createCardTemplate = (card) => {
       description :
       `${description.slice(0, MAX_SIMBOL_COUNT)}... `;
   };
+
+  // получает классы для отмеченных чекбоксов
+  const getActiveClass = (category) => category ? `film-card__controls-item--active` : ``;
 
   return `<article class="film-card">
         <h3 class="film-card__title">${title}</h3>
@@ -49,9 +56,32 @@ export const createCardTemplate = (card) => {
         <p class="film-card__description">${getDescription()}</p>
         <a class="film-card__comments">${commentsCount()}</a>
         <form class="film-card__controls">
-            <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist">Add to watchlist</button>
-            <button class="film-card__controls-item button film-card__controls-item--mark-as-watched">Mark as watched</button>
-            <button class="film-card__controls-item button film-card__controls-item--favorite">Mark as favorite</button>
+            <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${getActiveClass(isAddedToWatchlist)}">Add to watchlist</button>
+            <button class="film-card__controls-item button film-card__controls-item--mark-as-watched ${getActiveClass(isWatched)}">Mark as watched</button>
+            <button class="film-card__controls-item button film-card__controls-item--favorite ${getActiveClass(isFavorite)}">Mark as favorite</button>
         </form>
     </article>`;
 };
+
+export default class Card {
+  constructor(card) {
+    this._card = card;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createCardTemplate(this._card);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

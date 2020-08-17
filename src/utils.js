@@ -6,13 +6,16 @@ export const RenderPosition = {
 
 
 // функция для отрисовки готового элемента в родителе
-export const renderElement = (container, element, place) => {
+export const render = (container, element, place) => {
   switch (place) {
     case RenderPosition.AFTERBEGIN:
       container.prepend(element);
       break;
     case RenderPosition.BEFOREEND:
       container.append(element);
+      break;
+    case RenderPosition.AFTEREND:
+      container.after(element);
       break;
     default:
       throw new Error(`There is no such place`);
