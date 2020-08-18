@@ -68,14 +68,10 @@ const renderCard = (filmsListElement, card) => {
     cardDetailsComponent.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, onCrossButtonClick);
   };
 
-  cardComponent.getElement().querySelector(`.film-card__poster`).addEventListener(`click`, onCardClick);
-
-  cardComponent.getElement().querySelector(`.film-card__title`).addEventListener(`click`, onCardClick);
-
-  cardComponent.getElement().querySelector(`.film-card__comments`).addEventListener(`click`, onCardClick);
-
-  // cardComponent.getElement().querySelectorAll(`.film-card__poster, .film-card__title, .film-card__comments`)
-  // .forEach(() => addEventListener(`click`, onCardClick));
+  Array.from(cardComponent.getElement().querySelectorAll(`.film-card__poster, .film-card__title, .film-card__comments`))
+  .forEach(function (it) {
+    it.addEventListener(`click`, onCardClick);
+  });
 
   render(filmsListElement, cardComponent.getElement(), RenderPosition.BEFOREEND);
 };
