@@ -1,5 +1,4 @@
 const cardsToFilterMap = {
-  all: (cards) => cards.length,
   watchlist: (cards) => cards
       .filter((card) => card.isAddedToWatchlist).length,
   history: (cards) => cards

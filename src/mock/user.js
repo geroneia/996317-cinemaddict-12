@@ -1,16 +1,17 @@
+const Ranks = {
+  NOVICE: `novice`,
+  FAN: `fan`,
+  MOVIE_BUFF: `movie buff`
+};
+
+const getWatchedFilmsCount = (films) =>
+  films.filter((film) => film.isWatched).length;
+
 export const generateUserRank = (cards) => {
-  const Ranks = {
-    NOVICE: `novice`,
-    FAN: `fan`,
-    MOVIE_BUFF: `movie buff`
-  };
 
-  const getWatchedFilmsCount = () =>
-    cards.filter((card) => card.isWatched).length;
-
-  const watchedFilmsCount = getWatchedFilmsCount();
-
+  const watchedFilmsCount = getWatchedFilmsCount(cards);
   let userRank = ``;
+
   if (watchedFilmsCount > 0 && watchedFilmsCount <= 10) {
     userRank = Ranks.NOVICE;
   } else if (watchedFilmsCount <= 20) {

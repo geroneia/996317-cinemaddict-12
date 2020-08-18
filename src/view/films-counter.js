@@ -1,9 +1,6 @@
 import {createElement} from "../utils.js";
 
 // разметка поличества фильмов
-// const createFilmsCounterTemplate = (cards) =>
-//   `<p>${cards.length} movies inside</p>`;
-
 export default class FilmsCounter {
   constructor(cards) {
     this._cards = cards;

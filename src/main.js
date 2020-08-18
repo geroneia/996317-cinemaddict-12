@@ -52,30 +52,30 @@ const renderCard = (filmsListElement, card) => {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
       removeFilmDetails();
-      document.removeEventListener(`keydown`, onEscKeyDown);
+      // document.removeEventListener(`keydown`, onEscKeyDown);
     }
   };
 
-  cardComponent.getElement().querySelector(`.film-card__poster`).addEventListener(`click`, () => {
-    showFilmDetails();
-    document.addEventListener(`keydown`, onEscKeyDown);
-  });
+  const onCrossButtonClick = () => {
+    removeFilmDetails();
+    // document.removeEventListener(`keydown`, onEscKeyDown);
+  };
 
-  cardComponent.getElement().querySelector(`.film-card__title`).addEventListener(`click`, () => {
-    showFilmDetails();
-    document.addEventListener(`keydown`, onEscKeyDown);
-  });
-
-  cardComponent.getElement().querySelector(`.film-card__comments`).addEventListener(`click`, (evt) => {
+  const onCardClick = (evt) => {
     evt.preventDefault();
     showFilmDetails();
     document.addEventListener(`keydown`, onEscKeyDown);
-  });
+    cardDetailsComponent.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, onCrossButtonClick);
+  };
 
-  cardDetailsComponent.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, () => {
-    removeFilmDetails();
-    document.removeEventListener(`keydown`, onEscKeyDown);
-  });
+  cardComponent.getElement().querySelector(`.film-card__poster`).addEventListener(`click`, onCardClick);
+
+  cardComponent.getElement().querySelector(`.film-card__title`).addEventListener(`click`, onCardClick);
+
+  cardComponent.getElement().querySelector(`.film-card__comments`).addEventListener(`click`, onCardClick);
+
+  // cardComponent.getElement().querySelectorAll(`.film-card__poster, .film-card__title, .film-card__comments`)
+  // .forEach(() => addEventListener(`click`, onCardClick));
 
   render(filmsListElement, cardComponent.getElement(), RenderPosition.BEFOREEND);
 };
@@ -138,12 +138,12 @@ for (let i = 0; i < FilmsCount.EXTRA; i++) {
 }
 
 render(boardComponent.getElement(), new CommentedFilmsView().getElement(), RenderPosition.BEFOREEND);
-const commentedfilmsListElement = boardComponent.getElement().querySelector(`.films-list--extra:last-of-type .films-list__container`);
+const commentedFilmsListElement = boardComponent.getElement().querySelector(`.films-list--extra:last-of-type .films-list__container`);
 
-const sortedByommentsFilms = cards.slice().sort((a, b) => b.comments.length - a.comments.length);
+const sortedByСommentsFilms = cards.slice().sort((a, b) => b.comments.length - a.comments.length);
 
 for (let i = 0; i < FilmsCount.EXTRA; i++) {
-  renderCard(commentedfilmsListElement, sortedByommentsFilms[i]);
+  renderCard(commentedFilmsListElement, sortedByСommentsFilms[i]);
 }
 
 // рисует счетчик фильмов в футере
