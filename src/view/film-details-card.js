@@ -1,7 +1,7 @@
-import {humanizeAnyDate} from "../utils.js";
+import {humanizeAnyDate, createElement} from "../utils.js";
 
 // разметка дополнительной информации о фильме
-export const createFilmDetailsCard = (card) => {
+const createFilmDetailsCard = (card) => {
   const {
     title,
     poster,
@@ -42,9 +42,7 @@ export const createFilmDetailsCard = (card) => {
   // отмечает чекбоксы
   const getMark = (category) => category ? `checked` : ``;
 
-
   // получает разметку комментария
-
   const createCommentTemplate = (commentsList) => {
     return commentsList.map(({message, emoji, name, currentDate}) => `<ul class="film-details__comments-list">
     <li class="film-details__comment">
@@ -61,34 +59,6 @@ export const createFilmDetailsCard = (card) => {
     </div>
   </li>`).join(` `);
   };
-  // const createCommentTemplate = (commentsList) => {
-  //   const commentTemplate = [];
-  //   for (let comment of commentsList) {
-  //     const {
-  //       message,
-  //       emoji,
-  //       name,
-  //       currentDate,
-  //     } = comment;
-
-  //     commentTemplate.push(`<ul class="film-details__comments-list">
-  //   <li class="film-details__comment">
-  //   <span class="film-details__comment-emoji">
-  //     <img src="./images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">
-  //   </span>
-  //   <div>
-  //     <p class="film-details__comment-text">${message}</p>
-  //     <p class="film-details__comment-info">
-  //       <span class="film-details__comment-author">${name}</span>
-  //       <span class="film-details__comment-day">${currentDate.toLocaleDateString()}</span>
-  //       <button class="film-details__comment-delete">Delete</button>
-  //     </p>
-  //   </div>
-  // </li>`);
-  //   }
-  //   return commentTemplate;
-  // };
-
 
   return `<section class="film-details">
           <form class="film-details__inner" action="" method="get">
@@ -206,3 +176,26 @@ export const createFilmDetailsCard = (card) => {
           </form>
         </section>`;
 };
+
+export default class FilmDetailsCard {
+  constructor(card) {
+    this._card = card;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilmDetailsCard(this._card);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

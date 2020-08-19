@@ -86,20 +86,7 @@ const Rating = {
   MAX: 9
 };
 
-// получает случайный рейтинг фильма
-const generateRating = () => getRandomDecimal(Rating.MIN, Rating.MAX);
-
-// получает случайное название
-const generateTitle = () => getRandomItem(TITLES);
-
-// получает случайное имя режиссера
-const generateDirector = () => getRandomItem(NAMES);
-
-// получает случайные имена
-const generateCast = () => getSomeShuffledSubjects(NAMES);
-
-// получает случайный постер
-const generatePoster = () => getRandomItem(POSTERS);
+const MINUTES_IN_HOUR = 60;
 
 // получает случайную дату выхода фильма
 const generateRandomDateOfPremiere = () => {
@@ -108,34 +95,19 @@ const generateRandomDateOfPremiere = () => {
   return new Date(getRandomInteger(firstDate, lastDate));
 };
 
-// получает случайную продолжительность
-const generateRuntimeInMinutes = () => getRandomInteger(60, 180);
-
-// получает случайную страну
-const generateCountry = () => getSomeShuffledSubjects(COUNTRIES);
-
-// получает случайный жанр
-const generateGenre = () => getSomeShuffledSubjects(GENRES);
-
-// получает случайное описание
-const generateDescription = () => getSomeShuffledSubjects(DESCRIPTIONS).join(` `);
-
-// получает возрастное ограничение
-const generateAgeRating = () => getRandomItem(AGE_RATINGS);
-
 export const generateCard = () => ({
-  title: generateTitle(),
-  poster: generatePoster(),
-  rating: generateRating(),
-  director: generateDirector(),
-  writers: generateCast(),
-  actors: generateCast(),
+  title: getRandomItem(TITLES),
+  poster: getRandomItem(POSTERS),
+  rating: getRandomDecimal(Rating.MIN, Rating.MAX),
+  director: getRandomItem(NAMES),
+  writers: getSomeShuffledSubjects(NAMES),
+  actors: getSomeShuffledSubjects(NAMES),
   releaseDate: generateRandomDateOfPremiere(),
-  runtime: generateRuntimeInMinutes(),
-  country: generateCountry(),
-  genres: generateGenre(),
-  description: generateDescription(),
-  ageRating: generateAgeRating(),
+  runtime: getRandomInteger(MINUTES_IN_HOUR, MINUTES_IN_HOUR * 3),
+  country: getSomeShuffledSubjects(COUNTRIES),
+  genres: getSomeShuffledSubjects(GENRES),
+  description: getSomeShuffledSubjects(DESCRIPTIONS).join(` `),
+  ageRating: getRandomItem(AGE_RATINGS),
   comments: generateListOfComments(),
   isAddedToWatchlist: getTrueOrFaulse(),
   isWatched: getTrueOrFaulse(),
