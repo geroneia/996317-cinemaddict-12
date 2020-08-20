@@ -1,7 +1,7 @@
 import ProfileRatingView from "./view/profile-rating.js";
 import SiteMenuView from "./view/menu.js";
 import FilterView from "./view/filter.js";
-import SatsTemplateView from "./view/stats.js";
+import StatsTemplateView from "./view/stats.js";
 import SortingView from "./view/sorting.js";
 import BoardView from "./view/board.js";
 import FilmsListView from "./view/films-list.js";
@@ -11,6 +11,7 @@ import CardView from "./view/card.js";
 import ShowMoreButtonView from "./view/show-more-button.js";
 import FilmsCounterView from "./view/films-counter.js";
 import FilmDetailsCardView from "./view/film-details-card.js";
+import NoFilmsView from "./view/no-films.js";
 
 import {generateCard} from "./mock/film.js";
 import {generateFilter} from "./mock/filter.js";
@@ -52,13 +53,13 @@ const renderCard = (filmsListElement, card) => {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
       removeFilmDetails();
-      // document.removeEventListener(`keydown`, onEscKeyDown);
+      document.removeEventListener(`keydown`, onEscKeyDown);
     }
   };
 
   const onCrossButtonClick = () => {
     removeFilmDetails();
-    // document.removeEventListener(`keydown`, onEscKeyDown);
+    document.removeEventListener(`keydown`, onEscKeyDown);
   };
 
   const onCardClick = (evt) => {
@@ -86,14 +87,22 @@ const menuComponent = new SiteMenuView();
 render(siteMainElement, menuComponent.getElement(), RenderPosition.BEFOREEND);
 
 render(menuComponent.getElement(), new FilterView(filters).getElement(), RenderPosition.BEFOREEND);
-render(menuComponent.getElement(), new SatsTemplateView().getElement(), RenderPosition.BEFOREEND);
+render(menuComponent.getElement(), new StatsTemplateView().getElement(), RenderPosition.BEFOREEND);
 
 // рисует сортировку
 render(siteMainElement, new SortingView().getElement(), RenderPosition.BEFOREEND);
 
 // рисует список блоков фильмов
 const boardComponent = new BoardView();
-render(siteMainElement, boardComponent.getElement(), RenderPosition.BEFOREEND);
+if (cards.length === 0) {
+  render(siteMainElement, new NoFilmsView().getElement(), RenderPosition.BEFOREEND);
+} else {
+  render(siteMainElement, boardComponent.getElement(), RenderPosition.BEFOREEND);
+}
+
+// рисует счетчик фильмов в футере
+const footerStatElement = footerElement.querySelector(`.footer__statistics`);
+render(footerStatElement, new FilmsCounterView(cards).getElement(), RenderPosition.BEFOREEND);
 
 // рисует основной список фильмов
 render(boardComponent.getElement(), new FilmsListView().getElement(), RenderPosition.BEFOREEND);
@@ -136,12 +145,10 @@ for (let i = 0; i < FilmsCount.EXTRA; i++) {
 render(boardComponent.getElement(), new CommentedFilmsView().getElement(), RenderPosition.BEFOREEND);
 const commentedFilmsListElement = boardComponent.getElement().querySelector(`.films-list--extra:last-of-type .films-list__container`);
 
-const sortedByСommentsFilms = cards.slice().sort((a, b) => b.comments.length - a.comments.length);
+const sortedByCommentsFilms = cards.slice().sort((a, b) => b.comments.length - a.comments.length);
 
 for (let i = 0; i < FilmsCount.EXTRA; i++) {
-  renderCard(commentedFilmsListElement, sortedByСommentsFilms[i]);
+  renderCard(commentedFilmsListElement, sortedByCommentsFilms[i]);
 }
 
-// рисует счетчик фильмов в футере
-const footerStatElement = footerElement.querySelector(`.footer__statistics`);
-render(footerStatElement, new FilmsCounterView(cards).getElement(), RenderPosition.BEFOREEND);
+

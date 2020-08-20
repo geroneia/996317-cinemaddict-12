@@ -73,4 +73,4 @@ export const humanizeAnyDate = (anyDate) => {
 };
 
 // да или нет
-export const getTrueOrFaulse = () => Boolean(getRandomInteger(0, 1));
+export const getTrueOrFalse = () => Boolean(getRandomInteger(0, 1));

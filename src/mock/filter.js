@@ -1,4 +1,4 @@
-const cardsToFilterMap = {
+export const cardsToFilterMap = {
   watchlist: (cards) => cards
       .filter((card) => card.isAddedToWatchlist).length,
   history: (cards) => cards
