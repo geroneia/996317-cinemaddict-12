@@ -98,57 +98,56 @@ if (cards.length === 0) {
   render(siteMainElement, new NoFilmsView().getElement(), RenderPosition.BEFOREEND);
 } else {
   render(siteMainElement, boardComponent.getElement(), RenderPosition.BEFOREEND);
+
+  // рисует основной список фильмов
+  render(boardComponent.getElement(), new FilmsListView().getElement(), RenderPosition.BEFOREEND);
+  const filmsListComponent = boardComponent.getElement().querySelector(`.films-list .films-list__container`);
+
+  for (let i = 0; i < Math.min(cards.length, FilmsCount.PER_STEP); i++) {
+    renderCard(filmsListComponent, cards[i]);
+  }
+
+  if (cards.length > FilmsCount.PER_STEP) {
+    let renderedCardCount = FilmsCount.PER_STEP;
+    const showMoreButtonComponent = new ShowMoreButtonView();
+    render(filmsListComponent, showMoreButtonComponent.getElement(), RenderPosition.AFTEREND);
+    showMoreButtonComponent.getElement().addEventListener(`click`, (evt) => {
+      evt.preventDefault();
+      cards
+      .slice(renderedCardCount, renderedCardCount + FilmsCount.PER_STEP)
+      .forEach((card) => renderCard(filmsListComponent, card));
+
+      renderedCardCount += FilmsCount.PER_STEP;
+
+      if (renderedCardCount >= cards.length) {
+        showMoreButtonComponent.getElement().remove();
+        showMoreButtonComponent.removeElement();
+      }
+    });
+  }
+
+  // рисует дополнительные списки фильмов
+  render(boardComponent.getElement(), new BestFilmsView().getElement(), RenderPosition.BEFOREEND);
+
+  const bestfilmsListElement = boardComponent.getElement().querySelector(`.films-list--extra .films-list__container`);
+
+  const sortedByRatingsFilms = cards.slice().sort((a, b) => b.rating - a.rating);
+
+  for (let i = 0; i < FilmsCount.EXTRA; i++) {
+    renderCard(bestfilmsListElement, sortedByRatingsFilms[i]);
+  }
+
+  render(boardComponent.getElement(), new CommentedFilmsView().getElement(), RenderPosition.BEFOREEND);
+  const commentedFilmsListElement = boardComponent.getElement().querySelector(`.films-list--extra:last-of-type .films-list__container`);
+
+  const sortedByCommentsFilms = cards.slice().sort((a, b) => b.comments.length - a.comments.length);
+
+  for (let i = 0; i < FilmsCount.EXTRA; i++) {
+    renderCard(commentedFilmsListElement, sortedByCommentsFilms[i]);
+  }
 }
 
 // рисует счетчик фильмов в футере
 const footerStatElement = footerElement.querySelector(`.footer__statistics`);
 render(footerStatElement, new FilmsCounterView(cards).getElement(), RenderPosition.BEFOREEND);
-
-// рисует основной список фильмов
-render(boardComponent.getElement(), new FilmsListView().getElement(), RenderPosition.BEFOREEND);
-const filmsListComponent = boardComponent.getElement().querySelector(`.films-list .films-list__container`);
-
-for (let i = 0; i < Math.min(cards.length, FilmsCount.PER_STEP); i++) {
-  renderCard(filmsListComponent, cards[i]);
-}
-
-if (cards.length > FilmsCount.PER_STEP) {
-  let renderedCardCount = FilmsCount.PER_STEP;
-  const showMoreButtonComponent = new ShowMoreButtonView();
-  render(filmsListComponent, showMoreButtonComponent.getElement(), RenderPosition.AFTEREND);
-  showMoreButtonComponent.getElement().addEventListener(`click`, (evt) => {
-    evt.preventDefault();
-    cards
-      .slice(renderedCardCount, renderedCardCount + FilmsCount.PER_STEP)
-      .forEach((card) => renderCard(filmsListComponent, card));
-
-    renderedCardCount += FilmsCount.PER_STEP;
-
-    if (renderedCardCount >= cards.length) {
-      showMoreButtonComponent.getElement().remove();
-      showMoreButtonComponent.removeElement();
-    }
-  });
-}
-
-// рисует дополнительные списки фильмов
-render(boardComponent.getElement(), new BestFilmsView().getElement(), RenderPosition.BEFOREEND);
-
-const bestfilmsListElement = boardComponent.getElement().querySelector(`.films-list--extra .films-list__container`);
-
-const sortedByRatingsFilms = cards.slice().sort((a, b) => b.rating - a.rating);
-
-for (let i = 0; i < FilmsCount.EXTRA; i++) {
-  renderCard(bestfilmsListElement, sortedByRatingsFilms[i]);
-}
-
-render(boardComponent.getElement(), new CommentedFilmsView().getElement(), RenderPosition.BEFOREEND);
-const commentedFilmsListElement = boardComponent.getElement().querySelector(`.films-list--extra:last-of-type .films-list__container`);
-
-const sortedByCommentsFilms = cards.slice().sort((a, b) => b.comments.length - a.comments.length);
-
-for (let i = 0; i < FilmsCount.EXTRA; i++) {
-  renderCard(commentedFilmsListElement, sortedByCommentsFilms[i]);
-}
-
 
