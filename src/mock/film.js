@@ -1,4 +1,4 @@
-import {getRandomInteger, getRandomDecimal, getSomeShuffledSubjects, getTrueOrFaulse, getRandomItem} from "../utils.js";
+import {getRandomInteger, getRandomDecimal, getSomeShuffledSubjects, getTrueOrFalse, getRandomItem} from "../utils.js";
 import {generateListOfComments} from "./comment.js";
 
 const DATE_OF_FIRST_FILM_PREMIERE = new Date(Date.UTC(1896, 1, 6, 3, 0, 0));
@@ -109,7 +109,7 @@ export const generateCard = () => ({
   description: getSomeShuffledSubjects(DESCRIPTIONS).join(` `),
   ageRating: getRandomItem(AGE_RATINGS),
   comments: generateListOfComments(),
-  isAddedToWatchlist: getTrueOrFaulse(),
-  isWatched: getTrueOrFaulse(),
-  isFavorite: getTrueOrFaulse(),
+  isAddedToWatchlist: getTrueOrFalse(),
+  isWatched: getTrueOrFalse(),
+  isFavorite: getTrueOrFalse(),
 });

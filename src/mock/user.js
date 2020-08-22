@@ -1,3 +1,4 @@
+
 const Ranks = {
   NOVICE: `novice`,
   FAN: `fan`,
@@ -14,7 +15,7 @@ export const generateUserRank = (cards) => {
 
   if (watchedFilmsCount > 0 && watchedFilmsCount <= 10) {
     userRank = Ranks.NOVICE;
-  } else if (watchedFilmsCount <= 20) {
+  } else if (watchedFilmsCount > 10 && watchedFilmsCount <= 20) {
     userRank = Ranks.FAN;
   } else if (watchedFilmsCount > 20) {
     userRank = Ranks.MOVIE_BUFF;
