@@ -1,4 +1,4 @@
-import {createElement} from "../utils.js";
+import AbstractView from "./abstract.js";
 
 const MAX_SIMBOL_COUNT = 140;
 const MINUTES_IN_HOUR = 60;
@@ -63,25 +63,13 @@ const createCardTemplate = (card) => {
     </article>`;
 };
 
-export default class Card {
+export default class Card extends AbstractView {
   constructor(card) {
+    super();
     this._card = card;
-    this._element = null;
   }
 
   getTemplate() {
     return createCardTemplate(this._card);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

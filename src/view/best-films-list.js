@@ -1,4 +1,4 @@
-import {createElement} from "../utils.js";
+import AbstractView from "./abstract.js";
 
 // разметка списка лучших фильмов
 const createBestFilmsListTemplate = () =>
@@ -9,24 +9,8 @@ const createBestFilmsListTemplate = () =>
           </div>
       </section>`;
 
-export default class BestFilms {
-  constructor() {
-    this._element = null;
-  }
-
+export default class BestFilms extends AbstractView {
   getTemplate() {
     return createBestFilmsListTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

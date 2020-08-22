@@ -1,4 +1,5 @@
-import {humanizeAnyDate, createElement} from "../utils.js";
+import AbstractView from "./abstract.js";
+import {humanizeAnyDate} from "../utils.js";
 
 // разметка дополнительной информации о фильме
 const createFilmDetailsCard = (card) => {
@@ -177,25 +178,13 @@ const createFilmDetailsCard = (card) => {
         </section>`;
 };
 
-export default class FilmDetailsCard {
+export default class FilmDetailsCard extends AbstractView {
   constructor(card) {
+    super();
     this._card = card;
-    this._element = null;
   }
 
   getTemplate() {
     return createFilmDetailsCard(this._card);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

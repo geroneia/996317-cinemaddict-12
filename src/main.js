@@ -62,8 +62,7 @@ const renderCard = (filmsListElement, card) => {
     document.removeEventListener(`keydown`, onEscKeyDown);
   };
 
-  const onCardClick = (evt) => {
-    evt.preventDefault();
+  const onCardClick = () => {
     showFilmDetails();
     document.addEventListener(`keydown`, onEscKeyDown);
     cardDetailsComponent.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, onCrossButtonClick);
@@ -111,8 +110,7 @@ if (cards.length === 0) {
     let renderedCardCount = FilmsCount.PER_STEP;
     const showMoreButtonComponent = new ShowMoreButtonView();
     render(filmsListComponent, showMoreButtonComponent.getElement(), RenderPosition.AFTEREND);
-    showMoreButtonComponent.getElement().addEventListener(`click`, (evt) => {
-      evt.preventDefault();
+    showMoreButtonComponent.setClickHandler(() => {
       cards
       .slice(renderedCardCount, renderedCardCount + FilmsCount.PER_STEP)
       .forEach((card) => renderCard(filmsListComponent, card));
