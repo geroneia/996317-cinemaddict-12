@@ -17,7 +17,7 @@ import {generateCard} from "./mock/film.js";
 import {generateFilter} from "./mock/filter.js";
 import {generateUserRank} from "./mock/user.js";
 
-import {render, RenderPosition} from "./utils.js";
+import {render, RenderPosition, remove} from "./utils/render.js";
 
 const FilmsCount = {
   PER_STEP: 5,
@@ -41,65 +41,57 @@ const renderCard = (filmsListElement, card) => {
 
   const showFilmDetails = () => {
     // рисует попап с дополнительной информацией о фильме
-    render(footerElement, cardDetailsComponent.getElement(), RenderPosition.AFTEREND);
-  };
-
-  const removeFilmDetails = () => {
-    cardDetailsComponent.getElement().remove();
-    cardDetailsComponent.removeElement();
+    render(footerElement, cardDetailsComponent, RenderPosition.AFTEREND);
   };
 
   const onEscKeyDown = (evt) => {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
-      removeFilmDetails();
+      remove(cardDetailsComponent);
       document.removeEventListener(`keydown`, onEscKeyDown);
     }
   };
 
   const onCrossButtonClick = () => {
-    removeFilmDetails();
+    remove(cardDetailsComponent);
     document.removeEventListener(`keydown`, onEscKeyDown);
   };
 
   const onCardClick = () => {
     showFilmDetails();
     document.addEventListener(`keydown`, onEscKeyDown);
-    cardDetailsComponent.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, onCrossButtonClick);
+    cardDetailsComponent.setClickHandler(onCrossButtonClick);
   };
 
-  Array.from(cardComponent.getElement().querySelectorAll(`.film-card__poster, .film-card__title, .film-card__comments`))
-  .forEach(function (it) {
-    it.addEventListener(`click`, onCardClick);
-  });
+  cardComponent.setClickHandler(onCardClick);
 
-  render(filmsListElement, cardComponent.getElement(), RenderPosition.BEFOREEND);
+  render(filmsListElement, cardComponent, RenderPosition.BEFOREEND);
 };
 
 // рисует звание пользователя на странице
-render(siteHeaderElement, new ProfileRatingView(generateUserRank(cards)).getElement(), RenderPosition.BEFOREEND);
+render(siteHeaderElement, new ProfileRatingView(generateUserRank(cards)), RenderPosition.BEFOREEND);
 
 const siteMainElement = document.querySelector(`.main`);
 
 // рисует меню
 const menuComponent = new SiteMenuView();
-render(siteMainElement, menuComponent.getElement(), RenderPosition.BEFOREEND);
+render(siteMainElement, menuComponent, RenderPosition.BEFOREEND);
 
-render(menuComponent.getElement(), new FilterView(filters).getElement(), RenderPosition.BEFOREEND);
-render(menuComponent.getElement(), new StatsTemplateView().getElement(), RenderPosition.BEFOREEND);
+render(menuComponent, new FilterView(filters), RenderPosition.BEFOREEND);
+render(menuComponent, new StatsTemplateView(), RenderPosition.BEFOREEND);
 
 // рисует сортировку
-render(siteMainElement, new SortingView().getElement(), RenderPosition.BEFOREEND);
+render(siteMainElement, new SortingView(), RenderPosition.BEFOREEND);
 
 // рисует список блоков фильмов
 const boardComponent = new BoardView();
 if (cards.length === 0) {
-  render(siteMainElement, new NoFilmsView().getElement(), RenderPosition.BEFOREEND);
+  render(siteMainElement, new NoFilmsView(), RenderPosition.BEFOREEND);
 } else {
-  render(siteMainElement, boardComponent.getElement(), RenderPosition.BEFOREEND);
+  render(siteMainElement, boardComponent, RenderPosition.BEFOREEND);
 
   // рисует основной список фильмов
-  render(boardComponent.getElement(), new FilmsListView().getElement(), RenderPosition.BEFOREEND);
+  render(boardComponent, new FilmsListView(), RenderPosition.BEFOREEND);
   const filmsListComponent = boardComponent.getElement().querySelector(`.films-list .films-list__container`);
 
   for (let i = 0; i < Math.min(cards.length, FilmsCount.PER_STEP); i++) {
@@ -109,7 +101,7 @@ if (cards.length === 0) {
   if (cards.length > FilmsCount.PER_STEP) {
     let renderedCardCount = FilmsCount.PER_STEP;
     const showMoreButtonComponent = new ShowMoreButtonView();
-    render(filmsListComponent, showMoreButtonComponent.getElement(), RenderPosition.AFTEREND);
+    render(filmsListComponent, showMoreButtonComponent, RenderPosition.AFTEREND);
     showMoreButtonComponent.setClickHandler(() => {
       cards
       .slice(renderedCardCount, renderedCardCount + FilmsCount.PER_STEP)
@@ -125,7 +117,7 @@ if (cards.length === 0) {
   }
 
   // рисует дополнительные списки фильмов
-  render(boardComponent.getElement(), new BestFilmsView().getElement(), RenderPosition.BEFOREEND);
+  render(boardComponent, new BestFilmsView(), RenderPosition.BEFOREEND);
 
   const bestfilmsListElement = boardComponent.getElement().querySelector(`.films-list--extra .films-list__container`);
 
@@ -135,7 +127,7 @@ if (cards.length === 0) {
     renderCard(bestfilmsListElement, sortedByRatingsFilms[i]);
   }
 
-  render(boardComponent.getElement(), new CommentedFilmsView().getElement(), RenderPosition.BEFOREEND);
+  render(boardComponent, new CommentedFilmsView(), RenderPosition.BEFOREEND);
   const commentedFilmsListElement = boardComponent.getElement().querySelector(`.films-list--extra:last-of-type .films-list__container`);
 
   const sortedByCommentsFilms = cards.slice().sort((a, b) => b.comments.length - a.comments.length);
@@ -147,5 +139,5 @@ if (cards.length === 0) {
 
 // рисует счетчик фильмов в футере
 const footerStatElement = footerElement.querySelector(`.footer__statistics`);
-render(footerStatElement, new FilmsCounterView(cards).getElement(), RenderPosition.BEFOREEND);
+render(footerStatElement, new FilmsCounterView(cards), RenderPosition.BEFOREEND);
 

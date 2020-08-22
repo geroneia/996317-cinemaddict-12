@@ -1,5 +1,5 @@
 import AbstractView from "./abstract.js";
-import {humanizeAnyDate} from "../utils.js";
+import {humanizeAnyDate} from "../utils/common.js";
 
 // разметка дополнительной информации о фильме
 const createFilmDetailsCard = (card) => {
@@ -182,9 +182,19 @@ export default class FilmDetailsCard extends AbstractView {
   constructor(card) {
     super();
     this._card = card;
+    this._clickHandler = this._clickHandler.bind(this);
   }
 
   getTemplate() {
     return createFilmDetailsCard(this._card);
+  }
+
+  _clickHandler() {
+    this._callback.click();
+  }
+
+  setClickHandler(callback) {
+    this._callback.click = callback;
+    this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._clickHandler);
   }
 }

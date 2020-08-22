@@ -67,9 +67,22 @@ export default class Card extends AbstractView {
   constructor(card) {
     super();
     this._card = card;
+    this._clickHandler = this._clickHandler.bind(this);
   }
 
   getTemplate() {
     return createCardTemplate(this._card);
+  }
+
+  _clickHandler() {
+    this._callback.click();
+  }
+
+  setClickHandler(callback) {
+    this._callback.click = callback;
+    Array.from(this.getElement().querySelectorAll(`.film-card__poster, .film-card__title, .film-card__comments`))
+    .forEach((control) => {
+      control.addEventListener(`click`, this._clickHandler);
+    });
   }
 }
