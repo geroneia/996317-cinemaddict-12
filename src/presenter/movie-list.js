@@ -1,3 +1,4 @@
+import SortingView from "../view/sorting.js";
 import BoardView from "../view/board.js";
 import FilmsListView from "../view/films-list.js";
 import BestFilmsView from "../view/best-films-list.js";
@@ -7,7 +8,9 @@ import FilmDetailsCardView from "../view/film-details-card.js";
 import ShowMoreButtonView from "../view/show-more-button.js";
 import NoFilmsView from "../view/no-films.js";
 
+import {SortType} from "../view/sorting.js";
 import {render, RenderPosition, remove} from "../utils/render.js";
+import {sortByDate, sortByRating} from "../utils/card.js";
 
 const FilmsCount = {
   PER_STEP: 5,
@@ -17,22 +20,59 @@ const FilmsCount = {
 export default class MovieList {
   constructor(movieListContainer) {
     this._movieListContainer = movieListContainer;
+    this._currentSortType = SortType.DEFAULT;
 
+    this._sortComponent = new SortingView();
     this._boardComponent = new BoardView();
     this._filmsListComponent = new FilmsListView();
     this._bestFilmsComponent = new BestFilmsView();
     this._commentedFilmsComponent = new CommentedFilmsView();
     this._showMoreButtonComponent = new ShowMoreButtonView();
     this._noFilmsComponent = new NoFilmsView();
+    this._footerComponent = document.querySelector(`.footer`);
+
+    this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
 
   init(movieCards) {
+    this._renderSort();
     this._movieCards = movieCards.slice();
+    this._sourcedMovieCards = movieCards.slice();
+
     if (movieCards.length === 0) {
       this._renderNoFilms();
       return;
     }
     this._renderBoard();
+  }
+
+  _sortCards(sortType) {
+    switch (sortType) {
+      case SortType.BY_DATE:
+        this._movieCards.sort(sortByDate);
+        break;
+      case SortType.BY_RATING:
+        this._movieCards.sort(sortByRating);
+        break;
+      default:
+        this._movieCards = this._sourcedMovieCards.slice();
+    }
+    this._currentSortType = sortType;
+  }
+
+  _handleSortTypeChange(sortType) {
+    if (this._currentSortType === sortType) {
+      return;
+    }
+
+    this._sortCards(sortType);
+    // - Очищаем список
+    // - Рендерим список заново
+  }
+
+  _renderSort() {
+    render(this._movieListContainer, this._sortComponent, RenderPosition.BEFOREEND);
+    this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
   }
 
   _renderCard(container, movieCard) {
@@ -42,8 +82,7 @@ export default class MovieList {
 
     const showFilmDetails = () => {
       // рисует попап с дополнительной информацией о фильме
-      const footerElement = document.querySelector(`.footer`);
-      render(footerElement, cardDetailsComponent, RenderPosition.AFTEREND);
+      render(this._footerComponent, cardDetailsComponent, RenderPosition.AFTEREND);
     };
 
     const onEscKeyDown = (evt) => {
@@ -83,9 +122,8 @@ export default class MovieList {
 
   _renderShowMoreButton(container) {
     let renderedCardCount = FilmsCount.PER_STEP;
-    const showMoreButtonComponent = new ShowMoreButtonView();
-    render(container, showMoreButtonComponent, RenderPosition.AFTEREND);
-    showMoreButtonComponent.setClickHandler(() => {
+    render(container, this._showMoreButtonComponent, RenderPosition.AFTEREND);
+    this._showMoreButtonComponent.setClickHandler(() => {
       this._movieCards
       .slice(renderedCardCount, renderedCardCount + FilmsCount.PER_STEP)
       .forEach((movieCard) => this._renderCard(container, movieCard));
@@ -93,8 +131,8 @@ export default class MovieList {
       renderedCardCount += FilmsCount.PER_STEP;
 
       if (renderedCardCount >= this._movieCards.length) {
-        showMoreButtonComponent.getElement().remove();
-        showMoreButtonComponent.removeElement();
+        this._showMoreButtonComponent.getElement().remove();
+        this._showMoreButtonComponent.removeElement();
       }
     });
   }
@@ -124,7 +162,7 @@ export default class MovieList {
   }
 
   _renderMostCommentedFilmsList() {
-    render(this._boardComponent, new CommentedFilmsView(), RenderPosition.BEFOREEND);
+    render(this._boardComponent, this._commentedFilmsComponent, RenderPosition.BEFOREEND);
     const commentedFilmsListElement = this._boardComponent.getElement().querySelector(`.films-list--extra:last-of-type .films-list__container`);
 
     const sortedByCommentsFilms = this._movieCards.slice().sort((a, b) => b.comments.length - a.comments.length);
