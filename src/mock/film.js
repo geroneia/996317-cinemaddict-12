@@ -1,4 +1,4 @@
-import {getRandomInteger, getRandomDecimal, getSomeShuffledSubjects, getTrueOrFalse, getRandomItem} from "../utils.js";
+import {getRandomInteger, getRandomDecimal, getSomeShuffledSubjects, getTrueOrFalse, getRandomItem} from "../utils/common.js";
 import {generateListOfComments} from "./comment.js";
 
 const DATE_OF_FIRST_FILM_PREMIERE = new Date(Date.UTC(1896, 1, 6, 3, 0, 0));

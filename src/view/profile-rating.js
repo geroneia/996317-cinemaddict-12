@@ -1,4 +1,4 @@
-import {createElement} from "../utils.js";
+import AbstractView from "./abstract.js";
 
 // разметка звания пользователя
 const createProfileRating = (userRank) =>
@@ -7,25 +7,13 @@ const createProfileRating = (userRank) =>
     <img class="profile__avatar" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
     </section>`;
 
-export default class ProfileRating {
+export default class ProfileRating extends AbstractView {
   constructor(userRank) {
+    super();
     this._userRank = userRank;
-    this._element = null;
   }
 
   getTemplate() {
     return createProfileRating(this._userRank);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

@@ -1,4 +1,4 @@
-import {createElement} from "../utils.js";
+import AbstractView from "./abstract.js";
 
 // разметка часто обсуждаемых фильмов
 const createCommentedFilmsListTemplate = () =>
@@ -9,24 +9,8 @@ const createCommentedFilmsListTemplate = () =>
       </div>
       </section>`;
 
-export default class CommentedFilms {
-  constructor() {
-    this._element = null;
-  }
-
+export default class CommentedFilms extends AbstractView {
   getTemplate() {
     return createCommentedFilmsListTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

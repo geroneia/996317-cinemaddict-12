@@ -1,4 +1,4 @@
-import {getRandomInteger, getSomeShuffledSubjects, getRandomItem} from "../utils.js";
+import {getRandomInteger, getSomeShuffledSubjects, getRandomItem} from "../utils/common.js";
 import {NAMES} from "./film.js";
 const MAX_DAYS_GAP = 7;
 const MAX_COMMENTS_COUNT = 5;
