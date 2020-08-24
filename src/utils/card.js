@@ -1,7 +1,6 @@
-export const sortByDate = (cardA, cardB) => {
-  return cardA.releaseDate.getTime() - cardB.releaseDate.getTime();
-};
+export const sortByDate = (a, b) =>
+  b.releaseDate.getTime() - a.releaseDate.getTime();
 
-export const sortByRating = (cardA, cardB) => {
-  return cardA.rating - cardB.rating;
-};
+export const sortByRating = (a, b) => b.rating - a.rating;
+
+export const sortByComments = (a, b) => b.comments.length - a.comments.length;
