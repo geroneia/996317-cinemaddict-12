@@ -2,7 +2,6 @@ import ProfileRatingView from "./view/profile-rating.js";
 import SiteMenuView from "./view/menu.js";
 import FilterView from "./view/filter.js";
 import StatsTemplateView from "./view/stats.js";
-import SortingView from "./view/sorting.js";
 import FilmsCounterView from "./view/films-counter.js";
 
 import {generateCard} from "./mock/film.js";
@@ -38,9 +37,6 @@ render(siteMainElement, menuComponent, RenderPosition.BEFOREEND);
 
 render(menuComponent, new FilterView(filters), RenderPosition.BEFOREEND);
 render(menuComponent, new StatsTemplateView(), RenderPosition.BEFOREEND);
-
-// рисует сортировку
-render(siteMainElement, new SortingView(), RenderPosition.BEFOREEND);
 
 const movieListPresenter = new MovieListPresenter(siteMainElement);
 
