@@ -6,6 +6,7 @@ import CommentedFilmsView from "../view/commented-films-list.js";
 import ShowMoreButtonView from "../view/show-more-button.js";
 import NoFilmsView from "../view/no-films.js";
 import CardPresenter from "../presenter/card.js";
+import {updateItem} from "../utils/common.js";
 
 import {SortType} from "../view/sorting.js";
 import {render, RenderPosition, remove} from "../utils/render.js";
@@ -31,6 +32,7 @@ export default class MovieList {
     this._showMoreButtonComponent = new ShowMoreButtonView();
     this._noFilmsComponent = new NoFilmsView();
 
+    this._handleCardChange = this._handleCardChange.bind(this);
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
@@ -45,6 +47,13 @@ export default class MovieList {
       return;
     }
     this._renderBoard();
+  }
+
+  _handleCardChange(updatedCard) {
+    // обновляет карточку в двух массивах (сортировка), после чего вызывает инициализацию презентера с новыми данными
+    this._movieCards = updateItem(this._movieCards, updatedCard);
+    this._sourcedMovieCards = updateItem(this._sourcedMovieCards, updatedCard);
+    this._cardPresenter[updatedCard.id].init(updatedCard);
   }
 
   _sortCards(sortType) {
@@ -76,7 +85,7 @@ export default class MovieList {
   }
 
   _renderCard(container, movieCard) {
-    const cardPresenter = new CardPresenter(container);
+    const cardPresenter = new CardPresenter(container, this._handleCardChange);
     cardPresenter.init(movieCard);
     this._cardPresenter[movieCard.id] = cardPresenter;
   }
