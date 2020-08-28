@@ -32,7 +32,7 @@ export default class Sorting extends AbstractView {
 
     evt.preventDefault();
     this._callback.sortTypeChange(evt.target.dataset.sortType);
-    Array.from(this.getElement().querySelectorAll(`.sort__button`))
+    this.getElement().querySelectorAll(`.sort__button`)
     .forEach((button) => {
       button.classList.remove(`sort__button--active`);
     });

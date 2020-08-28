@@ -106,7 +106,8 @@ export default class Card {
     );
   }
 
-  _handleCloseCardClick() {
+  _handleCloseCardClick(task) {
+    this._changeData(task);
     remove(this._cardDetailsComponent);
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
   }
@@ -114,6 +115,7 @@ export default class Card {
   _handleShowMoreClick() {
     this._showFilmDetails();
     document.addEventListener(`keydown`, this._escKeyDownHandler);
+
     this._cardDetailsComponent.setClickHandler(this._handleCloseCardClick);
   }
 }

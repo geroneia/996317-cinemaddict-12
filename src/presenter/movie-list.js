@@ -23,6 +23,10 @@ export default class MovieList {
     this._renderedCardCount = FilmsCount.PER_STEP;
     this._currentSortType = SortType.DEFAULT;
     this._cardPresenter = {};
+    this._cardPresenterForExtraLists = {};
+
+    this._sortedByRatingsFilms = {};
+    this._sortedByCommentsFilms = {};
 
     this._sortComponent = new SortingView();
     this._boardComponent = new BoardView();
@@ -54,6 +58,7 @@ export default class MovieList {
     this._movieCards = updateItem(this._movieCards, updatedCard);
     this._sourcedMovieCards = updateItem(this._sourcedMovieCards, updatedCard);
     this._cardPresenter[updatedCard.id].init(updatedCard);
+    // this._cardPresenterForExtraLists[updatedCard.id].init(updatedCard);
   }
 
   _sortCards(sortType) {
@@ -90,6 +95,13 @@ export default class MovieList {
     this._cardPresenter[movieCard.id] = cardPresenter;
   }
 
+  // Выводит в дополнительные списки карточки фильмов с помощью отдельного метода, чтобы
+  // при удалении презентеров при сортировке их не приходилось рисовать заново
+  _renderCardForExtraLists(container, movieCard) {
+    const cardPresenterForExtraLists = new CardPresenter(container, this._handleCardChange);
+    cardPresenterForExtraLists.init(movieCard);
+    this._cardPresenterForExtraLists[movieCard.id] = cardPresenterForExtraLists;
+  }
 
   _renderCards(container, from, to) {
     this._movieCards
@@ -116,7 +128,6 @@ export default class MovieList {
   }
 
   _clearFilmsListContainer() {
-    // this._filmsListComponent.getElement().querySelector(`.films-list .films-list__container`).innerHTML = ``;
     Object
       .values(this._cardPresenter)
       .forEach((presenter) => presenter.destroy());
@@ -146,28 +157,29 @@ export default class MovieList {
 
     const bestfilmsListElement = this._boardComponent.getElement().querySelector(`.films-list--extra .films-list__container`);
 
-    const sortedByRatingsFilms = this._sourcedMovieCards.slice().sort(sortByRating);
+    this._sortedByRatingsFilms = this._sourcedMovieCards.slice().sort(sortByRating);
 
     for (let i = 0; i < FilmsCount.EXTRA; i++) {
-      this._renderCard(bestfilmsListElement, sortedByRatingsFilms[i]);
+      this._renderCardForExtraLists(bestfilmsListElement, this._sortedByRatingsFilms[i]);
     }
   }
 
   _renderMostCommentedFilmsList() {
     render(this._boardComponent, this._commentedFilmsComponent, RenderPosition.BEFOREEND);
+
     const commentedFilmsListElement = this._boardComponent.getElement().querySelector(`.films-list--extra:last-of-type .films-list__container`);
 
-    const sortedByCommentsFilms = this._sourcedMovieCards.slice().sort(sortByComments);
+    this._sortedByCommentsFilms = this._sourcedMovieCards.slice().sort(sortByComments);
 
     for (let i = 0; i < FilmsCount.EXTRA; i++) {
-      this._renderCard(commentedFilmsListElement, sortedByCommentsFilms[i]);
+      this._renderCardForExtraLists(commentedFilmsListElement, this._sortedByCommentsFilms[i]);
     }
   }
 
   _renderBoard() {
     render(this._movieListContainer, this._boardComponent, RenderPosition.BEFOREEND);
     this._renderFilmsListContainer();
-    // this._renderBestFilmsList();
-    // this._renderMostCommentedFilmsList();
+    this._renderBestFilmsList();
+    this._renderMostCommentedFilmsList();
   }
 }

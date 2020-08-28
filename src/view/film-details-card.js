@@ -2,7 +2,7 @@ import AbstractView from "./abstract.js";
 import {humanizeAnyDate} from "../utils/common.js";
 
 // разметка дополнительной информации о фильме
-const createFilmDetailsCard = (card) => {
+const createFilmDetailsCard = (data) => {
   const {
     title,
     poster,
@@ -20,7 +20,7 @@ const createFilmDetailsCard = (card) => {
     isAddedToWatchlist,
     isWatched,
     isFavorite
-  } = card;
+  } = data;
 
   // получает год выхода для краткой информации
   const releaseYear = releaseDate.getFullYear();
@@ -181,20 +181,134 @@ const createFilmDetailsCard = (card) => {
 export default class FilmDetailsCard extends AbstractView {
   constructor(card) {
     super();
-    this._card = card;
+    this._data = FilmDetailsCard.parseCardToData(card);
     this._clickHandler = this._clickHandler.bind(this);
+
+    this._emojiInputHandler = this._emojiInputHandler.bind(this);
+    this._favoriteToggleHandler = this._favoriteToggleHandler.bind(this);
+    this._addToWatchlistToggleHandler = this._addToWatchlistToggleHandler.bind(this);
+    this._watchedToggleHandler = this._watchedToggleHandler.bind(this);
+
+    this._setInnerHandlers();
   }
 
   getTemplate() {
-    return createFilmDetailsCard(this._card);
+    return createFilmDetailsCard(this._data);
   }
 
-  _clickHandler() {
-    this._callback.click(this._card);
+  updateData(update, justDataUpdating) {
+    if (!update) {
+      return;
+    }
+
+    this._data = Object.assign(
+        {},
+        this._data,
+        update
+    );
+
+    if (justDataUpdating) {
+      return;
+    }
+
+    this.updateElement();
+  }
+
+  updateElement() {
+    let prevElement = this.getElement();
+    const parent = prevElement.parentElement;
+    this.removeElement();
+
+    const newElement = this.getElement();
+
+    parent.replaceChild(newElement, prevElement);
+    prevElement = null;
+
+    this.restoreHandlers();
+  }
+
+  _favoriteToggleHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      isFavorite: !this._data.isFavorite
+    });
+  }
+
+  _addToWatchlistToggleHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      isAddedToWatchlist: !this._data.isAddedToWatchlist
+    });
+  }
+
+  _watchedToggleHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      isWatched: !this._data.isWatched
+    });
+  }
+
+  _clickHandler(evt) {
+    evt.preventDefault();
+    this._callback.click(FilmDetailsCard.parseDataTocard(this._data));
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setClickHandler(this._callback.click);
+  }
+
+  _setInnerHandlers() {
+    this.getElement()
+    .querySelector(`.film-details__control-label--favorite`)
+    .addEventListener(`click`, this._favoriteToggleHandler);
+
+    this.getElement()
+    .querySelector(`.film-details__control-label--watchlist`)
+      .addEventListener(`click`, this._addToWatchlistToggleHandler);
+
+    this.getElement().querySelector(`.film-details__control-label--watched`)
+      .addEventListener(`click`, this._watchedToggleHandler);
+
+    this.getElement().querySelectorAll(`.film-details__emoji-item`)
+      .forEach((label) => label.addEventListener(`click`, this._emojiInputHandler));
+  }
+
+  _emojiInputHandler(evt) {
+    let id = evt.target.id;
+    let emoji = id.slice(6);
+    this.getElement().querySelector(`.film-details__add-emoji-label`)
+      .innerHTML = `<img src="./images/emoji/${emoji}.png" width="55" height="55" alt="${id}">`;
+    this.updateData({
+      description: evt.target.value
+    }, true);
   }
 
   setClickHandler(callback) {
     this._callback.click = callback;
-    this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._clickHandler);
+    this.getElement().querySelector(`.film-details__close-btn`)
+    .addEventListener(`click`, this._clickHandler);
+  }
+
+  static parseCardToData(card) {
+    return Object.assign(
+        {},
+        card,
+        {
+          isAddedToWatchlist: card.isAddedToWatchlist,
+          isWatched: card.isWatched,
+          isFavorite: card.isFavorite
+        }
+    );
+  }
+
+  static parseDataTocard(data) {
+    data = Object.assign({}, data);
+
+    delete data.isAddedToWatchlist;
+    delete data.isWatched;
+    delete data.isFavorite;
+
+    return data;
   }
 }
