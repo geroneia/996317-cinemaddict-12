@@ -1,4 +1,4 @@
-import AbstractView from "./abstract.js";
+import SmartView from "./smart.js";
 import {humanizeAnyDate} from "../utils/common.js";
 
 // разметка дополнительной информации о фильме
@@ -70,22 +70,22 @@ const createFilmDetailsCard = (data) => {
               <div class="film-details__info-wrap">
                 <div class="film-details__poster">
                   <img class="film-details__poster-img" src="./images/posters/${poster}" alt="${title}(${releaseYear})">
-  
+
                   <p class="film-details__age">${ageRating}+</p>
                 </div>
-  
+
                 <div class="film-details__info">
                   <div class="film-details__info-head">
                     <div class="film-details__title-wrap">
                       <h3 class="film-details__title">${title}</h3>
                       <p class="film-details__title-original">Original: ${title}</p>
                     </div>
-  
+
                     <div class="film-details__rating">
                       <p class="film-details__total-rating">${rating}</p>
                     </div>
                   </div>
-  
+
                   <table class="film-details__table">
                     <tr class="film-details__row">
                       <td class="film-details__term">Director</td>
@@ -116,56 +116,56 @@ const createFilmDetailsCard = (data) => {
                       <td class="film-details__cell">${createGenresTemplate(genres)}</td>
                     </tr>
                   </table>
-  
+
                   <p class="film-details__film-description">
                     ${description}
                   </p>
                 </div>
               </div>
-  
+
               <section class="film-details__controls">
                 <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${getMark(isAddedToWatchlist)}>
                 <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
-  
+
                 <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${getMark(isWatched)}>
                 <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
-  
+
                 <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${getMark(isFavorite)}>
                 <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
               </section>
             </div>
-  
+
             <div class="form-details__bottom-container">
               <section class="film-details__comments-wrap">
                 <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
-  
+
                 <ul class="film-details__comments-list">
                   ${createCommentTemplate(comments)}
                 </ul>
-  
+
                 <div class="film-details__new-comment">
                   <div for="add-emoji" class="film-details__add-emoji-label"></div>
-  
+
                   <label class="film-details__comment-label">
                     <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
                   </label>
-  
+
                   <div class="film-details__emoji-list">
                     <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
                     <label class="film-details__emoji-label" for="emoji-smile">
                       <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
                     </label>
-  
+
                     <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
                     <label class="film-details__emoji-label" for="emoji-sleeping">
                       <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
                     </label>
-  
+
                     <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke">
                     <label class="film-details__emoji-label" for="emoji-puke">
                       <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
                     </label>
-  
+
                     <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">
                     <label class="film-details__emoji-label" for="emoji-angry">
                       <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
@@ -178,7 +178,7 @@ const createFilmDetailsCard = (data) => {
         </section>`;
 };
 
-export default class FilmDetailsCard extends AbstractView {
+export default class FilmDetailsCard extends SmartView {
   constructor(card) {
     super();
     this._data = FilmDetailsCard.parseCardToData(card);
@@ -192,39 +192,15 @@ export default class FilmDetailsCard extends AbstractView {
     this._setInnerHandlers();
   }
 
+  // Выход без сохранения
+  reset(card) {
+    this.updateData(
+        FilmDetailsCard.parseCardToData(card)
+    );
+  }
+
   getTemplate() {
     return createFilmDetailsCard(this._data);
-  }
-
-  updateData(update, justDataUpdating) {
-    if (!update) {
-      return;
-    }
-
-    this._data = Object.assign(
-        {},
-        this._data,
-        update
-    );
-
-    if (justDataUpdating) {
-      return;
-    }
-
-    this.updateElement();
-  }
-
-  updateElement() {
-    let prevElement = this.getElement();
-    const parent = prevElement.parentElement;
-    this.removeElement();
-
-    const newElement = this.getElement();
-
-    parent.replaceChild(newElement, prevElement);
-    prevElement = null;
-
-    this.restoreHandlers();
   }
 
   _favoriteToggleHandler(evt) {
@@ -271,7 +247,7 @@ export default class FilmDetailsCard extends AbstractView {
       .addEventListener(`click`, this._watchedToggleHandler);
 
     this.getElement().querySelectorAll(`.film-details__emoji-item`)
-      .forEach((label) => label.addEventListener(`click`, this._emojiInputHandler));
+      .forEach((input) => input.addEventListener(`click`, this._emojiInputHandler));
   }
 
   _emojiInputHandler(evt) {

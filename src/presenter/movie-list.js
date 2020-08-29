@@ -37,6 +37,7 @@ export default class MovieList {
     this._noFilmsComponent = new NoFilmsView();
 
     this._handleCardChange = this._handleCardChange.bind(this);
+    this._handleModeChange = this._handleModeChange.bind(this);
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
@@ -51,6 +52,12 @@ export default class MovieList {
       return;
     }
     this._renderBoard();
+  }
+
+  _handleModeChange() {
+    Object
+      .values(this._cardPresenter)
+      .forEach((presenter) => presenter.resetView());
   }
 
   _handleCardChange(updatedCard) {
@@ -90,7 +97,7 @@ export default class MovieList {
   }
 
   _renderCard(container, movieCard) {
-    const cardPresenter = new CardPresenter(container, this._handleCardChange);
+    const cardPresenter = new CardPresenter(container, this._handleCardChange, this._handleModeChange);
     cardPresenter.init(movieCard);
     this._cardPresenter[movieCard.id] = cardPresenter;
   }
@@ -106,7 +113,7 @@ export default class MovieList {
   _renderCards(container, from, to) {
     this._movieCards
     .slice(from, to)
-    .forEach((movieCard) => this._renderCard(container, movieCard));
+    .forEach((movieCard) => this._renderCard(container, movieCard, this._handleModeChange));
   }
 
   _renderNoFilms() {
