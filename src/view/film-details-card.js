@@ -189,7 +189,7 @@ export default class FilmDetailsCard extends SmartView {
     this._addToWatchlistToggleHandler = this._addToWatchlistToggleHandler.bind(this);
     this._watchedToggleHandler = this._watchedToggleHandler.bind(this);
 
-    this._setInnerHandlers();
+    this._setEmojiInputHandler();
   }
 
   // Выход без сохранения
@@ -205,6 +205,7 @@ export default class FilmDetailsCard extends SmartView {
 
   _favoriteToggleHandler(evt) {
     evt.preventDefault();
+    this._callback.favoriteClick(FilmDetailsCard.parseDataTocard(this._data));
     this.updateData({
       isFavorite: !this._data.isFavorite
     });
@@ -212,6 +213,7 @@ export default class FilmDetailsCard extends SmartView {
 
   _addToWatchlistToggleHandler(evt) {
     evt.preventDefault();
+    this._callback.addToWatchlistClick(FilmDetailsCard.parseDataTocard(this._data));
     this.updateData({
       isAddedToWatchlist: !this._data.isAddedToWatchlist
     });
@@ -219,35 +221,43 @@ export default class FilmDetailsCard extends SmartView {
 
   _watchedToggleHandler(evt) {
     evt.preventDefault();
+    this._callback.watchedClick(FilmDetailsCard.parseDataTocard(this._data));
     this.updateData({
       isWatched: !this._data.isWatched
     });
   }
 
-  _clickHandler(evt) {
-    evt.preventDefault();
-    this._callback.click(FilmDetailsCard.parseDataTocard(this._data));
-  }
-
   restoreHandlers() {
-    this._setInnerHandlers();
+    this.setFavoriteLabelClickHandler(this._callback.favoriteClick);
+    this.setAddToWatchlistLabelClickHandler(this._callback.addToWatchlistClick);
+    this.setWatchedLabelClickHandler(this._callback.watchedClick);
     this.setClickHandler(this._callback.click);
+    this._setEmojiInputHandler();
   }
 
-  _setInnerHandlers() {
+  setFavoriteLabelClickHandler(callback) {
+    this._callback.favoriteClick = callback;
     this.getElement()
     .querySelector(`.film-details__control-label--favorite`)
     .addEventListener(`click`, this._favoriteToggleHandler);
+  }
 
+  setAddToWatchlistLabelClickHandler(callback) {
+    this._callback.addToWatchlistClick = callback;
     this.getElement()
     .querySelector(`.film-details__control-label--watchlist`)
       .addEventListener(`click`, this._addToWatchlistToggleHandler);
+  }
 
+  setWatchedLabelClickHandler(callback) {
+    this._callback.watchedClick = callback;
     this.getElement().querySelector(`.film-details__control-label--watched`)
       .addEventListener(`click`, this._watchedToggleHandler);
+  }
 
+  _setEmojiInputHandler() {
     this.getElement().querySelectorAll(`.film-details__emoji-item`)
-      .forEach((input) => input.addEventListener(`click`, this._emojiInputHandler));
+    .forEach((input) => input.addEventListener(`click`, this._emojiInputHandler));
   }
 
   _emojiInputHandler(evt) {
@@ -258,6 +268,12 @@ export default class FilmDetailsCard extends SmartView {
     this.updateData({
       description: evt.target.value
     }, true);
+  }
+
+  // внешние обработчики
+  _clickHandler(evt) {
+    evt.preventDefault();
+    this._callback.click(FilmDetailsCard.parseDataTocard(this._data));
   }
 
   setClickHandler(callback) {

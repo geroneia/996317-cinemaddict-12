@@ -23,7 +23,8 @@ export default class MovieList {
     this._renderedCardCount = FilmsCount.PER_STEP;
     this._currentSortType = SortType.DEFAULT;
     this._cardPresenter = {};
-    this._cardPresenterForExtraLists = {};
+    this._cardPresenterBestFilmsList = {};
+    this._cardPresenterMostCommentedFilmsList = {};
 
     this._sortedByRatingsFilms = {};
     this._sortedByCommentsFilms = {};
@@ -58,14 +59,30 @@ export default class MovieList {
     Object
       .values(this._cardPresenter)
       .forEach((presenter) => presenter.resetView());
+
+    Object
+      .values(this._cardPresenterBestFilmsList)
+      .forEach((presenter) => presenter.resetView());
+
+    Object
+      .values(this._cardPresenterMostCommentedFilmsList)
+      .forEach((presenter) => presenter.resetView());
   }
 
   _handleCardChange(updatedCard) {
     // обновляет карточку в двух массивах (сортировка), после чего вызывает инициализацию презентера с новыми данными
     this._movieCards = updateItem(this._movieCards, updatedCard);
     this._sourcedMovieCards = updateItem(this._sourcedMovieCards, updatedCard);
-    this._cardPresenter[updatedCard.id].init(updatedCard);
-    // this._cardPresenterForExtraLists[updatedCard.id].init(updatedCard);
+    if (this._cardPresenter[updatedCard.id] !== undefined) {
+      this._cardPresenter[updatedCard.id].init(updatedCard);
+    }
+
+    if (this._cardPresenterBestFilmsList[updatedCard.id] !== undefined) {
+      this._cardPresenterBestFilmsList[updatedCard.id].init(updatedCard);
+    }
+    if (this._cardPresenterMostCommentedFilms[updatedCard.id] !== undefined) {
+      this._cardPresenterMostCommentedFilms[updatedCard.id].init(updatedCard);
+    }
   }
 
   _sortCards(sortType) {
@@ -104,10 +121,16 @@ export default class MovieList {
 
   // Выводит в дополнительные списки карточки фильмов с помощью отдельного метода, чтобы
   // при удалении презентеров при сортировке их не приходилось рисовать заново
-  _renderCardForExtraLists(container, movieCard) {
-    const cardPresenterForExtraLists = new CardPresenter(container, this._handleCardChange);
-    cardPresenterForExtraLists.init(movieCard);
-    this._cardPresenterForExtraLists[movieCard.id] = cardPresenterForExtraLists;
+  _renderCardForBestFilmsList(container, movieCard) {
+    const cardPresenterBestFilmsList = new CardPresenter(container, this._handleCardChange, this._handleModeChange);
+    cardPresenterBestFilmsList.init(movieCard);
+    this._cardPresenterBestFilmsList[movieCard.id] = cardPresenterBestFilmsList;
+  }
+
+  _renderCardForMostCommentedFilmsList(container, movieCard) {
+    const cardPresenterMostCommentedFilmsList = new CardPresenter(container, this._handleCardChange, this._handleModeChange);
+    cardPresenterMostCommentedFilmsList.init(movieCard);
+    this._cardPresenterMostCommentedFilmsList[movieCard.id] = cardPresenterMostCommentedFilmsList;
   }
 
   _renderCards(container, from, to) {
@@ -167,7 +190,7 @@ export default class MovieList {
     this._sortedByRatingsFilms = this._sourcedMovieCards.slice().sort(sortByRating);
 
     for (let i = 0; i < FilmsCount.EXTRA; i++) {
-      this._renderCardForExtraLists(bestfilmsListElement, this._sortedByRatingsFilms[i]);
+      this._renderCardForBestFilmsList(bestfilmsListElement, this._sortedByRatingsFilms[i]);
     }
   }
 
@@ -179,7 +202,7 @@ export default class MovieList {
     this._sortedByCommentsFilms = this._sourcedMovieCards.slice().sort(sortByComments);
 
     for (let i = 0; i < FilmsCount.EXTRA; i++) {
-      this._renderCardForExtraLists(commentedFilmsListElement, this._sortedByCommentsFilms[i]);
+      this._renderCardForMostCommentedFilmsList(commentedFilmsListElement, this._sortedByCommentsFilms[i]);
     }
   }
 

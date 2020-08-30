@@ -23,6 +23,8 @@ export default class Card {
     this._handleWatchedClick = this._handleWatchedClick.bind(this);
     this._handleCloseCardClick = this._handleCloseCardClick.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
+
+    this._footerComponent = document.querySelector(`.footer`);
   }
 
   init(card) {
@@ -39,8 +41,6 @@ export default class Card {
     this._cardComponent.setAddToWatchlistClickHandler(this._handleAddToWatchlistClick);
     this._cardComponent.setWatchedClickHandler(this._handleWatchedClick);
     this._cardComponent.setClickHandler(this._handleShowMoreClick);
-
-    this._footerComponent = document.querySelector(`.footer`);
 
     if (prevCardComponent === null || prevCardDetailsComponent === null) {
       render(this._container, this._cardComponent, RenderPosition.BEFOREEND);
@@ -120,18 +120,23 @@ export default class Card {
     );
   }
 
-  _handleCloseCardClick(card) {
-    this._changeData(card);
+  _handleCloseCardClick() {
     this._mode = Mode.DEFAULT;
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
     remove(this._cardDetailsComponent);
   }
 
   _handleShowMoreClick() {
-    this._showFilmDetails();
-    document.addEventListener(`keydown`, this._escKeyDownHandler);
     this._changeMode();
     this._mode = Mode.EDITING;
+    this._showFilmDetails();
+
+    this._cardDetailsComponent.setFavoriteLabelClickHandler(this._handleFavoriteClick);
+    this._cardDetailsComponent.setAddToWatchlistLabelClickHandler(this._handleAddToWatchlistClick);
+    this._cardDetailsComponent.setWatchedLabelClickHandler(this._handleWatchedClick);
+
     this._cardDetailsComponent.setClickHandler(this._handleCloseCardClick);
+
+    document.addEventListener(`keydown`, this._escKeyDownHandler);
   }
 }
