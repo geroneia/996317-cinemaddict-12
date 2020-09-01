@@ -22,7 +22,7 @@ export default class MovieList {
     this._movieListContainer = movieListContainer;
     this._renderedCardCount = FilmsCount.PER_STEP;
     this._currentSortType = SortType.DEFAULT;
-    this._cardPresenter = {};
+    this._cardPresenterCommonFilmsList = {};
     this._cardPresenterBestFilmsList = {};
     this._cardPresenterMostCommentedFilmsList = {};
 
@@ -57,7 +57,7 @@ export default class MovieList {
 
   _handleModeChange() {
     [
-      ...Object.values(this._cardPresenter),
+      ...Object.values(this._cardPresenterCommonFilmsList),
       ...Object.values(this._cardPresenterBestFilmsList),
       ...Object.values(this._cardPresenterMostCommentedFilmsList)
     ].forEach((presenter) => presenter.resetView());
@@ -67,7 +67,10 @@ export default class MovieList {
     // обновляет карточку в двух массивах (сортировка), после чего вызывает инициализацию презентера с новыми данными
     this._movieCards = updateItem(this._movieCards, updatedCard);
     this._sourcedMovieCards = updateItem(this._sourcedMovieCards, updatedCard);
-    this._cardPresenter[updatedCard.id].init(updatedCard);
+
+    if (this._cardPresenterCommonFilmsList[updatedCard.id] !== undefined) {
+      this._cardPresenterCommonFilmsList[updatedCard.id].init(updatedCard);
+    }
 
     if (this._cardPresenterBestFilmsList[updatedCard.id] !== undefined) {
       this._cardPresenterBestFilmsList[updatedCard.id].init(updatedCard);
@@ -106,9 +109,9 @@ export default class MovieList {
   }
 
   _renderCard(container, movieCard) {
-    const cardPresenter = new CardPresenter(container, this._handleCardChange, this._handleModeChange);
-    cardPresenter.init(movieCard);
-    this._cardPresenter[movieCard.id] = cardPresenter;
+    const cardPresenterCommonFilmsList = new CardPresenter(container, this._handleCardChange, this._handleModeChange);
+    cardPresenterCommonFilmsList.init(movieCard);
+    this._cardPresenterCommonFilmsList[movieCard.id] = cardPresenterCommonFilmsList;
   }
 
   // Выводит в дополнительные списки карточки фильмов с помощью отдельного метода, чтобы
@@ -151,9 +154,9 @@ export default class MovieList {
 
   _clearFilmsListContainer() {
     Object
-      .values(this._cardPresenter)
+      .values(this._cardPresenterCommonFilmsList)
       .forEach((presenter) => presenter.destroy());
-    this._cardPresenter = {};
+    this._cardPresenterCommonFilmsList = {};
     this._renderedCardCount = FilmsCount.PER_STEP;
   }
 
