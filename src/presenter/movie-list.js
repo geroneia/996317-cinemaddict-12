@@ -56,32 +56,24 @@ export default class MovieList {
   }
 
   _handleModeChange() {
-    Object
-      .values(this._cardPresenter)
-      .forEach((presenter) => presenter.resetView());
-
-    Object
-      .values(this._cardPresenterBestFilmsList)
-      .forEach((presenter) => presenter.resetView());
-
-    Object
-      .values(this._cardPresenterMostCommentedFilmsList)
-      .forEach((presenter) => presenter.resetView());
+    [
+      ...Object.values(this._cardPresenter),
+      ...Object.values(this._cardPresenterBestFilmsList),
+      ...Object.values(this._cardPresenterMostCommentedFilmsList)
+    ].forEach((presenter) => presenter.resetView());
   }
 
   _handleCardChange(updatedCard) {
     // обновляет карточку в двух массивах (сортировка), после чего вызывает инициализацию презентера с новыми данными
     this._movieCards = updateItem(this._movieCards, updatedCard);
     this._sourcedMovieCards = updateItem(this._sourcedMovieCards, updatedCard);
-    if (this._cardPresenter[updatedCard.id] !== undefined) {
-      this._cardPresenter[updatedCard.id].init(updatedCard);
-    }
+    this._cardPresenter[updatedCard.id].init(updatedCard);
 
     if (this._cardPresenterBestFilmsList[updatedCard.id] !== undefined) {
       this._cardPresenterBestFilmsList[updatedCard.id].init(updatedCard);
     }
-    if (this._cardPresenterMostCommentedFilms[updatedCard.id] !== undefined) {
-      this._cardPresenterMostCommentedFilms[updatedCard.id].init(updatedCard);
+    if (this._cardPresenterMostCommentedFilmsList[updatedCard.id] !== undefined) {
+      this._cardPresenterMostCommentedFilmsList[updatedCard.id].init(updatedCard);
     }
   }
 

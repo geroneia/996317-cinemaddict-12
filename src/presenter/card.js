@@ -42,12 +42,15 @@ export default class Card {
     this._cardComponent.setWatchedClickHandler(this._handleWatchedClick);
     this._cardComponent.setClickHandler(this._handleShowMoreClick);
 
-    if (prevCardComponent === null || prevCardDetailsComponent === null) {
+    this._cardDetailsComponent.setFavoriteLabelClickHandler(this._handleFavoriteClick);
+    this._cardDetailsComponent.setAddToWatchlistLabelClickHandler(this._handleAddToWatchlistClick);
+    this._cardDetailsComponent.setWatchedLabelClickHandler(this._handleWatchedClick);
+    this._cardDetailsComponent.setClickHandler(this._handleCloseCardClick);
+
+    if (prevCardComponent === null) {
       render(this._container, this._cardComponent, RenderPosition.BEFOREEND);
       return;
-    }
-
-    if (this._mode === Mode.DEFAULT) {
+    } else {
       replace(this._cardComponent, prevCardComponent);
     }
 
@@ -71,12 +74,15 @@ export default class Card {
   }
 
   _showFilmDetails() {
+    // восстанавливает обработчики при повторном открытии того же опапа (без init)
+    this._cardDetailsComponent.restoreHandlers();
     // рисует попап с дополнительной информацией о фильме
     render(this._footerComponent, this._cardDetailsComponent, RenderPosition.AFTEREND);
   }
 
   _escKeyDownHandler(evt) {
     if (evt.key === `Escape` || evt.key === `Esc`) {
+      this._mode = Mode.DEFAULT;
       evt.preventDefault();
       this._cardDetailsComponent.reset(this._card);
       remove(this._cardDetailsComponent);
@@ -130,12 +136,6 @@ export default class Card {
     this._changeMode();
     this._mode = Mode.EDITING;
     this._showFilmDetails();
-
-    this._cardDetailsComponent.setFavoriteLabelClickHandler(this._handleFavoriteClick);
-    this._cardDetailsComponent.setAddToWatchlistLabelClickHandler(this._handleAddToWatchlistClick);
-    this._cardDetailsComponent.setWatchedLabelClickHandler(this._handleWatchedClick);
-
-    this._cardDetailsComponent.setClickHandler(this._handleCloseCardClick);
 
     document.addEventListener(`keydown`, this._escKeyDownHandler);
   }
