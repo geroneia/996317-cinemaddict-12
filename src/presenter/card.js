@@ -74,7 +74,7 @@ export default class Card {
   }
 
   _showFilmDetails() {
-    // восстанавливает обработчики при повторном открытии того же опапа (без init)
+    // восстанавливает обработчики при повторном открытии того же попапа (без init)
     this._cardDetailsComponent.restoreHandlers();
     // рисует попап с дополнительной информацией о фильме
     render(this._footerComponent, this._cardDetailsComponent, RenderPosition.AFTEREND);

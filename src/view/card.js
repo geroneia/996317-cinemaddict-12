@@ -1,7 +1,7 @@
 import AbstractView from "./abstract.js";
+import {formatCardReleaseYear, formatCardRuntime} from "../utils/card.js";
 
 const MAX_SIMBOL_COUNT = 140;
-const MINUTES_IN_HOUR = 60;
 
 // разметка карточки фильма
 const createCardTemplate = (card) => {
@@ -19,22 +19,10 @@ const createCardTemplate = (card) => {
     isFavorite
   } = card;
 
-  // получает год выхода для краткой информации
-  const releaseYear = releaseDate.getFullYear();
-
-  // получает продолжительность в часах
-  const getRuntimeInHours = () => {
-    const hour = Math.floor(runtime / MINUTES_IN_HOUR);
-    const minutes = runtime % MINUTES_IN_HOUR;
-    return minutes > 0 ?
-      `${hour}h ${minutes}m` :
-      `${hour}h`;
-  };
-
   // получает количество комментариев
   const commentsCount = () => `${comments.length} comment` + (comments.length > 1 ? `s` : ``);
 
-  // получает описание для краткого отоображения
+  // получает описание для краткого отображения
   const getDescription = () => {
     return description.length < MAX_SIMBOL_COUNT ?
       description :
@@ -48,11 +36,11 @@ const createCardTemplate = (card) => {
         <h3 class="film-card__title">${title}</h3>
         <p class="film-card__rating">${rating}</p>
         <p class="film-card__info">
-            <span class="film-card__year">${releaseYear}</span>
-            <span class="film-card__duration">${getRuntimeInHours()}</span>
+            <span class="film-card__year">${formatCardReleaseYear(releaseDate)}</span>
+            <span class="film-card__duration">${formatCardRuntime(runtime)}</span>
             <span class="film-card__genre">${genres[0]}</span>
         </p>
-        <img src="./images/posters/${poster}" alt="${title}(${releaseYear})" class="film-card__poster">
+        <img src="./images/posters/${poster}" alt="${title}(${formatCardReleaseYear(releaseDate)})" class="film-card__poster">
         <p class="film-card__description">${getDescription()}</p>
         <a class="film-card__comments">${commentsCount()}</a>
         <form class="film-card__controls">
