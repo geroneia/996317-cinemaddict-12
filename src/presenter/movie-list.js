@@ -3,10 +3,10 @@ import BoardView from "../view/board.js";
 import FilmsListView from "../view/films-list.js";
 import BestFilmsView from "../view/best-films-list.js";
 import CommentedFilmsView from "../view/commented-films-list.js";
-import CardView from "../view/card.js";
-import FilmDetailsCardView from "../view/film-details-card.js";
 import ShowMoreButtonView from "../view/show-more-button.js";
 import NoFilmsView from "../view/no-films.js";
+import CardPresenter from "../presenter/card.js";
+import {updateItem} from "../utils/common.js";
 
 import {SortType} from "../view/sorting.js";
 import {render, RenderPosition, remove} from "../utils/render.js";
@@ -22,6 +22,12 @@ export default class MovieList {
     this._movieListContainer = movieListContainer;
     this._renderedCardCount = FilmsCount.PER_STEP;
     this._currentSortType = SortType.DEFAULT;
+    this._cardPresenterCommonFilmsList = {};
+    this._cardPresenterBestFilmsList = {};
+    this._cardPresenterMostCommentedFilmsList = {};
+
+    this._sortedByRatingsFilms = {};
+    this._sortedByCommentsFilms = {};
 
     this._sortComponent = new SortingView();
     this._boardComponent = new BoardView();
@@ -30,8 +36,9 @@ export default class MovieList {
     this._commentedFilmsComponent = new CommentedFilmsView();
     this._showMoreButtonComponent = new ShowMoreButtonView();
     this._noFilmsComponent = new NoFilmsView();
-    this._footerComponent = document.querySelector(`.footer`);
 
+    this._handleCardChange = this._handleCardChange.bind(this);
+    this._handleModeChange = this._handleModeChange.bind(this);
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
@@ -46,6 +53,31 @@ export default class MovieList {
       return;
     }
     this._renderBoard();
+  }
+
+  _handleModeChange() {
+    [
+      ...Object.values(this._cardPresenterCommonFilmsList),
+      ...Object.values(this._cardPresenterBestFilmsList),
+      ...Object.values(this._cardPresenterMostCommentedFilmsList)
+    ].forEach((presenter) => presenter.resetView());
+  }
+
+  _handleCardChange(updatedCard) {
+    // обновляет карточку в двух массивах (сортировка), после чего вызывает инициализацию презентера с новыми данными
+    this._movieCards = updateItem(this._movieCards, updatedCard);
+    this._sourcedMovieCards = updateItem(this._sourcedMovieCards, updatedCard);
+
+    if (this._cardPresenterCommonFilmsList[updatedCard.id] !== undefined) {
+      this._cardPresenterCommonFilmsList[updatedCard.id].init(updatedCard);
+    }
+
+    if (this._cardPresenterBestFilmsList[updatedCard.id] !== undefined) {
+      this._cardPresenterBestFilmsList[updatedCard.id].init(updatedCard);
+    }
+    if (this._cardPresenterMostCommentedFilmsList[updatedCard.id] !== undefined) {
+      this._cardPresenterMostCommentedFilmsList[updatedCard.id].init(updatedCard);
+    }
   }
 
   _sortCards(sortType) {
@@ -77,44 +109,29 @@ export default class MovieList {
   }
 
   _renderCard(container, movieCard) {
-    const cardComponent = new CardView(movieCard);
-    const cardDetailsComponent = new FilmDetailsCardView(movieCard);
-
-
-    const showFilmDetails = () => {
-      // рисует попап с дополнительной информацией о фильме
-      render(this._footerComponent, cardDetailsComponent, RenderPosition.AFTEREND);
-    };
-
-    const onEscKeyDown = (evt) => {
-      if (evt.key === `Escape` || evt.key === `Esc`) {
-        evt.preventDefault();
-        remove(cardDetailsComponent);
-        document.removeEventListener(`keydown`, onEscKeyDown);
-      }
-    };
-
-    const onCrossButtonClick = () => {
-      remove(cardDetailsComponent);
-      document.removeEventListener(`keydown`, onEscKeyDown);
-    };
-
-    const onCardClick = () => {
-      showFilmDetails();
-      document.addEventListener(`keydown`, onEscKeyDown);
-      cardDetailsComponent.setClickHandler(onCrossButtonClick);
-    };
-
-    cardComponent.setClickHandler(onCardClick);
-
-    render(container, cardComponent, RenderPosition.BEFOREEND);
+    const cardPresenterCommonFilmsList = new CardPresenter(container, this._handleCardChange, this._handleModeChange);
+    cardPresenterCommonFilmsList.init(movieCard);
+    this._cardPresenterCommonFilmsList[movieCard.id] = cardPresenterCommonFilmsList;
   }
 
+  // Выводит в дополнительные списки карточки фильмов с помощью отдельного метода, чтобы
+  // при удалении презентеров при сортировке их не приходилось рисовать заново
+  _renderCardForBestFilmsList(container, movieCard) {
+    const cardPresenterBestFilmsList = new CardPresenter(container, this._handleCardChange, this._handleModeChange);
+    cardPresenterBestFilmsList.init(movieCard);
+    this._cardPresenterBestFilmsList[movieCard.id] = cardPresenterBestFilmsList;
+  }
+
+  _renderCardForMostCommentedFilmsList(container, movieCard) {
+    const cardPresenterMostCommentedFilmsList = new CardPresenter(container, this._handleCardChange, this._handleModeChange);
+    cardPresenterMostCommentedFilmsList.init(movieCard);
+    this._cardPresenterMostCommentedFilmsList[movieCard.id] = cardPresenterMostCommentedFilmsList;
+  }
 
   _renderCards(container, from, to) {
     this._movieCards
     .slice(from, to)
-    .forEach((movieCard) => this._renderCard(container, movieCard));
+    .forEach((movieCard) => this._renderCard(container, movieCard, this._handleModeChange));
   }
 
   _renderNoFilms() {
@@ -136,7 +153,11 @@ export default class MovieList {
   }
 
   _clearFilmsListContainer() {
-    this._filmsListComponent.getElement().querySelector(`.films-list .films-list__container`).innerHTML = ``;
+    Object
+      .values(this._cardPresenterCommonFilmsList)
+      .forEach((presenter) => presenter.destroy());
+    this._cardPresenterCommonFilmsList = {};
+    this._renderedCardCount = FilmsCount.PER_STEP;
   }
 
   _renderFilmsListContainer() {
@@ -161,21 +182,22 @@ export default class MovieList {
 
     const bestfilmsListElement = this._boardComponent.getElement().querySelector(`.films-list--extra .films-list__container`);
 
-    const sortedByRatingsFilms = this._sourcedMovieCards.slice().sort(sortByRating);
+    this._sortedByRatingsFilms = this._sourcedMovieCards.slice().sort(sortByRating);
 
     for (let i = 0; i < FilmsCount.EXTRA; i++) {
-      this._renderCard(bestfilmsListElement, sortedByRatingsFilms[i]);
+      this._renderCardForBestFilmsList(bestfilmsListElement, this._sortedByRatingsFilms[i]);
     }
   }
 
   _renderMostCommentedFilmsList() {
     render(this._boardComponent, this._commentedFilmsComponent, RenderPosition.BEFOREEND);
+
     const commentedFilmsListElement = this._boardComponent.getElement().querySelector(`.films-list--extra:last-of-type .films-list__container`);
 
-    const sortedByCommentsFilms = this._sourcedMovieCards.slice().sort(sortByComments);
+    this._sortedByCommentsFilms = this._sourcedMovieCards.slice().sort(sortByComments);
 
     for (let i = 0; i < FilmsCount.EXTRA; i++) {
-      this._renderCard(commentedFilmsListElement, sortedByCommentsFilms[i]);
+      this._renderCardForMostCommentedFilmsList(commentedFilmsListElement, this._sortedByCommentsFilms[i]);
     }
   }
 

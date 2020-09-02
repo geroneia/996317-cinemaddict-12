@@ -1,6 +1,8 @@
 import {getRandomInteger, getRandomDecimal, getSomeShuffledSubjects, getTrueOrFalse, getRandomItem} from "../utils/common.js";
 import {generateListOfComments} from "./comment.js";
 
+const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+
 const DATE_OF_FIRST_FILM_PREMIERE = new Date(Date.UTC(1896, 1, 6, 3, 0, 0));
 
 const TITLES = [
@@ -96,6 +98,7 @@ const generateRandomDateOfPremiere = () => {
 };
 
 export const generateCard = () => ({
+  id: generateId(),
   title: getRandomItem(TITLES),
   poster: getRandomItem(POSTERS),
   rating: getRandomDecimal(Rating.MIN, Rating.MAX),
