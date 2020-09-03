@@ -1,5 +1,5 @@
 import SmartView from "./smart.js";
-import {humanizeAnyDate} from "../utils/common.js";
+import {formatCardReleaseDate, formatCardRuntime, formatCardReleaseYear, formatCommentDate} from "../utils/card.js";
 
 // разметка дополнительной информации о фильме
 const createFilmDetailsCard = (data) => {
@@ -22,19 +22,6 @@ const createFilmDetailsCard = (data) => {
     isFavorite
   } = data;
 
-  // получает год выхода для краткой информации
-  const releaseYear = releaseDate.getFullYear();
-
-  // получает дату выхода для полной информации
-  const releaseFullDate = humanizeAnyDate(releaseDate);
-
-  // получает продолжительность в часах
-  const getRuntimeInHours = () => {
-    const hour = Math.floor(runtime / 60);
-    const minutes = runtime % 60;
-    return minutes > 0 ? `${hour}h ${minutes}m` : `${hour}h`;
-  };
-
   // получает разметку списка жанров
   const createGenresTemplate = (genresList) => {
     return genresList.map((genre) => `<span class="film-details__genre">${genre}</span>`).join(` `);
@@ -54,7 +41,7 @@ const createFilmDetailsCard = (data) => {
       <p class="film-details__comment-text">${message}</p>
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${name}</span>
-        <span class="film-details__comment-day">${currentDate.toLocaleDateString()}</span>
+        <span class="film-details__comment-day">${formatCommentDate(currentDate)}</span>
         <button class="film-details__comment-delete">Delete</button>
       </p>
     </div>
@@ -69,7 +56,7 @@ const createFilmDetailsCard = (data) => {
               </div>
               <div class="film-details__info-wrap">
                 <div class="film-details__poster">
-                  <img class="film-details__poster-img" src="./images/posters/${poster}" alt="${title}(${releaseYear})">
+                  <img class="film-details__poster-img" src="./images/posters/${poster}" alt="${title}(${formatCardReleaseYear(releaseDate)})">
 
                   <p class="film-details__age">${ageRating}+</p>
                 </div>
@@ -101,11 +88,11 @@ const createFilmDetailsCard = (data) => {
                     </tr>
                     <tr class="film-details__row">
                       <td class="film-details__term">Release Date</td>
-                      <td class="film-details__cell">${releaseFullDate}</td>
+                      <td class="film-details__cell">${formatCardReleaseDate(releaseDate)}</td>
                     </tr>
                     <tr class="film-details__row">
                       <td class="film-details__term">Runtime</td>
-                      <td class="film-details__cell">${getRuntimeInHours()}</td>
+                      <td class="film-details__cell">${formatCardRuntime(runtime)}</td>
                     </tr>
                     <tr class="film-details__row">
                       <td class="film-details__term">Country</td>

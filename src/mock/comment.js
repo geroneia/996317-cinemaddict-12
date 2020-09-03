@@ -1,7 +1,7 @@
 import {getRandomInteger, getSomeShuffledSubjects, getRandomItem} from "../utils/common.js";
 import {NAMES} from "./film.js";
 const MAX_DAYS_GAP = 7;
-const MAX_COMMENTS_COUNT = 5;
+const MAX_COMMENTS_COUNT = 15;
 
 const MESSAGES = [
   `Interesting setting and a good cast.`,
@@ -17,7 +17,7 @@ const generateCommentDate = () => {
   const daysGap = getRandomInteger(0, MAX_DAYS_GAP);
   const currentDate = new Date();
 
-  currentDate.setHours(23, 59, 59, 999);
+  currentDate.setHours(23, 49, 59, 999);
 
   currentDate.setDate(currentDate.getDate() - daysGap);
 
