@@ -25,7 +25,6 @@ const filters = generateFilter(cards);
 const siteHeaderElement = document.querySelector(`.header`);
 const footerElement = document.querySelector(`.footer`);
 
-
 // рисует звание пользователя на странице
 render(siteHeaderElement, new ProfileRatingView(generateUserRank(cards)), RenderPosition.BEFOREEND);
 
@@ -38,7 +37,7 @@ render(siteMainElement, menuComponent, RenderPosition.BEFOREEND);
 render(menuComponent, new FilterView(filters), RenderPosition.BEFOREEND);
 render(menuComponent, new StatsTemplateView(), RenderPosition.BEFOREEND);
 
-const movieListPresenter = new MovieListPresenter(siteMainElement);
+const movieListPresenter = new MovieListPresenter(siteMainElement, footerElement);
 
 movieListPresenter.init(cards);
 

@@ -18,8 +18,9 @@ const FilmsCount = {
 };
 
 export default class MovieList {
-  constructor(movieListContainer) {
+  constructor(movieListContainer, popupContainer) {
     this._movieListContainer = movieListContainer;
+    this._popupContainer = popupContainer;
     this._renderedCardCount = FilmsCount.PER_STEP;
     this._currentSortType = SortType.DEFAULT;
     this._cardPresenterCommonFilmsList = {};
@@ -108,7 +109,7 @@ export default class MovieList {
   }
 
   _renderCard(container, movieCard, presenterStore) {
-    const cardPresenter = new CardPresenter(container, this._handleCardChange, this._handleModeChange);
+    const cardPresenter = new CardPresenter(container, this._popupContainer, this._handleCardChange, this._handleModeChange);
     cardPresenter.init(movieCard);
     presenterStore[movieCard.id] = cardPresenter;
   }

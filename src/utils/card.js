@@ -15,7 +15,4 @@ export const formatCardReleaseDate = (releaseDate) => moment(releaseDate).format
 
 export const formatCardRuntime = (runtime) => moment(runtime * MILLISECONDS_IN_MINUTE).format(`h[h] mm[m]`);
 
-export const formatCommentDate = (commentsDate) => {
-
-  return moment(commentsDate).startOf(`m`). fromNow();
-};
+export const formatCommentDate = (commentsDate) => moment(commentsDate).fromNow();

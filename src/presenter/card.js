@@ -8,8 +8,9 @@ const Mode = {
 };
 
 export default class Card {
-  constructor(container, changeData, changeMode) {
+  constructor(container, popupContainer, changeData, changeMode) {
     this._container = container;
+    this._popupContainer = popupContainer;
     this._changeData = changeData;
     this._changeMode = changeMode;
 
@@ -77,7 +78,7 @@ export default class Card {
     // восстанавливает обработчики при повторном открытии того же попапа (без init)
     this._cardDetailsComponent.restoreHandlers();
     // рисует попап с дополнительной информацией о фильме
-    render(this._footerComponent, this._cardDetailsComponent, RenderPosition.AFTEREND);
+    render(this._popupContainer, this._cardDetailsComponent, RenderPosition.AFTEREND);
   }
 
   _escKeyDownHandler(evt) {
