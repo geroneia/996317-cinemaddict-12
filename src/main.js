@@ -3,6 +3,8 @@ import SiteMenuView from "./view/menu.js";
 import FilterView from "./view/filter.js";
 import StatsTemplateView from "./view/stats.js";
 import FilmsCounterView from "./view/films-counter.js";
+import CardsModel from "./model/movies.js";
+import CommentsModel from "./model/comments.js";
 
 import {generateCard} from "./mock/film.js";
 import {generateFilter} from "./mock/filter.js";
@@ -22,6 +24,12 @@ const cards = new Array(FilmsCount.TOTAL).fill(``).map(generateCard);
 // собирает фильтры из массива карточек
 const filters = generateFilter(cards);
 
+const cardsModel = new CardsModel();
+cardsModel.setCards(cards);
+
+// const commentsModel = new CommentsModel();
+// commentsModel.setComments(comments);
+
 const siteHeaderElement = document.querySelector(`.header`);
 const footerElement = document.querySelector(`.footer`);
 
@@ -37,9 +45,9 @@ render(siteMainElement, menuComponent, RenderPosition.BEFOREEND);
 render(menuComponent, new FilterView(filters), RenderPosition.BEFOREEND);
 render(menuComponent, new StatsTemplateView(), RenderPosition.BEFOREEND);
 
-const movieListPresenter = new MovieListPresenter(siteMainElement, footerElement);
+const movieListPresenter = new MovieListPresenter(siteMainElement, footerElement, cardsModel);
 
-movieListPresenter.init(cards);
+movieListPresenter.init();
 
 // рисует счетчик фильмов в футере
 const footerStatElement = footerElement.querySelector(`.footer__statistics`);

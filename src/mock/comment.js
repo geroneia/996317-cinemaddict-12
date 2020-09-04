@@ -1,5 +1,6 @@
 import {getRandomInteger, getSomeShuffledSubjects, getRandomItem} from "../utils/common.js";
 import {NAMES} from "./film.js";
+const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 const MAX_DAYS_GAP = 7;
 const MAX_COMMENTS_COUNT = 15;
 
@@ -28,6 +29,7 @@ const generateCommentDate = () => {
 const generateMessage = () => getSomeShuffledSubjects(MESSAGES).join(` `);
 
 const generateComment = () => ({
+  id: generateId(),
   message: generateMessage(),
   emoji: getRandomItem(EMOJI),
   name: getRandomItem(NAMES),
