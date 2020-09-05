@@ -2,7 +2,7 @@ import SmartView from "./smart.js";
 import {formatCardReleaseDate, formatCardRuntime, formatCardReleaseYear, formatCommentDate} from "../utils/card.js";
 
 // разметка дополнительной информации о фильме
-const createFilmDetailsCard = (data) => {
+const createFilmDetailsCard = (data, comments) => {
   const {
     title,
     poster,
@@ -16,7 +16,6 @@ const createFilmDetailsCard = (data) => {
     country,
     genres,
     description,
-    comments,
     isAddedToWatchlist,
     isWatched,
     isFavorite
@@ -166,9 +165,10 @@ const createFilmDetailsCard = (data) => {
 };
 
 export default class FilmDetailsCard extends SmartView {
-  constructor(card) {
+  constructor(card, commentsList) {
     super();
     this._data = FilmDetailsCard.parseCardToData(card);
+    this._commentsList = commentsList;
     this._clickHandler = this._clickHandler.bind(this);
 
     this._emojiInputHandler = this._emojiInputHandler.bind(this);
@@ -187,7 +187,7 @@ export default class FilmDetailsCard extends SmartView {
   }
 
   getTemplate() {
-    return createFilmDetailsCard(this._data);
+    return createFilmDetailsCard(this._data, this._commentsList);
   }
 
   _favoriteToggleHandler(evt) {

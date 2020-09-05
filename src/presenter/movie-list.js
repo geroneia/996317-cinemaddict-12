@@ -18,10 +18,11 @@ const FilmsCount = {
 };
 
 export default class MovieList {
-  constructor(movieListContainer, popupContainer, cardsModel) {
+  constructor(movieListContainer, popupContainer, cardsModel, commentsModel) {
     this._movieListContainer = movieListContainer;
     this._popupContainer = popupContainer;
     this._cardsModel = cardsModel;
+    this._commentsModel = commentsModel;
     this._renderedCardCount = FilmsCount.PER_STEP;
     this._currentSortType = SortType.DEFAULT;
     this._cardPresenterCommonFilmsList = {};
@@ -100,14 +101,18 @@ export default class MovieList {
     render(this._movieListContainer, this._sortComponent, RenderPosition.BEFOREEND);
   }
 
-  _renderCard(container, movieCard, presenterStore) {
+  _renderCard(container, movieCard, commentsList, presenterStore) {
+    // const comments = commentsList.filter((comment) =>
+    //   movieCard.comments.forEach((id) => id === comment.id)
+    // );
+    // console.log(comments);
     const cardPresenter = new CardPresenter(container, this._popupContainer, this._handleCardChange, this._handleModeChange);
-    cardPresenter.init(movieCard);
+    cardPresenter.init(movieCard, commentsList);
     presenterStore[movieCard.id] = cardPresenter;
   }
 
   _renderCards(container, cards) {
-    cards.forEach((card) => this._renderCard(container, card, this._cardPresenterCommonFilmsList));
+    cards.forEach((card) => this._renderCard(container, card, this._commentsModel.getComments(), this._cardPresenterCommonFilmsList));
   }
 
   _renderNoFilms() {
@@ -171,7 +176,7 @@ export default class MovieList {
     this._sortedByRatingsFilms = this._cardsModel.getCards().slice().sort(sortByRating);
 
     for (let i = 0; i < FilmsCount.EXTRA; i++) {
-      this._renderCard(bestFilmsListElement, this._sortedByRatingsFilms[i], this._cardPresenterBestFilmsList);
+      this._renderCard(bestFilmsListElement, this._sortedByRatingsFilms[i], this._commentsModel.getComments(), this._cardPresenterBestFilmsList);
     }
   }
 
@@ -183,7 +188,7 @@ export default class MovieList {
     this._sortedByCommentsFilms = this._cardsModel.getCards().slice().sort(sortByComments);
 
     for (let i = 0; i < FilmsCount.EXTRA; i++) {
-      this._renderCard(commentedFilmsListElement, this._sortedByCommentsFilms[i], this._cardPresenterMostCommentedFilmsList);
+      this._renderCard(commentedFilmsListElement, this._sortedByCommentsFilms[i], this._commentsModel.getComments(), this._cardPresenterMostCommentedFilmsList);
     }
   }
 

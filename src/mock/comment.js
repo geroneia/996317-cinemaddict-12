@@ -2,7 +2,7 @@ import {getRandomInteger, getSomeShuffledSubjects, getRandomItem} from "../utils
 import {NAMES} from "./film.js";
 const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 const MAX_DAYS_GAP = 7;
-const MAX_COMMENTS_COUNT = 15;
+const MAX_COMMENTS_COUNT = 80;
 
 const MESSAGES = [
   `Interesting setting and a good cast.`,
@@ -37,9 +37,8 @@ const generateComment = () => ({
 });
 
 export const generateListOfComments = () => {
-  const commentCount = getRandomInteger(0, MAX_COMMENTS_COUNT);
   const listOfComments = [];
-  for (let i = 0; i < commentCount; i++) {
+  for (let i = 0; i < MAX_COMMENTS_COUNT; i++) {
     listOfComments.push(generateComment());
   }
   return listOfComments;

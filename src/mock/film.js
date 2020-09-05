@@ -1,5 +1,4 @@
 import {getRandomInteger, getRandomDecimal, getSomeShuffledSubjects, getTrueOrFalse, getRandomItem} from "../utils/common.js";
-import {generateListOfComments} from "./comment.js";
 
 const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 
@@ -111,7 +110,7 @@ export const generateCard = () => ({
   genres: getSomeShuffledSubjects(GENRES),
   description: getSomeShuffledSubjects(DESCRIPTIONS).join(` `),
   ageRating: getRandomItem(AGE_RATINGS),
-  comments: generateListOfComments(),
+  comments: [],
   isAddedToWatchlist: getTrueOrFalse(),
   isWatched: getTrueOrFalse(),
   isFavorite: getTrueOrFalse(),

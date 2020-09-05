@@ -28,14 +28,15 @@ export default class Card {
     this._footerComponent = document.querySelector(`.footer`);
   }
 
-  init(card) {
+  init(card, comments) {
     this._card = card;
+    this._comments = comments;
 
     const prevCardComponent = this._cardComponent;
     const prevCardDetailsComponent = this._cardDetailsComponent;
 
-    this._cardComponent = new CardView(card);
-    this._cardDetailsComponent = new FilmDetailsCardView(card);
+    this._cardComponent = new CardView(card, comments);
+    this._cardDetailsComponent = new FilmDetailsCardView(card, comments);
 
     // устанавливает обработчики
     this._cardComponent.setFavoriteClickHandler(this._handleFavoriteClick);

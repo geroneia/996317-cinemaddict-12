@@ -7,6 +7,7 @@ import CardsModel from "./model/movies.js";
 import CommentsModel from "./model/comments.js";
 
 import {generateCard} from "./mock/film.js";
+import {generateListOfComments} from "./mock/comment.js";
 import {generateFilter} from "./mock/filter.js";
 import {generateUserRank} from "./mock/user.js";
 import MovieListPresenter from "./presenter/movie-list.js";
@@ -14,12 +15,22 @@ import {render, RenderPosition} from "./utils/render.js";
 
 const FilmsCount = {
   PER_STEP: 5,
-  TOTAL: 25,
+  TOTAL: 20,
   EXTRA: 2
 };
 
+const COMMENTS_COUNT = 4;
+
 // собирает в массив результаты вызова функции, генерирующей случайную карточку фильма
 const cards = new Array(FilmsCount.TOTAL).fill(``).map(generateCard);
+const comments = generateListOfComments();
+let counter = 0;
+const commentsID = comments.map((comment) => comment.id);
+const getCommentsId = (film) => {
+  film.comments = commentsID.slice(counter, COMMENTS_COUNT + counter);
+  counter += COMMENTS_COUNT;
+};
+cards.forEach((card) => getCommentsId(card));
 
 // собирает фильтры из массива карточек
 const filters = generateFilter(cards);
@@ -27,8 +38,8 @@ const filters = generateFilter(cards);
 const cardsModel = new CardsModel();
 cardsModel.setCards(cards);
 
-// const commentsModel = new CommentsModel();
-// commentsModel.setComments(comments);
+const commentsModel = new CommentsModel();
+commentsModel.setComments(comments);
 
 const siteHeaderElement = document.querySelector(`.header`);
 const footerElement = document.querySelector(`.footer`);
@@ -45,7 +56,7 @@ render(siteMainElement, menuComponent, RenderPosition.BEFOREEND);
 render(menuComponent, new FilterView(filters), RenderPosition.BEFOREEND);
 render(menuComponent, new StatsTemplateView(), RenderPosition.BEFOREEND);
 
-const movieListPresenter = new MovieListPresenter(siteMainElement, footerElement, cardsModel);
+const movieListPresenter = new MovieListPresenter(siteMainElement, footerElement, cardsModel, commentsModel);
 
 movieListPresenter.init();
 
