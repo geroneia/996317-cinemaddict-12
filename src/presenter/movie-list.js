@@ -74,16 +74,16 @@ export default class MovieList {
     ].forEach((presenter) => presenter.resetView());
   }
 
-  _handleCardChange(updatedCard) {
+  _handleCardChange(updatedCard, commentsList) {
     // Здесь будем вызывать обновление модели
-    this._updatePresenter(this._cardPresenterCommonFilmsList, updatedCard);
-    this._updatePresenter(this._cardPresenterBestFilmsList, updatedCard);
-    this._updatePresenter(this._cardPresenterMostCommentedFilmsList, updatedCard);
+    this._updatePresenter(this._cardPresenterCommonFilmsList, updatedCard, commentsList);
+    this._updatePresenter(this._cardPresenterBestFilmsList, updatedCard, commentsList);
+    this._updatePresenter(this._cardPresenterMostCommentedFilmsList, updatedCard, commentsList);
   }
 
-  _updatePresenter(presenters, updatedCard) {
+  _updatePresenter(presenters, updatedCard, commentsList) {
     if (presenters[updatedCard.id] !== undefined) {
-      presenters[updatedCard.id].init(updatedCard);
+      presenters[updatedCard.id].init(updatedCard, commentsList);
     }
   }
 
@@ -102,17 +102,16 @@ export default class MovieList {
   }
 
   _renderCard(container, movieCard, commentsList, presenterStore) {
-    // const comments = commentsList.filter((comment) =>
-    //   movieCard.comments.forEach((id) => id === comment.id)
-    // );
-    // console.log(comments);
+    // фильтрует массив комментариев, отбирая те, которые проходят проверку на то,
+    // что массив ID в карточке содержит ID комментария в массиве комментариев
+    const comments = commentsList.filter(({id}) => movieCard.comments.includes(id));
     const cardPresenter = new CardPresenter(container, this._popupContainer, this._handleCardChange, this._handleModeChange);
-    cardPresenter.init(movieCard, commentsList);
+    cardPresenter.init(movieCard, comments);
     presenterStore[movieCard.id] = cardPresenter;
   }
 
-  _renderCards(container, cards) {
-    cards.forEach((card) => this._renderCard(container, card, this._commentsModel.getComments(), this._cardPresenterCommonFilmsList));
+  _renderCards(container, cards, commentsList) {
+    cards.forEach((card) => this._renderCard(container, card, commentsList, this._cardPresenterCommonFilmsList));
   }
 
   _renderNoFilms() {
@@ -158,8 +157,9 @@ export default class MovieList {
     // рисует основной список фильмов
     const cardCount = this._getCards().length;
     const cards = this._getCards().slice(0, Math.min(cardCount, FilmsCount.PER_STEP));
+    const commentsList = this._commentsModel.getComments().slice();
 
-    this._renderCards(container, cards);
+    this._renderCards(container, cards, commentsList);
 
     if (cardCount > FilmsCount.PER_STEP) {
       this._renderShowMoreButton(container);
@@ -175,8 +175,10 @@ export default class MovieList {
 
     this._sortedByRatingsFilms = this._cardsModel.getCards().slice().sort(sortByRating);
 
+    this._commentsList = this._commentsModel.getComments().slice();
+
     for (let i = 0; i < FilmsCount.EXTRA; i++) {
-      this._renderCard(bestFilmsListElement, this._sortedByRatingsFilms[i], this._commentsModel.getComments(), this._cardPresenterBestFilmsList);
+      this._renderCard(bestFilmsListElement, this._sortedByRatingsFilms[i], this._commentsList, this._cardPresenterBestFilmsList);
     }
   }
 
@@ -187,8 +189,10 @@ export default class MovieList {
 
     this._sortedByCommentsFilms = this._cardsModel.getCards().slice().sort(sortByComments);
 
+    this._commentsList = this._commentsModel.getComments().slice();
+
     for (let i = 0; i < FilmsCount.EXTRA; i++) {
-      this._renderCard(commentedFilmsListElement, this._sortedByCommentsFilms[i], this._commentsModel.getComments(), this._cardPresenterMostCommentedFilmsList);
+      this._renderCard(commentedFilmsListElement, this._sortedByCommentsFilms[i], this._commentsList, this._cardPresenterMostCommentedFilmsList);
     }
   }
 
