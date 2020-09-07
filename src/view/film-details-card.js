@@ -31,7 +31,7 @@ const createFilmDetailsCard = (data, comments) => {
 
   // получает разметку комментария
   const createCommentTemplate = (commentsList) => {
-    return commentsList.map(({message, emoji, name, currentDate}) => `<ul class="film-details__comments-list">
+    return commentsList.map(({message, emoji, name, currentDate, id}) => `<ul class="film-details__comments-list">
     <li class="film-details__comment">
     <span class="film-details__comment-emoji">
       <img src="./images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">
@@ -41,7 +41,7 @@ const createFilmDetailsCard = (data, comments) => {
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${name}</span>
         <span class="film-details__comment-day">${formatCommentDate(currentDate)}</span>
-        <button class="film-details__comment-delete">Delete</button>
+        <button class="film-details__comment-delete" data-id="${id}">Delete</button>
       </p>
     </div>
   </li>`).join(` `);
@@ -175,6 +175,7 @@ export default class FilmDetailsCard extends SmartView {
     this._favoriteToggleHandler = this._favoriteToggleHandler.bind(this);
     this._addToWatchlistToggleHandler = this._addToWatchlistToggleHandler.bind(this);
     this._watchedToggleHandler = this._watchedToggleHandler.bind(this);
+    this._commentDeleteClickHandler = this._commentDeleteClickHandler.bind(this);
 
     this._setEmojiInputHandler();
   }
@@ -192,7 +193,7 @@ export default class FilmDetailsCard extends SmartView {
 
   _favoriteToggleHandler(evt) {
     evt.preventDefault();
-    this._callback.favoriteClick(FilmDetailsCard.parseDataTocard(this._data));
+    this._callback.favoriteClick(FilmDetailsCard.parseDataToCard(this._data));
     this.updateData({
       isFavorite: !this._data.isFavorite
     });
@@ -200,7 +201,7 @@ export default class FilmDetailsCard extends SmartView {
 
   _addToWatchlistToggleHandler(evt) {
     evt.preventDefault();
-    this._callback.addToWatchlistClick(FilmDetailsCard.parseDataTocard(this._data));
+    this._callback.addToWatchlistClick(FilmDetailsCard.parseDataToCard(this._data));
     this.updateData({
       isAddedToWatchlist: !this._data.isAddedToWatchlist
     });
@@ -208,7 +209,7 @@ export default class FilmDetailsCard extends SmartView {
 
   _watchedToggleHandler(evt) {
     evt.preventDefault();
-    this._callback.watchedClick(FilmDetailsCard.parseDataTocard(this._data));
+    this._callback.watchedClick(FilmDetailsCard.parseDataToCard(this._data));
     this.updateData({
       isWatched: !this._data.isWatched
     });
@@ -220,6 +221,7 @@ export default class FilmDetailsCard extends SmartView {
     this.setWatchedLabelClickHandler(this._callback.watchedClick);
     this.setClickHandler(this._callback.click);
     this._setEmojiInputHandler();
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
   setFavoriteLabelClickHandler(callback) {
@@ -260,7 +262,7 @@ export default class FilmDetailsCard extends SmartView {
   // внешние обработчики
   _clickHandler(evt) {
     evt.preventDefault();
-    this._callback.click(FilmDetailsCard.parseDataTocard(this._data));
+    this._callback.click(FilmDetailsCard.parseDataToCard(this._data));
   }
 
   setClickHandler(callback) {
@@ -268,6 +270,22 @@ export default class FilmDetailsCard extends SmartView {
     this.getElement().querySelector(`.film-details__close-btn`)
     .addEventListener(`click`, this._clickHandler);
   }
+
+  _commentDeleteClickHandler(evt) {
+    evt.preventDefault();
+    const value = evt.target.dataset.id;
+    this._commentsList.forEach((comment) => {
+      if (comment.id === value) {
+        this._callback.deleteClick(comment);
+      }
+    });
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector(`.film-details__comment-delete`).addEventListener(`click`, this._commentDeleteClickHandler);
+  }
+
 
   static parseCardToData(card) {
     return Object.assign(
@@ -281,7 +299,7 @@ export default class FilmDetailsCard extends SmartView {
     );
   }
 
-  static parseDataTocard(data) {
+  static parseDataToCard(data) {
     data = Object.assign({}, data);
 
     delete data.isAddedToWatchlist;

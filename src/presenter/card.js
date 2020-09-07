@@ -1,6 +1,7 @@
 import CardView from "../view/card.js";
 import FilmDetailsCardView from "../view/film-details-card.js";
 import {render, RenderPosition, remove, replace} from "../utils/render.js";
+import {UserAction, UpdateType} from "../const.js";
 
 const Mode = {
   DEFAULT: `DEFAULT`,
@@ -48,6 +49,7 @@ export default class Card {
     this._cardDetailsComponent.setAddToWatchlistLabelClickHandler(this._handleAddToWatchlistClick);
     this._cardDetailsComponent.setWatchedLabelClickHandler(this._handleWatchedClick);
     this._cardDetailsComponent.setClickHandler(this._handleCloseCardClick);
+    this._cardDetailsComponent.setDeleteClickHandler(this._handleDeleteClick);
 
     if (prevCardComponent === null) {
       render(this._container, this._cardComponent, RenderPosition.BEFOREEND);
@@ -94,37 +96,46 @@ export default class Card {
 
   _handleFavoriteClick() {
     this._changeData(
+        UserAction.UPDATE_CARD,
+        UpdateType.MINOR,
         Object.assign(
             {},
             this._card,
             {
               isFavorite: !this._card.isFavorite
             }
-        )
+        ),
+        this._comments
     );
   }
 
   _handleAddToWatchlistClick() {
     this._changeData(
+        UserAction.UPDATE_CARD,
+        UpdateType.MINOR,
         Object.assign(
             {},
             this._card,
             {
               isAddedToWatchlist: !this._card.isAddedToWatchlist
             }
-        )
+        ),
+        this._comments
     );
   }
 
   _handleWatchedClick() {
     this._changeData(
+        UserAction.UPDATE_CARD,
+        UpdateType.MINOR,
         Object.assign(
             {},
             this._card,
             {
               isWatched: !this._card.isWatched
             }
-        )
+        ),
+        this._comments
     );
   }
 
@@ -140,5 +151,13 @@ export default class Card {
     this._showFilmDetails();
 
     document.addEventListener(`keydown`, this._escKeyDownHandler);
+  }
+
+  _handleDeleteClick(comment) {
+    this._changeData(
+        UserAction.DELETE_COMMENT,
+        UpdateType.PATCH,
+        comment
+    );
   }
 }

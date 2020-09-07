@@ -1,30 +1,42 @@
 import AbstractView from "./abstract.js";
 
 // разметка одного из фильтров
-const createFilterItemTemplate = ({name, count}) => {
+const createFilterItemTemplate = ({type, name, count}, currentFilterType) => {
   const getUpperCaseForFirstLetter = () =>
     name[0].toUpperCase() + name.slice(1);
-  return `<a href="#${name}" class="main-navigation__item">${getUpperCaseForFirstLetter()} <span class="main-navigation__item-count">${count}</span></a>`;
+  return `<a href="#${name}" class="main-navigation__item ${type === currentFilterType ? `main-navigation__item--active` : ``}" value="${type}">${getUpperCaseForFirstLetter()} <span class="main-navigation__item-count">${count}</span></a>`;
 };
 
 // разметка фильтров
-export const createFilterTemplate = (filterItems) => {
+export const createFilterTemplate = (filterItems, currentFilterType) => {
   const filterItemsTemplate = filterItems
-  .map((filter, index) => createFilterItemTemplate(filter, index === 0))
+  .map((filter) => createFilterItemTemplate(filter, currentFilterType))
   .join(``);
   return `<div class="main-navigation__items">
-        <a href="#all" class="main-navigation__item main-navigation__item--active">All movies</a>
           ${filterItemsTemplate}
         </div>`;
 };
 
 export default class Filter extends AbstractView {
-  constructor(filters) {
+  constructor(filters, currentFilterType) {
     super();
     this._filters = filters;
+    this._currentFilter = currentFilterType;
+
+    this._filterTypeChangeHandler = this._filterTypeChangeHandler.bind(this);
   }
 
   getTemplate() {
-    return createFilterTemplate(this._filters);
+    return createFilterTemplate(this._filters, this._currentFilter);
+  }
+
+  _filterTypeChangeHandler(evt) {
+    evt.preventDefault();
+    this._callback.filterTypeChange(evt.target.value);
+  }
+
+  setFilterTypeChangeHandler(callback) {
+    this._callback.filterTypeChange = callback;
+    this.getElement().addEventListener(`change`, this._filterTypeChangeHandler);
   }
 }
