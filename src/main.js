@@ -1,6 +1,5 @@
 import ProfileRatingView from "./view/profile-rating.js";
 import SiteMenuView from "./view/menu.js";
-import FilterView from "./view/filter.js";
 import StatsTemplateView from "./view/stats.js";
 import FilmsCounterView from "./view/films-counter.js";
 import CardsModel from "./model/movies.js";
@@ -11,6 +10,7 @@ import {generateCard} from "./mock/film.js";
 import {generateListOfComments} from "./mock/comment.js";
 import {generateUserRank} from "./mock/user.js";
 import MovieListPresenter from "./presenter/movie-list.js";
+import FilterPresenter from "./presenter/filter.js";
 import {render, RenderPosition} from "./utils/render.js";
 
 const FilmsCount = {
@@ -32,14 +32,6 @@ const getCommentsId = (film) => {
 };
 cards.forEach((card) => getCommentsId(card));
 
-const filters = [
-  {
-    type: `all movies`,
-    name: `All movies`,
-    count: 0
-  }
-];
-
 const cardsModel = new CardsModel();
 cardsModel.setCards(cards);
 
@@ -60,11 +52,12 @@ const siteMainElement = document.querySelector(`.main`);
 const menuComponent = new SiteMenuView();
 render(siteMainElement, menuComponent, RenderPosition.BEFOREEND);
 
-render(menuComponent, new FilterView(filters, `all movies`), RenderPosition.BEFOREEND);
 render(menuComponent, new StatsTemplateView(), RenderPosition.BEFOREEND);
 
-const movieListPresenter = new MovieListPresenter(siteMainElement, footerElement, cardsModel, commentsModel);
+const movieListPresenter = new MovieListPresenter(siteMainElement, footerElement, cardsModel, commentsModel, filterModel);
+const filterPresenter = new FilterPresenter(menuComponent, filterModel, cardsModel);
 
+filterPresenter.init();
 movieListPresenter.init();
 
 // рисует счетчик фильмов в футере

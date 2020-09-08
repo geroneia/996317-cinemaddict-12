@@ -97,7 +97,7 @@ export default class Card {
   _handleFavoriteClick() {
     this._changeData(
         UserAction.UPDATE_CARD,
-        UpdateType.MINOR,
+        UpdateType.PATCH,
         Object.assign(
             {},
             this._card,
@@ -112,7 +112,7 @@ export default class Card {
   _handleAddToWatchlistClick() {
     this._changeData(
         UserAction.UPDATE_CARD,
-        UpdateType.MINOR,
+        UpdateType.PATCH,
         Object.assign(
             {},
             this._card,
@@ -127,7 +127,7 @@ export default class Card {
   _handleWatchedClick() {
     this._changeData(
         UserAction.UPDATE_CARD,
-        UpdateType.MINOR,
+        UpdateType.PATCH,
         Object.assign(
             {},
             this._card,
@@ -153,11 +153,13 @@ export default class Card {
     document.addEventListener(`keydown`, this._escKeyDownHandler);
   }
 
-  _handleDeleteClick(comment) {
+  _handleDeleteClick(card, deletedComment) {
     this._changeData(
         UserAction.DELETE_COMMENT,
         UpdateType.PATCH,
-        comment
+        this._card,
+        this._comments,
+        deletedComment
     );
   }
 }

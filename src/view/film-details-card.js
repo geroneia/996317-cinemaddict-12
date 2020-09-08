@@ -274,11 +274,11 @@ export default class FilmDetailsCard extends SmartView {
   _commentDeleteClickHandler(evt) {
     evt.preventDefault();
     const value = evt.target.dataset.id;
-    this._commentsList.forEach((comment) => {
-      if (comment.id === value) {
-        this._callback.deleteClick(comment);
-      }
-    });
+    console.log(value);
+    const index = this._commentsList.findIndex((comment) => comment.id === +value);
+    const deletedComment = this._commentsList[index];
+    console.log(deletedComment);
+    this._callback.deleteClick(FilmDetailsCard.parseDataToCard(this._data), deletedComment);
   }
 
   setDeleteClickHandler(callback) {

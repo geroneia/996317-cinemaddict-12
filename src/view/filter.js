@@ -4,7 +4,9 @@ import AbstractView from "./abstract.js";
 const createFilterItemTemplate = ({type, name, count}, currentFilterType) => {
   const getUpperCaseForFirstLetter = () =>
     name[0].toUpperCase() + name.slice(1);
-  return `<a href="#${name}" class="main-navigation__item ${type === currentFilterType ? `main-navigation__item--active` : ``}" value="${type}">${getUpperCaseForFirstLetter()} <span class="main-navigation__item-count">${count}</span></a>`;
+  return name !== `all movies` ? `<a href="#${name}" class="main-navigation__item ${type === currentFilterType ? `main-navigation__item--active` : ``}" data-id="${type}">
+  ${getUpperCaseForFirstLetter()} <span class="main-navigation__item-count">${count}</span></a>`
+    : `<a href="#all" class="main-navigation__item ${type === currentFilterType ? `main-navigation__item--active` : ``}" data-id="${type}">All movies</a>`;
 };
 
 // разметка фильтров
@@ -32,11 +34,11 @@ export default class Filter extends AbstractView {
 
   _filterTypeChangeHandler(evt) {
     evt.preventDefault();
-    this._callback.filterTypeChange(evt.target.value);
+    this._callback.filterTypeChange(evt.target.dataset.id);
   }
 
   setFilterTypeChangeHandler(callback) {
     this._callback.filterTypeChange = callback;
-    this.getElement().addEventListener(`change`, this._filterTypeChangeHandler);
+    this.getElement().addEventListener(`click`, this._filterTypeChangeHandler);
   }
 }
