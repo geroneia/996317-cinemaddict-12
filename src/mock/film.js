@@ -1,6 +1,6 @@
 import {getRandomInteger, getRandomDecimal, getSomeShuffledSubjects, getTrueOrFalse, getRandomItem} from "../utils/common.js";
 
-const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 
 const DATE_OF_FIRST_FILM_PREMIERE = new Date(Date.UTC(1896, 1, 6, 3, 0, 0));
 

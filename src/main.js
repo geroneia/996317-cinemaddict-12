@@ -12,6 +12,7 @@ import {generateUserRank} from "./mock/user.js";
 import MovieListPresenter from "./presenter/movie-list.js";
 import FilterPresenter from "./presenter/filter.js";
 import {render, RenderPosition} from "./utils/render.js";
+// import MovieList from "./presenter/movie-list.js";
 
 const FilmsCount = {
   PER_STEP: 5,
@@ -42,6 +43,7 @@ const filterModel = new FilterModel();
 
 const siteHeaderElement = document.querySelector(`.header`);
 const footerElement = document.querySelector(`.footer`);
+const commentInput = document.querySelector(`.film-details__comment-input`);
 
 // рисует звание пользователя на странице
 render(siteHeaderElement, new ProfileRatingView(generateUserRank(cards)), RenderPosition.BEFOREEND);
@@ -54,7 +56,7 @@ render(siteMainElement, menuComponent, RenderPosition.BEFOREEND);
 
 render(menuComponent, new StatsTemplateView(), RenderPosition.BEFOREEND);
 
-const movieListPresenter = new MovieListPresenter(siteMainElement, footerElement, cardsModel, commentsModel, filterModel);
+const movieListPresenter = new MovieListPresenter(siteMainElement, footerElement, cardsModel, commentsModel, filterModel, commentInput);
 const filterPresenter = new FilterPresenter(menuComponent, filterModel, cardsModel);
 
 filterPresenter.init();

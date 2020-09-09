@@ -2,6 +2,7 @@ import CardView from "../view/card.js";
 import FilmDetailsCardView from "../view/film-details-card.js";
 import {render, RenderPosition, remove, replace} from "../utils/render.js";
 import {UserAction, UpdateType} from "../const.js";
+// import MovieList from "./movie-list.js";
 
 const Mode = {
   DEFAULT: `DEFAULT`,
@@ -9,9 +10,10 @@ const Mode = {
 };
 
 export default class Card {
-  constructor(container, popupContainer, changeData, changeMode) {
+  constructor(container, popupContainer, changeData, changeMode, commentInput) {
     this._container = container;
     this._popupContainer = popupContainer;
+    this._commentInput = commentInput;
     this._changeData = changeData;
     this._changeMode = changeMode;
 
@@ -50,6 +52,10 @@ export default class Card {
     this._cardDetailsComponent.setWatchedLabelClickHandler(this._handleWatchedClick);
     this._cardDetailsComponent.setClickHandler(this._handleCloseCardClick);
     this._cardDetailsComponent.setDeleteClickHandler(this._handleDeleteClick);
+    // this._commentInput.addEventListener(`input`, (evt) => {
+    //   evt.preventDefault();
+    //   MovieList.createComment();
+    // });
 
     if (prevCardComponent === null) {
       render(this._container, this._cardComponent, RenderPosition.BEFOREEND);
@@ -88,7 +94,7 @@ export default class Card {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       this._mode = Mode.DEFAULT;
       evt.preventDefault();
-      this._cardDetailsComponent.reset(this._card);
+      this._cardDetailsComponent.reset(this._card, this._comments);
       remove(this._cardDetailsComponent);
       document.removeEventListener(`keydown`, this._escKeyDownHandler);
     }

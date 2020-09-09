@@ -6,11 +6,12 @@ import CommentedFilmsView from "../view/commented-films-list.js";
 import ShowMoreButtonView from "../view/show-more-button.js";
 import NoFilmsView from "../view/no-films.js";
 import CardPresenter from "../presenter/card.js";
+import CommentNewPresenter from "../presenter/comment-new.js";
 import {SortType} from "../view/sorting.js";
 import {render, RenderPosition, remove} from "../utils/render.js";
 import {filter} from "../utils/filter.js";
 import {sortByDate, sortByRating, sortByComments} from "../utils/card.js";
-import {UpdateType, UserAction} from "../const.js";
+import {UpdateType, UserAction, FilterType} from "../const.js";
 
 const FilmsCount = {
   PER_STEP: 5,
@@ -18,9 +19,10 @@ const FilmsCount = {
 };
 
 export default class MovieList {
-  constructor(movieListContainer, popupContainer, cardsModel, commentsModel, filterModel) {
+  constructor(movieListContainer, popupContainer, cardsModel, commentsModel, filterModel, commentInput) {
     this._movieListContainer = movieListContainer;
     this._popupContainer = popupContainer;
+    this._commentInput = commentInput;
     this._cardsModel = cardsModel;
     this._commentsModel = commentsModel;
     this._filterModel = filterModel;
@@ -51,6 +53,8 @@ export default class MovieList {
     this._cardsModel.addObserver(this._handleModelEvent);
     this._commentsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
+
+    this._commentNewPresenter = new CommentNewPresenter(this._popupContainer, this._handleViewAction);
   }
 
   init() {
@@ -61,6 +65,12 @@ export default class MovieList {
       return;
     }
     this._renderBoard();
+  }
+
+  createComment() {
+    this._currentSortType = SortType.DEFAULT;
+    this._filterModel.setFilter(UpdateType.MAJOR, FilterType.ALL);
+    this._commentNewPresenter.init();
   }
 
   _getCards() {
@@ -78,6 +88,7 @@ export default class MovieList {
   }
 
   _handleModeChange() {
+    this._commentNewPresenter.destroy();
     [
       ...Object.values(this._cardPresenterCommonFilmsList),
       ...Object.values(this._cardPresenterBestFilmsList),
@@ -92,7 +103,7 @@ export default class MovieList {
   }
 
   _handleViewAction(actionType, updateType, updateCard, updateComments, updateComment) {
-    console.log(actionType, updateType, updateCard, updateComments);
+    // console.log(actionType, updateType, updateCard, updateComments);
     switch (actionType) {
       case UserAction.UPDATE_CARD:
         this._cardsModel.updateCard(updateType, updateCard, updateComments);
@@ -107,8 +118,8 @@ export default class MovieList {
     }
   }
 
-  _handleModelEvent(updateType, data, updateComments, updateComment) {
-    console.log(updateType, data, updateComments, updateComment);
+  _handleModelEvent(updateType, data, updateComments) {
+    // console.log(updateType, data, updateComments, updateComment);
     switch (updateType) {
       case UpdateType.PATCH:
         this._updatePresenter(this._cardPresenterCommonFilmsList, data, updateComments);
@@ -153,7 +164,7 @@ export default class MovieList {
     // фильтрует массив комментариев, отбирая те, которые проходят проверку на то,
     // что массив ID в карточке содержит ID комментария в массиве комментариев
     const comments = commentsList.filter(({id}) => movieCard.comments.includes(id));
-    const cardPresenter = new CardPresenter(container, this._popupContainer, this._handleViewAction, this._handleModeChange);
+    const cardPresenter = new CardPresenter(container, this._popupContainer, this._handleViewAction, this._handleModeChange, this._commentInput);
     cardPresenter.init(movieCard, comments);
     presenterStore[movieCard.id] = cardPresenter;
   }
@@ -201,6 +212,8 @@ export default class MovieList {
 
   _clearBoard({resetRenderedCardCount = false, resetSortType = false} = {}) {
     const cardCount = this._getCards().length;
+
+    this._commentNewPresenter.destroy();
 
     [
       ...Object.values(this._cardPresenterCommonFilmsList),
