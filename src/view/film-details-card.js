@@ -2,6 +2,7 @@ import SmartView from "./smart.js";
 import {generateId} from "../mock/film.js";
 import {getRandomItem} from "../utils/common.js";
 import {NAMES} from "../mock/film.js";
+import he from "he";
 
 import {formatCardReleaseDate, formatCardRuntime, formatCardReleaseYear, formatCommentDate} from "../utils/card.js";
 
@@ -176,7 +177,6 @@ export default class FilmDetailsCard extends SmartView {
     this._clickHandler = this._clickHandler.bind(this);
     this._message = ``;
     this._emoji = ``;
-    this._addedComment = {};
 
     this._emojiInputHandler = this._emojiInputHandler.bind(this);
     this._favoriteToggleHandler = this._favoriteToggleHandler.bind(this);
@@ -232,9 +232,6 @@ export default class FilmDetailsCard extends SmartView {
     this.setClickHandler(this._callback.click);
     this._setEmojiInputHandler();
     this.setDeleteClickHandler(this._callback.deleteClick);
-    this.setFormSubmitHandler(this._callback.formSubmit);
-
-
   }
 
   setFavoriteLabelClickHandler(callback) {
@@ -314,16 +311,19 @@ export default class FilmDetailsCard extends SmartView {
   _formSubmitHandler(evt) {
     if ((evt.ctrlKey || evt.metaKey) && (evt.key === `Enter`)) {
       evt.preventDefault();
-      this._addedComment = {
-        id: generateId(),
-        message: this._message,
-        emoji: this._emoji,
-        name: getRandomItem(NAMES),
-        currentDate: new Date()
-      };
-      this._callback.formSubmit(this._addedComment);
+      if (this._emoji !== `` && this._message !== ``) {
+        const addedComment = {
+          id: generateId(),
+          message: he.encode(this._message),
+          emoji: this._emoji,
+          name: getRandomItem(NAMES),
+          currentDate: new Date()
+        };
+        this._callback.formSubmit(addedComment);
+      }
+      this._emoji = ``;
+      this._message = ``;
     }
-    this._addedComment = {};
   }
 
   setFormSubmitHandler(callback) {

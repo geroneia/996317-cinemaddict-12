@@ -28,6 +28,7 @@ export default class Card {
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
+    // this._checkUpdateType = this._checkUpdateType.bind(this);
 
     this._footerComponent = document.querySelector(`.footer`);
   }
@@ -54,7 +55,6 @@ export default class Card {
     this._cardDetailsComponent.setClickHandler(this._handleCloseCardClick);
     this._cardDetailsComponent.setDeleteClickHandler(this._handleDeleteClick);
     this._cardDetailsComponent.setFormSubmitHandler(this._handleFormSubmit);
-
 
     if (prevCardComponent === null) {
       render(this._container, this._cardComponent, RenderPosition.BEFOREEND);
@@ -102,7 +102,8 @@ export default class Card {
   _handleFavoriteClick() {
     this._changeData(
         UserAction.UPDATE_CARD,
-        UpdateType.PATCH,
+        this._mode = Mode.DEFAULT ? UpdateType.MINOR
+          : UpdateType.PATCH,
         Object.assign(
             {},
             this._card,
@@ -117,7 +118,8 @@ export default class Card {
   _handleAddToWatchlistClick() {
     this._changeData(
         UserAction.UPDATE_CARD,
-        UpdateType.PATCH,
+        this._mode = Mode.DEFAULT ? UpdateType.MINOR
+          : UpdateType.PATCH,
         Object.assign(
             {},
             this._card,
@@ -132,7 +134,8 @@ export default class Card {
   _handleWatchedClick() {
     this._changeData(
         UserAction.UPDATE_CARD,
-        UpdateType.PATCH,
+        this._mode = Mode.DEFAULT ? UpdateType.MINOR
+          : UpdateType.PATCH,
         Object.assign(
             {},
             this._card,
