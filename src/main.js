@@ -2,7 +2,7 @@ import ProfileRatingView from "./view/profile-rating.js";
 import SiteMenuView from "./view/menu.js";
 import StatsTemplateView from "./view/stats.js";
 import FilmsCounterView from "./view/films-counter.js";
-import CardsModel from "./model/movies.js";
+import MoviesModel from "./model/movies.js";
 import CommentsModel from "./model/comments.js";
 import FilterModel from "./model/filter.js";
 
@@ -12,7 +12,6 @@ import {generateUserRank} from "./mock/user.js";
 import MovieListPresenter from "./presenter/movie-list.js";
 import FilterPresenter from "./presenter/filter.js";
 import {render, RenderPosition} from "./utils/render.js";
-// import MovieList from "./presenter/movie-list.js";
 
 const FilmsCount = {
   PER_STEP: 5,
@@ -33,11 +32,11 @@ const getCommentsId = (film) => {
 };
 cards.forEach((card) => getCommentsId(card));
 
-const cardsModel = new CardsModel();
+const cardsModel = new MoviesModel();
 cardsModel.setCards(cards);
 
 const commentsModel = new CommentsModel();
-commentsModel.setComments(comments);
+commentsModel.set(comments);
 
 const filterModel = new FilterModel();
 

@@ -1,18 +1,18 @@
 import AbstractView from "./abstract.js";
 
 // разметка одного из фильтров
-const createFilterItemTemplate = ({type, name, count}, currentFilterType) => {
+const createFilterItemTemplate = ({type, name, count}, currentType) => {
   const getUpperCaseForFirstLetter = () =>
     name[0].toUpperCase() + name.slice(1);
-  return name !== `all movies` ? `<a href="#${name}" class="main-navigation__item ${type === currentFilterType ? `main-navigation__item--active` : ``}" data-id="${type}">
+  return name !== `all movies` ? `<a href="#${name}" class="main-navigation__item ${type === currentType ? `main-navigation__item--active` : ``}" data-id="${type}">
   ${getUpperCaseForFirstLetter()} <span class="main-navigation__item-count">${count}</span></a>`
-    : `<a href="#all" class="main-navigation__item ${type === currentFilterType ? `main-navigation__item--active` : ``}" data-id="${type}">All movies</a>`;
+    : `<a href="#all" class="main-navigation__item ${type === currentType ? `main-navigation__item--active` : ``}" data-id="${type}">All movies</a>`;
 };
 
 // разметка фильтров
-export const createFilterTemplate = (filterItems, currentFilterType) => {
+export const createFilterTemplate = (filterItems, currentType) => {
   const filterItemsTemplate = filterItems
-  .map((filter) => createFilterItemTemplate(filter, currentFilterType))
+  .map((filter) => createFilterItemTemplate(filter, currentType))
   .join(``);
   return `<div class="main-navigation__items">
           ${filterItemsTemplate}
@@ -20,25 +20,25 @@ export const createFilterTemplate = (filterItems, currentFilterType) => {
 };
 
 export default class Filter extends AbstractView {
-  constructor(filters, currentFilterType) {
+  constructor(filters, currentType) {
     super();
-    this._filters = filters;
-    this._currentFilter = currentFilterType;
+    this._titles = filters;
+    this._currentType = currentType;
 
-    this._filterTypeChangeHandler = this._filterTypeChangeHandler.bind(this);
+    this._typeChangeHandler = this._typeChangeHandler.bind(this);
   }
 
   getTemplate() {
-    return createFilterTemplate(this._filters, this._currentFilter);
+    return createFilterTemplate(this._titles, this._currentType);
   }
 
-  _filterTypeChangeHandler(evt) {
+  setTypeChangeHandler(callback) {
+    this._callback.typeChange = callback;
+    this.getElement().addEventListener(`click`, this._typeChangeHandler);
+  }
+
+  _typeChangeHandler(evt) {
     evt.preventDefault();
-    this._callback.filterTypeChange(evt.target.dataset.id);
-  }
-
-  setFilterTypeChangeHandler(callback) {
-    this._callback.filterTypeChange = callback;
-    this.getElement().addEventListener(`click`, this._filterTypeChangeHandler);
+    this._callback.typeChange(evt.target.dataset.id);
   }
 }

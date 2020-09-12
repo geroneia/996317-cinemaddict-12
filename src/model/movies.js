@@ -1,6 +1,6 @@
 import Observer from "../utils/observer.js";
 
-export default class Cards extends Observer {
+export default class Movies extends Observer {
   constructor() {
     super();
     this._cards = {};
