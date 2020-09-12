@@ -46,6 +46,10 @@ export const renderTemplate = (container, template, place) => {
 
 // функция для удаления элемента (который наследуется от абстрактного класса)
 export const remove = (component) => {
+  if (component === null) {
+    return;
+  }
+
   if (!(component instanceof Abstract)) {
     throw new Error(`Can remove only components`);
   }

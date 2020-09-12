@@ -4,7 +4,7 @@ import {formatCardReleaseYear, formatCardRuntime} from "../utils/card.js";
 const MAX_SIMBOL_COUNT = 140;
 
 // разметка карточки фильма
-const createCardTemplate = (card) => {
+const createCardTemplate = (card, commentsList) => {
   const {
     poster,
     title,
@@ -12,7 +12,6 @@ const createCardTemplate = (card) => {
     runtime,
     genres,
     description,
-    comments,
     rating,
     isAddedToWatchlist,
     isWatched,
@@ -20,7 +19,7 @@ const createCardTemplate = (card) => {
   } = card;
 
   // получает количество комментариев
-  const commentsCount = () => `${comments.length} comment` + (comments.length > 1 ? `s` : ``);
+  const commentsCount = () => `${commentsList.length} comment` + (commentsList.length > 1 ? `s` : ``);
 
   // получает описание для краткого отображения
   const getDescription = () => {
@@ -52,9 +51,10 @@ const createCardTemplate = (card) => {
 };
 
 export default class Card extends AbstractView {
-  constructor(card) {
+  constructor(card, commentsList) {
     super();
     this._card = card;
+    this._commentsList = commentsList;
     this._clickHandler = this._clickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
     this._addToWatchlistClickHandler = this._addToWatchlistClickHandler.bind(this);
@@ -62,7 +62,7 @@ export default class Card extends AbstractView {
   }
 
   getTemplate() {
-    return createCardTemplate(this._card);
+    return createCardTemplate(this._card, this._commentsList);
   }
 
   _favoriteClickHandler(evt) {

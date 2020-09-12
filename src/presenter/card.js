@@ -1,6 +1,7 @@
 import CardView from "../view/card.js";
 import FilmDetailsCardView from "../view/film-details-card.js";
 import {render, RenderPosition, remove, replace} from "../utils/render.js";
+import {UserAction, UpdateType} from "../const.js";
 
 const Mode = {
   DEFAULT: `DEFAULT`,
@@ -8,8 +9,10 @@ const Mode = {
 };
 
 export default class Card {
-  constructor(container, changeData, changeMode) {
+  constructor(container, popupContainer, changeData, changeMode) {
     this._container = container;
+    this._popupContainer = popupContainer;
+    // this._commentInput = commentInput;
     this._changeData = changeData;
     this._changeMode = changeMode;
 
@@ -23,18 +26,22 @@ export default class Card {
     this._handleWatchedClick = this._handleWatchedClick.bind(this);
     this._handleCloseCardClick = this._handleCloseCardClick.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
+    this._handleDeleteClick = this._handleDeleteClick.bind(this);
+    this._handleFormSubmit = this._handleFormSubmit.bind(this);
+    // this._checkUpdateType = this._checkUpdateType.bind(this);
 
     this._footerComponent = document.querySelector(`.footer`);
   }
 
-  init(card) {
+  init(card, comments) {
     this._card = card;
+    this._comments = comments;
 
     const prevCardComponent = this._cardComponent;
     const prevCardDetailsComponent = this._cardDetailsComponent;
 
-    this._cardComponent = new CardView(card);
-    this._cardDetailsComponent = new FilmDetailsCardView(card);
+    this._cardComponent = new CardView(card, comments);
+    this._cardDetailsComponent = new FilmDetailsCardView(card, comments);
 
     // устанавливает обработчики
     this._cardComponent.setFavoriteClickHandler(this._handleFavoriteClick);
@@ -46,6 +53,8 @@ export default class Card {
     this._cardDetailsComponent.setAddToWatchlistLabelClickHandler(this._handleAddToWatchlistClick);
     this._cardDetailsComponent.setWatchedLabelClickHandler(this._handleWatchedClick);
     this._cardDetailsComponent.setClickHandler(this._handleCloseCardClick);
+    this._cardDetailsComponent.setDeleteClickHandler(this._handleDeleteClick);
+    this._cardDetailsComponent.setFormSubmitHandler(this._handleFormSubmit);
 
     if (prevCardComponent === null) {
       render(this._container, this._cardComponent, RenderPosition.BEFOREEND);
@@ -77,14 +86,14 @@ export default class Card {
     // восстанавливает обработчики при повторном открытии того же попапа (без init)
     this._cardDetailsComponent.restoreHandlers();
     // рисует попап с дополнительной информацией о фильме
-    render(this._footerComponent, this._cardDetailsComponent, RenderPosition.AFTEREND);
+    render(this._popupContainer, this._cardDetailsComponent, RenderPosition.AFTEREND);
   }
 
   _escKeyDownHandler(evt) {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       this._mode = Mode.DEFAULT;
       evt.preventDefault();
-      this._cardDetailsComponent.reset(this._card);
+      this._cardDetailsComponent.reset(this._card, this._comments);
       remove(this._cardDetailsComponent);
       document.removeEventListener(`keydown`, this._escKeyDownHandler);
     }
@@ -92,37 +101,49 @@ export default class Card {
 
   _handleFavoriteClick() {
     this._changeData(
+        UserAction.UPDATE_CARD,
+        this._mode = Mode.DEFAULT ? UpdateType.MINOR
+          : UpdateType.PATCH,
         Object.assign(
             {},
             this._card,
             {
               isFavorite: !this._card.isFavorite
             }
-        )
+        ),
+        this._comments
     );
   }
 
   _handleAddToWatchlistClick() {
     this._changeData(
+        UserAction.UPDATE_CARD,
+        this._mode = Mode.DEFAULT ? UpdateType.MINOR
+          : UpdateType.PATCH,
         Object.assign(
             {},
             this._card,
             {
               isAddedToWatchlist: !this._card.isAddedToWatchlist
             }
-        )
+        ),
+        this._comments
     );
   }
 
   _handleWatchedClick() {
     this._changeData(
+        UserAction.UPDATE_CARD,
+        this._mode = Mode.DEFAULT ? UpdateType.MINOR
+          : UpdateType.PATCH,
         Object.assign(
             {},
             this._card,
             {
               isWatched: !this._card.isWatched
             }
-        )
+        ),
+        this._comments
     );
   }
 
@@ -138,5 +159,26 @@ export default class Card {
     this._showFilmDetails();
 
     document.addEventListener(`keydown`, this._escKeyDownHandler);
+  }
+
+  _handleDeleteClick(deletedComment) {
+    this._changeData(
+        UserAction.DELETE_COMMENT,
+        UpdateType.PATCH,
+        this._card,
+        this._comments,
+        deletedComment
+    );
+  }
+
+  _handleFormSubmit(addedComment) {
+    this._changeData(
+        UserAction.ADD_COMMENT,
+        UpdateType.PATCH,
+        this._card,
+        this._comments,
+        addedComment
+    );
+
   }
 }

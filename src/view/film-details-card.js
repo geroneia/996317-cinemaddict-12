@@ -1,8 +1,13 @@
 import SmartView from "./smart.js";
+import {generateId} from "../mock/film.js";
+import {getRandomItem} from "../utils/common.js";
+import {NAMES} from "../mock/film.js";
+import he from "he";
+
 import {formatCardReleaseDate, formatCardRuntime, formatCardReleaseYear, formatCommentDate} from "../utils/card.js";
 
 // разметка дополнительной информации о фильме
-const createFilmDetailsCard = (data) => {
+const createFilmDetailsCard = (data, comments) => {
   const {
     title,
     poster,
@@ -16,7 +21,6 @@ const createFilmDetailsCard = (data) => {
     country,
     genres,
     description,
-    comments,
     isAddedToWatchlist,
     isWatched,
     isFavorite
@@ -32,7 +36,7 @@ const createFilmDetailsCard = (data) => {
 
   // получает разметку комментария
   const createCommentTemplate = (commentsList) => {
-    return commentsList.map(({message, emoji, name, currentDate}) => `<ul class="film-details__comments-list">
+    return commentsList.map(({message, emoji, name, currentDate, id}) => `<ul class="film-details__comments-list">
     <li class="film-details__comment">
     <span class="film-details__comment-emoji">
       <img src="./images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">
@@ -42,7 +46,7 @@ const createFilmDetailsCard = (data) => {
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${name}</span>
         <span class="film-details__comment-day">${formatCommentDate(currentDate)}</span>
-        <button class="film-details__comment-delete">Delete</button>
+        <button class="film-details__comment-delete" data-id="${id}">Delete</button>
       </p>
     </div>
   </li>`).join(` `);
@@ -134,7 +138,7 @@ const createFilmDetailsCard = (data) => {
                   <div for="add-emoji" class="film-details__add-emoji-label"></div>
 
                   <label class="film-details__comment-label">
-                    <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
+                    <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" value=""></textarea>
                   </label>
 
                   <div class="film-details__emoji-list">
@@ -166,16 +170,23 @@ const createFilmDetailsCard = (data) => {
 };
 
 export default class FilmDetailsCard extends SmartView {
-  constructor(card) {
+  constructor(card, commentsList) {
     super();
     this._data = FilmDetailsCard.parseCardToData(card);
+    this._commentsList = commentsList;
     this._clickHandler = this._clickHandler.bind(this);
+    this._message = ``;
+    this._emoji = ``;
 
     this._emojiInputHandler = this._emojiInputHandler.bind(this);
     this._favoriteToggleHandler = this._favoriteToggleHandler.bind(this);
     this._addToWatchlistToggleHandler = this._addToWatchlistToggleHandler.bind(this);
     this._watchedToggleHandler = this._watchedToggleHandler.bind(this);
+    this._commentDeleteClickHandler = this._commentDeleteClickHandler.bind(this);
+    this._descriptionInputHandler = this._descriptionInputHandler.bind(this);
+    this._formSubmitHandler = this._formSubmitHandler.bind(this);
 
+    this.setDescriptionInputHandler();
     this._setEmojiInputHandler();
   }
 
@@ -187,12 +198,12 @@ export default class FilmDetailsCard extends SmartView {
   }
 
   getTemplate() {
-    return createFilmDetailsCard(this._data);
+    return createFilmDetailsCard(this._data, this._commentsList);
   }
 
   _favoriteToggleHandler(evt) {
     evt.preventDefault();
-    this._callback.favoriteClick(FilmDetailsCard.parseDataTocard(this._data));
+    this._callback.favoriteClick(FilmDetailsCard.parseDataToCard(this._data));
     this.updateData({
       isFavorite: !this._data.isFavorite
     });
@@ -200,7 +211,7 @@ export default class FilmDetailsCard extends SmartView {
 
   _addToWatchlistToggleHandler(evt) {
     evt.preventDefault();
-    this._callback.addToWatchlistClick(FilmDetailsCard.parseDataTocard(this._data));
+    this._callback.addToWatchlistClick(FilmDetailsCard.parseDataToCard(this._data));
     this.updateData({
       isAddedToWatchlist: !this._data.isAddedToWatchlist
     });
@@ -208,7 +219,7 @@ export default class FilmDetailsCard extends SmartView {
 
   _watchedToggleHandler(evt) {
     evt.preventDefault();
-    this._callback.watchedClick(FilmDetailsCard.parseDataTocard(this._data));
+    this._callback.watchedClick(FilmDetailsCard.parseDataToCard(this._data));
     this.updateData({
       isWatched: !this._data.isWatched
     });
@@ -220,6 +231,7 @@ export default class FilmDetailsCard extends SmartView {
     this.setWatchedLabelClickHandler(this._callback.watchedClick);
     this.setClickHandler(this._callback.click);
     this._setEmojiInputHandler();
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
   setFavoriteLabelClickHandler(callback) {
@@ -249,24 +261,74 @@ export default class FilmDetailsCard extends SmartView {
 
   _emojiInputHandler(evt) {
     let id = evt.target.id;
-    let emoji = id.slice(6);
+    this._emoji = id.slice(6);
     this.getElement().querySelector(`.film-details__add-emoji-label`)
-      .innerHTML = `<img src="./images/emoji/${emoji}.png" width="55" height="55" alt="${id}">`;
+      .innerHTML = `<img src="./images/emoji/${this._emoji}.png" width="55" height="55" alt="${id}" data-value="${this._emoji}">`;
     this.updateData({
       description: evt.target.value
     }, true);
   }
 
-  // внешние обработчики
   _clickHandler(evt) {
     evt.preventDefault();
-    this._callback.click(FilmDetailsCard.parseDataTocard(this._data));
+    this._callback.click(FilmDetailsCard.parseDataToCard(this._data));
   }
 
   setClickHandler(callback) {
     this._callback.click = callback;
     this.getElement().querySelector(`.film-details__close-btn`)
     .addEventListener(`click`, this._clickHandler);
+  }
+
+  _commentDeleteClickHandler(evt) {
+    evt.preventDefault();
+    const value = evt.target.dataset.id;
+    const index = this._commentsList.findIndex((comment) => comment.id === +value);
+    const deletedComment = this._commentsList[index];
+    this._callback.deleteClick(deletedComment);
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    const buttons = this.getElement().querySelectorAll(`.film-details__comment-delete`);
+    if (buttons) {
+      buttons.forEach((button) => button.addEventListener(`click`, this._commentDeleteClickHandler));
+    }
+  }
+
+  _descriptionInputHandler(evt) {
+    evt.preventDefault();
+    this._message = evt.target.value;
+  }
+
+  setDescriptionInputHandler() {
+    this.getElement()
+  .querySelector(`.film-details__comment-input`)
+  .addEventListener(`input`, this._descriptionInputHandler);
+  }
+
+
+  _formSubmitHandler(evt) {
+    if ((evt.ctrlKey || evt.metaKey) && (evt.key === `Enter`)) {
+      evt.preventDefault();
+      if (this._emoji !== `` && this._message !== ``) {
+        const addedComment = {
+          id: generateId(),
+          message: he.encode(this._message),
+          emoji: this._emoji,
+          name: getRandomItem(NAMES),
+          currentDate: new Date()
+        };
+        this._callback.formSubmit(addedComment);
+      }
+      this._emoji = ``;
+      this._message = ``;
+    }
+  }
+
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    document.addEventListener(`keydown`, this._formSubmitHandler);
   }
 
   static parseCardToData(card) {
@@ -281,7 +343,7 @@ export default class FilmDetailsCard extends SmartView {
     );
   }
 
-  static parseDataTocard(data) {
+  static parseDataToCard(data) {
     data = Object.assign({}, data);
 
     delete data.isAddedToWatchlist;
