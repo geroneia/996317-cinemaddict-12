@@ -4,6 +4,8 @@ import {generateId} from "../utils/card.js";
 
 const DATE_OF_FIRST_FILM_PREMIERE = new Date(Date.UTC(1896, 1, 6, 3, 0, 0));
 
+// const DATE_OF_FIRST_FILM_WATCHED = new Date(Date.UTC(2020, 9, 1, 3, 0, 0));
+
 const TITLES = [
   `Made for Each Other`,
   `Popeye Meets Sinbad`,
@@ -56,18 +58,11 @@ const DESCRIPTIONS = [
 ];
 
 const GENRES = [
+  `Sci-Fi`,
+  `Animation`,
+  `Fantasy`,
   `Comedy`,
-  `Drama`,
-  `Family`,
-  `Biography`,
-  `Thriller`,
-  `Documentary`,
-  `Western`,
-  `Musical`,
-  `Cartoon`,
-  `Film-Noir`,
-  `Mystery`,
-  `History`
+  `TV Series`
 ];
 
 const POSTERS = [
@@ -96,6 +91,12 @@ const generateRandomDateOfPremiere = () => {
   return new Date(getRandomInteger(firstDate, lastDate));
 };
 
+const generateRandomDateOfWatching = () => {
+  // const firstDate = DATE_OF_FIRST_FILM_WATCHED;
+  // const lastDate = new Date();
+  return new Date();
+};
+
 export const generateCard = () => ({
   id: generateId(),
   title: getRandomItem(TITLES),
@@ -114,4 +115,5 @@ export const generateCard = () => ({
   isAddedToWatchlist: getTrueOrFalse(),
   isWatched: getTrueOrFalse(),
   isFavorite: getTrueOrFalse(),
+  watchingDate: generateRandomDateOfWatching()
 });
