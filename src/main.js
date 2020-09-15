@@ -12,7 +12,7 @@ import {generateListOfComments} from "./mock/comment.js";
 import {generateUserRank} from "./mock/user.js";
 import MovieListPresenter from "./presenter/movie-list.js";
 import FilterPresenter from "./presenter/filter.js";
-import {render, RenderPosition} from "./utils/render.js";
+import {render, RenderPosition, remove} from "./utils/render.js";
 import {MenuItem} from "./const.js";
 
 const FilmsCount = {
@@ -23,7 +23,8 @@ const FilmsCount = {
 
 const COMMENTS_COUNT = 4;
 
-const defaultMenuItem = MenuItem.STATS;
+const currentMenuItem = MenuItem.STATS;
+// console.log(currentMenuItem);
 
 // собирает в массив результаты вызова функции, генерирующей случайную карточку фильма
 const cards = new Array(FilmsCount.TOTAL).fill(``).map(generateCard);
@@ -57,7 +58,7 @@ const siteMainElement = document.querySelector(`.main`);
 const menuComponent = new SiteMenuView();
 render(siteMainElement, menuComponent, RenderPosition.BEFOREEND);
 
-const statsSectionSwitcher = new StatsTemplateView(defaultMenuItem);
+const statsSectionSwitcher = new StatsTemplateView(currentMenuItem);
 render(menuComponent, statsSectionSwitcher, RenderPosition.BEFOREEND);
 
 const userStatisticComponent = new UserStatisticView(cards);
@@ -69,15 +70,34 @@ const filterPresenter = new FilterPresenter(menuComponent, filterModel, cardsMod
 const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.MOVIES:
-      // Скрыть статистику
+      if (currentMenuItem === MenuItem.MOVIES) {
+        return;
+      }
+      // как менять текущий режим?
+      // currentMenuItem = MenuItem.MOVIES;
+      remove(userStatisticComponent);
+      remove(statsSectionSwitcher);
+
+      render(menuComponent, statsSectionSwitcher, RenderPosition.BEFOREEND);
       movieListPresenter.init();
+      movieListPresenter.renderExtraFilmsLists();
       break;
     case MenuItem.STATS:
-      // movieListPresenter.destroy();
-      // Показать статистику
+      // currentMenuItem = MenuItem.STATS;
+      movieListPresenter.destroy();
+      render(menuComponent, userStatisticComponent, RenderPosition.AFTEREND);
+      userStatisticComponent.restoreHandlers();
       break;
   }
 };
+
+const handleDateIntervalClick = () => {
+  remove(userStatisticComponent);
+  render(menuComponent, userStatisticComponent, RenderPosition.AFTEREND);
+  userStatisticComponent.restoreHandlers();
+};
+
+userStatisticComponent.setDateIntervalChangeHandler(handleDateIntervalClick);
 
 menuComponent.setMenuClickHandler(handleSiteMenuClick);
 

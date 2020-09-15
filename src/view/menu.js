@@ -23,9 +23,9 @@ export default class SiteMenu extends AbstractView {
     evt.preventDefault();
     if (evt.target.className === `main-navigation__additional`) {
       menuItem = MenuItem.STATS;
+    } else if (evt.target.className === `main-navigation__item `) {
+      menuItem = MenuItem.MOVIES;
     }
-    menuItem = MenuItem.MOVIES;
-
     this._callback.menuClick(menuItem);
   }
 }

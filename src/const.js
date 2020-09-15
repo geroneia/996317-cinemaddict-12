@@ -11,6 +11,7 @@ export const UpdateType = {
 };
 
 export const FilterType = {
+  DISABLED: `disabled`,
   ALL_MOVIES: `all movies`,
   WATCHLIST: `watchlist`,
   HISTORY: `history`,

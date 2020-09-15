@@ -25,12 +25,15 @@ export const countWatchedFilmsInDateRange = (cards, dateFrom, dateTo) => {
       return counter;
     }
 
+
     if (
       moment(card.watchingDate).isSame(dateFrom) ||
       moment(card.watchingDate).isBetween(dateFrom, dateTo) ||
       moment(card.watchingDate).isSame(dateTo)
     ) {
       return counter + 1;
+    } else {
+      counter = 0;
     }
 
     return counter;
@@ -55,7 +58,6 @@ export const getDatesInRange = (dateFrom, dateTo) => {
   return dates;
 };
 
-
 export const getGenresCount = (genres) => {
   const genresStorage = {};
   genres.forEach((genre) => {
@@ -66,4 +68,20 @@ export const getGenresCount = (genres) => {
     }
   });
   return genresStorage;
+};
+
+export const getFavoriteGenre = (films) => {
+  const cardGenres = films.map(({genres}) => genres).reduce((a, b) => a.concat(b));
+  const genresCounter = getGenresCount(cardGenres);
+  console.log(cardGenres);
+  const counter = Math.max(...Object.values(genresCounter));
+  console.log(counter);
+  let favoriteGenre = ``;
+  for (let genre in genresCounter) {
+    if (genresCounter[genre] === counter) {
+      favoriteGenre = genre;
+    }
+
+  }
+  return favoriteGenre;
 };
