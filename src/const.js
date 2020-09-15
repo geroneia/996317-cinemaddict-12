@@ -22,18 +22,7 @@ export const MenuItem = {
   STATS: `STATS`
 };
 
-export const Genre = {
-  SCI_FI: `Sci-Fi`,
-  ANIMATION: `Animation`,
-  FANTASY: `Fantasy`,
-  COMEDY: `Comedy`,
-  TV_SERIES: `TV Series`
-};
-
-export const GENRES = Object.values(Genre);
-
-
-export const StatisticFilter = {
+export const DateInterval = {
   ALL_TIME: `all-time`,
   TODAY: `today`,
   WEEK: `week`,

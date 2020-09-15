@@ -1,30 +1,34 @@
 import SmartView from "./smart.js";
 import {generateUserRank} from "../mock/user";
-import {getCurrentDate} from "../utils/card.js";
+import {getCurrentDate, getEarliestDate} from "../utils/card.js";
 import {getOverallDuration} from "../utils/card.js";
 import Chart from "chart.js";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import {countWatchedFilmsInDateRange, makeItemsUniq, countCardsByGenre} from "../utils/statistic.js";
+import {countWatchedFilmsInDateRange, makeItemsUniq, listOfWatchedFilmsInDateRange, getGenresCount} from "../utils/statistic.js";
+import {DateInterval} from "../const.js";
+
+const DAYS_TO_FULL_WEEK = 6;
 // import {Genre} from "../const.js";
 
-const renderGenresChart = (genresCtx, cards) => {
-  let cardGenres = cards.map((card) => card.genres);
-  cardGenres = cardGenres.reduce((a, b) => a.concat(b)
+const renderGenresChart = (genresCtx, cards, dateFrom, dateTo) => {
+  console.log(listOfWatchedFilmsInDateRange(cards, dateFrom, dateTo));
+  const sortedCards = listOfWatchedFilmsInDateRange(cards, dateFrom, dateTo);
+  const cardGenres = sortedCards.map(({genres}) => genres).reduce((a, b) => a.concat(b)
   );
-
   const uniqGenres = makeItemsUniq(cardGenres);
-  const cardByGenresCounts = uniqGenres.map((genre) => countCardsByGenre(cards, genre));
+  const genresCounter = getGenresCount(cardGenres);
+
   const BAR_HEIGHT = 50;
 
-  genresCtx.style.height = `${BAR_HEIGHT * uniqGenres}`;
+  genresCtx.style.height = `${BAR_HEIGHT * uniqGenres.length}`;
 
   return new Chart(genresCtx, {
     plugins: [ChartDataLabels],
     type: `horizontalBar`,
     data: {
-      labels: uniqGenres,
+      labels: Object.keys(genresCounter),
       datasets: [{
-        data: cardByGenresCounts,
+        data: Object.values(genresCounter),
         backgroundColor: `#ffe800`,
         hoverBackgroundColor: `#ffe800`,
         anchor: `start`
@@ -78,6 +82,7 @@ const renderGenresChart = (genresCtx, cards) => {
 
 const createStatisticsTemplate = (allCards, {cards, dateFrom, dateTo}) => {
   const watchedFilmsCount = countWatchedFilmsInDateRange(cards, dateFrom, dateTo);
+  console.log(watchedFilmsCount);
   return `<section class="statistic">
     <p class="statistic__rank">
       Your rank
@@ -130,14 +135,11 @@ export default class UserStatistic extends SmartView {
   constructor(cards) {
     super();
     this._cards = cards;
+    this._dateInterval = DateInterval.ALL_TIME;
+
     this._countedCards = {
       cards,
-      dateFrom: (() => {
-        const daysToFullWeek = 6;
-        const date = getCurrentDate();
-        date.setDate(date.getDate() - daysToFullWeek);
-        return date;
-      })(),
+      dateFrom: this._getDateFrom(),
       dateTo: getCurrentDate()
     };
 
@@ -163,8 +165,12 @@ export default class UserStatistic extends SmartView {
 
   _dateIntervalChangeHandler(evt) {
     evt.preventDefault();
-    // console.log(evt.target.value);
-    this.getElement().querySelector(`[value=${evt.target.value}]`).checked = true;
+    if (this._dateInterval === evt.target.value) {
+      return;
+    }
+    this._dateInterval = evt.target.value;
+    this._countedCards.dateFrom = this._getDateFrom();
+    this._setCharts();
   }
 
   setDateIntervalChangeHandler() {
@@ -175,15 +181,23 @@ export default class UserStatistic extends SmartView {
     this._setCharts();
   }
 
-  _dateChangeHandler([dateFrom, dateTo]) {
-    if (!dateFrom || !dateTo) {
-      return;
+  _getDateFrom() {
+    let date = getCurrentDate();
+    switch (this._dateInterval) {
+      case DateInterval.ALL_TIME :
+        date = getEarliestDate();
+        break;
+      case DateInterval.WEEK :
+        date.setDate(date.getDate() - DAYS_TO_FULL_WEEK);
+        break;
+      case DateInterval.MONTH :
+        date.setMonth(date.getMonth() - 1);
+        break;
+      case DateInterval.YEAR :
+        date.setFullYear(date.getFullYear() - 1);
+        break;
     }
-
-    this.updateCountedCards({
-      dateFrom,
-      dateTo
-    });
+    return date;
   }
 
   _setCharts() {
@@ -192,6 +206,7 @@ export default class UserStatistic extends SmartView {
     }
 
     const {cards, dateFrom, dateTo} = this._countedCards;
+
     const genresCtx = this.getElement().querySelector(`.statistic__chart`);
 
     this._genresChart = renderGenresChart(genresCtx, cards, dateFrom, dateTo);

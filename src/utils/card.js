@@ -23,9 +23,14 @@ export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10)
 
 export const getCurrentDate = () => {
   const currentDate = new Date();
-  currentDate.setHours(23, 59, 59, 999);
+  currentDate.setHours(0, 0, 0, 0);
 
   return new Date(currentDate);
+};
+
+export const getEarliestDate = () => {
+  const earliestDate = new Date(0);
+  return new Date(earliestDate);
 };
 
 export const isDatesEqual = (dateA, dateB) => {

@@ -37,6 +37,13 @@ export const countWatchedFilmsInDateRange = (cards, dateFrom, dateTo) => {
   }, 0);
 };
 
+export const listOfWatchedFilmsInDateRange = (cards, dateFrom, dateTo) =>
+  cards.filter((card) =>
+    (moment(card.watchingDate).isSame(dateFrom) ||
+    moment(card.watchingDate).isBetween(dateFrom, dateTo) ||
+    moment(card.watchingDate).isSame(dateTo))
+  );
+
 export const getDatesInRange = (dateFrom, dateTo) => {
   const dates = [];
   let stepDate = new Date(dateFrom);
@@ -46,4 +53,17 @@ export const getDatesInRange = (dateFrom, dateTo) => {
   }
 
   return dates;
+};
+
+
+export const getGenresCount = (genres) => {
+  const genresStorage = {};
+  genres.forEach((genre) => {
+    if (genresStorage[genre]) {
+      genresStorage[genre] += 1;
+    } else {
+      genresStorage[genre] = 1;
+    }
+  });
+  return genresStorage;
 };

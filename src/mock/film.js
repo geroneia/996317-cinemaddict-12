@@ -4,8 +4,6 @@ import {generateId} from "../utils/card.js";
 
 const DATE_OF_FIRST_FILM_PREMIERE = new Date(Date.UTC(1896, 1, 6, 3, 0, 0));
 
-// const DATE_OF_FIRST_FILM_WATCHED = new Date(Date.UTC(2020, 9, 1, 3, 0, 0));
-
 const TITLES = [
   `Made for Each Other`,
   `Popeye Meets Sinbad`,
@@ -92,9 +90,10 @@ const generateRandomDateOfPremiere = () => {
 };
 
 const generateRandomDateOfWatching = () => {
-  // const firstDate = DATE_OF_FIRST_FILM_WATCHED;
-  // const lastDate = new Date();
-  return new Date();
+  const date = new Date();
+  const firstDate = date.setFullYear(date.getFullYear() - 1);
+  const lastDate = new Date();
+  return new Date(getRandomInteger(firstDate, lastDate));
 };
 
 export const generateCard = () => ({
