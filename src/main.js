@@ -1,7 +1,6 @@
 import ProfileRatingView from "./view/profile-rating.js";
 import SiteMenuView from "./view/menu.js";
 import StatsTemplateView from "./view/stats.js";
-import UserStatisticView from "./view/user-statistic.js";
 import FilmsCounterView from "./view/films-counter.js";
 import MoviesModel from "./model/movies.js";
 import CommentsModel from "./model/comments.js";
@@ -12,6 +11,7 @@ import {generateListOfComments} from "./mock/comment.js";
 import {generateUserRank} from "./mock/user.js";
 import MovieListPresenter from "./presenter/movie-list.js";
 import FilterPresenter from "./presenter/filter.js";
+import UserStatisticPresenter from "./presenter/user-statistic.js";
 import {render, RenderPosition, remove} from "./utils/render.js";
 import {MenuItem} from "./const.js";
 
@@ -61,11 +61,13 @@ render(siteMainElement, menuComponent, RenderPosition.BEFOREEND);
 const statsSectionSwitcher = new StatsTemplateView(currentMenuItem);
 render(menuComponent, statsSectionSwitcher, RenderPosition.BEFOREEND);
 
-const userStatisticComponent = new UserStatisticView(cards);
-render(menuComponent, userStatisticComponent, RenderPosition.AFTEREND);
+// const userStatisticComponent = new UserStatisticView(cards);
+// render(menuComponent, userStatisticComponent, RenderPosition.AFTEREND);
 
 const movieListPresenter = new MovieListPresenter(siteMainElement, footerElement, cardsModel, commentsModel, filterModel, commentInput);
 const filterPresenter = new FilterPresenter(menuComponent, filterModel, cardsModel);
+
+const userStatisticPresenter = new UserStatisticPresenter(siteMainElement, cardsModel.getCards());
 
 const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
@@ -75,7 +77,7 @@ const handleSiteMenuClick = (menuItem) => {
       }
       // как менять текущий режим?
       // currentMenuItem = MenuItem.MOVIES;
-      remove(userStatisticComponent);
+      userStatisticPresenter.destroy();
       remove(statsSectionSwitcher);
 
       render(menuComponent, statsSectionSwitcher, RenderPosition.BEFOREEND);
@@ -85,23 +87,23 @@ const handleSiteMenuClick = (menuItem) => {
     case MenuItem.STATS:
       // currentMenuItem = MenuItem.STATS;
       movieListPresenter.destroy();
-      render(menuComponent, userStatisticComponent, RenderPosition.AFTEREND);
-      userStatisticComponent.restoreHandlers();
+      userStatisticPresenter.init();
       break;
   }
 };
 
-const handleDateIntervalClick = () => {
-  remove(userStatisticComponent);
-  render(menuComponent, userStatisticComponent, RenderPosition.AFTEREND);
-  userStatisticComponent.restoreHandlers();
-};
+// const handleDateIntervalClick = () => {
+//   remove(userStatisticComponent);
+//   render(menuComponent, userStatisticComponent, RenderPosition.AFTEREND);
+//   userStatisticComponent.restoreHandlers();
+// };
 
-userStatisticComponent.setDateIntervalChangeHandler(handleDateIntervalClick);
+// userStatisticComponent.setDateIntervalChangeHandler(handleDateIntervalClick);
 
 menuComponent.setMenuClickHandler(handleSiteMenuClick);
 
 filterPresenter.init();
+userStatisticPresenter.init();
 
 // рисует счетчик фильмов в футере
 const footerStatElement = footerElement.querySelector(`.footer__statistics`);

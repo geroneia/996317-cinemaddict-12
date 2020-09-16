@@ -1,83 +1,12 @@
 import SmartView from "./smart.js";
 import {generateUserRank} from "../mock/user";
-import {getCurrentDate, getEarliestDate} from "../utils/card.js";
 import {getOverallDuration} from "../utils/card.js";
 import Chart from "chart.js";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import {countWatchedFilmsInDateRange, makeItemsUniq, listOfWatchedFilmsInDateRange, getGenresCount, getFavoriteGenre} from "../utils/statistic.js";
+import {countWatchedFilmsInDateRange, makeItemsUniq, getGenresCount, getFavoriteGenre} from "../utils/statistic.js";
 import {DateInterval} from "../const.js";
 
-const DAYS_TO_FULL_WEEK = 6;
-
-const renderGenresChart = (genresCtx, cards) => {
-  const cardGenres = cards.map(({genres}) => genres).reduce((a, b) => a.concat(b)
-  );
-
-  const uniqGenres = makeItemsUniq(cardGenres);
-  const genresCounter = getGenresCount(cardGenres);
-  const BAR_HEIGHT = 50;
-
-  genresCtx.style.height = `${BAR_HEIGHT * uniqGenres.length}`;
-
-  return new Chart(genresCtx, {
-    plugins: [ChartDataLabels],
-    type: `horizontalBar`,
-    data: {
-      labels: Object.keys(genresCounter),
-      datasets: [{
-        data: Object.values(genresCounter),
-        backgroundColor: `#ffe800`,
-        hoverBackgroundColor: `#ffe800`,
-        anchor: `start`
-      }]
-    },
-    options: {
-      plugins: {
-        datalabels: {
-          font: {
-            size: 20
-          },
-          color: `#ffffff`,
-          anchor: `start`,
-          align: `start`,
-          offset: 40,
-        }
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            fontColor: `#ffffff`,
-            padding: 100,
-            fontSize: 20
-          },
-          gridLines: {
-            display: false,
-            drawBorder: false
-          },
-          barThickness: 24
-        }],
-        xAxes: [{
-          ticks: {
-            display: false,
-            beginAtZero: true
-          },
-          gridLines: {
-            display: false,
-            drawBorder: false
-          },
-        }],
-      },
-      legend: {
-        display: false
-      },
-      tooltips: {
-        enabled: false
-      }
-    }
-  });
-};
-
-const createStatisticsTemplate = (allCards, {cards, dateFrom, dateTo}) => {
+const createStatisticsTemplate = (allCards, {cards, dateFrom, dateTo}, dateInterval) => {
   const watchedFilmsCount = countWatchedFilmsInDateRange(cards, dateFrom, dateTo);
   return `<section class="statistic">
     <p class="statistic__rank">
@@ -89,19 +18,24 @@ const createStatisticsTemplate = (allCards, {cards, dateFrom, dateTo}) => {
     <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
       <p class="statistic__filters-description">Show stats:</p>
 
-      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-all-time" value="${DateInterval.ALL_TIME}" checked>
+      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-all-time" value="${DateInterval.ALL_TIME}"
+      ${DateInterval.ALL_TIME === dateInterval ? `checked` : ``}>
       <label for="statistic-all-time" class="statistic__filters-label">All time</label>
 
-      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-today" value="${DateInterval.TODAY}">
+      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-today" value="${DateInterval.TODAY}"
+      ${DateInterval.TODAY === dateInterval ? `checked` : ``}>
       <label for="statistic-today" class="statistic__filters-label">Today</label>
 
-      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-week" value="${DateInterval.WEEK}">
+      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-week" value="${DateInterval.WEEK}"
+      ${DateInterval.WEEK === dateInterval ? `checked` : ``}>
       <label for="statistic-week" class="statistic__filters-label">Week</label>
 
-      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-month" value="${DateInterval.MONTH}">
+      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-month" value="${DateInterval.MONTH}"
+      ${DateInterval.MONTH === dateInterval ? `checked` : ``}>
       <label for="statistic-month" class="statistic__filters-label">Month</label>
 
-      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-year" value="${DateInterval.YEAR}">
+      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-year" value="${DateInterval.YEAR}"
+      ${DateInterval.YEAR === dateInterval ? `checked` : ``}>
       <label for="statistic-year" class="statistic__filters-label">Year</label>
     </form>
 
@@ -128,23 +62,11 @@ const createStatisticsTemplate = (allCards, {cards, dateFrom, dateTo}) => {
 };
 
 export default class UserStatistic extends SmartView {
-  constructor(cards) {
+  constructor(cards, countedCards, dateInterval) {
     super();
-    this._cards = cards.slice();
-    this._allCards = cards.slice();
-    this._dateInterval = DateInterval.ALL_TIME;
-
-    this._countedCards = {
-      cards,
-      dateFrom: this._getDateFrom(),
-      dateTo: getCurrentDate()
-    };
-
-    this._genresChart = null;
-
-    this._dateIntervalChangeHandler = this._dateIntervalChangeHandler.bind(this);
-
-    this._setCharts();
+    this._cards = cards;
+    this._countedCards = countedCards;
+    this._dateInterval = dateInterval;
   }
 
   removeElement() {
@@ -156,66 +78,74 @@ export default class UserStatistic extends SmartView {
   }
 
   getTemplate() {
-    return createStatisticsTemplate(this._allCards, this._countedCards);
+    return createStatisticsTemplate(this._cards, this._countedCards, this._dateInterval);
   }
 
-  _dateIntervalChangeHandler(evt) {
-    evt.preventDefault();
-    if (this._dateInterval === evt.target.value) {
-      return;
-    }
-    this._dateInterval = evt.target.value;
+  renderGenresChart(genresCtx, cards) {
+    const cardGenres = cards.map(({genres}) => genres).reduce((a, b) => a.concat(b)
+    );
 
-    // evt.target.checked = true; - не работает, потому что перерисовывается?
-    // console.log(evt.target);
-    this._countedCards.dateFrom = this._getDateFrom();
-    this._countedCards.cards = listOfWatchedFilmsInDateRange(this._allCards, this._countedCards.dateFrom, this._countedCards.dateTo);
+    const uniqGenres = makeItemsUniq(cardGenres);
+    const genresCounter = getGenresCount(cardGenres);
+    const BAR_HEIGHT = 50;
 
-    this._callback.changeIntervalClick(this._allCards, this._countedCards);
-    if (this._countedCards.cards.length !== 0) {
-      this._setCharts();
-    }
-    // console.log(this._dateInterval);
-  }
+    genresCtx.style.height = `${BAR_HEIGHT * uniqGenres.length}`;
 
-  setDateIntervalChangeHandler(callback) {
-    this._callback.changeIntervalClick = callback;
-    this.getElement().addEventListener(`change`, this._dateIntervalChangeHandler);
-  }
-
-  restoreHandlers() {
-    this.setDateIntervalChangeHandler();
-    this._setCharts();
-  }
-
-  _getDateFrom() {
-    let date = getCurrentDate();
-    switch (this._dateInterval) {
-      case DateInterval.ALL_TIME :
-        date = getEarliestDate();
-        break;
-      case DateInterval.WEEK :
-        date.setDate(date.getDate() - DAYS_TO_FULL_WEEK);
-        break;
-      case DateInterval.MONTH :
-        date.setMonth(date.getMonth() - 1);
-        break;
-      case DateInterval.YEAR :
-        date.setFullYear(date.getFullYear() - 1);
-        break;
-    }
-    return date;
-  }
-
-  _setCharts() {
-    if (this._genresChart !== null) {
-      this._genresChart = null;
-    }
-
-    const {cards, dateFrom, dateTo} = this._countedCards;
-
-    const genresCtx = this.getElement().querySelector(`.statistic__chart`);
-
-    this._genresChart = renderGenresChart(genresCtx, cards, dateFrom, dateTo);
+    return new Chart(genresCtx, {
+      plugins: [ChartDataLabels],
+      type: `horizontalBar`,
+      data: {
+        labels: Object.keys(genresCounter),
+        datasets: [{
+          data: Object.values(genresCounter),
+          backgroundColor: `#ffe800`,
+          hoverBackgroundColor: `#ffe800`,
+          anchor: `start`
+        }]
+      },
+      options: {
+        plugins: {
+          datalabels: {
+            font: {
+              size: 20
+            },
+            color: `#ffffff`,
+            anchor: `start`,
+            align: `start`,
+            offset: 40,
+          }
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              fontColor: `#ffffff`,
+              padding: 100,
+              fontSize: 20
+            },
+            gridLines: {
+              display: false,
+              drawBorder: false
+            },
+            barThickness: 24
+          }],
+          xAxes: [{
+            ticks: {
+              display: false,
+              beginAtZero: true
+            },
+            gridLines: {
+              display: false,
+              drawBorder: false
+            },
+          }],
+        },
+        legend: {
+          display: false
+        },
+        tooltips: {
+          enabled: false
+        }
+      }
+    });
   }
 }

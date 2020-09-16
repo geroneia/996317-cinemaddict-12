@@ -73,9 +73,7 @@ export const getGenresCount = (genres) => {
 export const getFavoriteGenre = (films) => {
   const cardGenres = films.map(({genres}) => genres).reduce((a, b) => a.concat(b));
   const genresCounter = getGenresCount(cardGenres);
-  console.log(cardGenres);
   const counter = Math.max(...Object.values(genresCounter));
-  console.log(counter);
   let favoriteGenre = ``;
   for (let genre in genresCounter) {
     if (genresCounter[genre] === counter) {
