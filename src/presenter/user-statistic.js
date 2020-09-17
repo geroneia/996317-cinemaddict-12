@@ -1,9 +1,9 @@
+import moment from "moment";
 import UserStatisticView from "../view/user-statistic.js";
-import {render, RenderPosition, remove, replace} from "../utils/render.js";
-import {listOfWatchedFilmsInDateRange} from "../utils/statistic.js";
-import {getCurrentDate, getEarliestDate} from "../utils/card.js";
+import {render, RenderPosition, remove} from "../utils/render.js";
+import {getCurrentDate, getEarliestDate, getOverallDuration} from "../utils/card.js";
 import {DateInterval} from "../const.js";
-
+import {generateUserRank} from "../mock/user";
 
 const DAYS_TO_FULL_WEEK = 6;
 
@@ -12,37 +12,38 @@ export default class UserStatistic {
     this._container = userStatisticContainer;
     this._cards = cards;
     this._currentDateInterval = DateInterval.ALL_TIME;
-    this._countedCards = {
-      cards,
-      dateFrom: this._getDateFrom(),
-      dateTo: getCurrentDate()
-    };
-    this._component = null;
 
-    this._genresChart = null;
+    this._statisticsComponent = null;
 
     this._dateIntervalChangeHandler = this._dateIntervalChangeHandler.bind(this);
-    // this.setDateIntervalChangeHandler = this.setDateIntervalChangeHandler.bind(this);
   }
 
   init() {
-    // this._dateInterval = this._currentDateInterval;
+    this._statisticsComponent = new UserStatisticView(this._getStatisticsData());
 
-    const previousComponent = this._component;
+    this._statisticsComponent.setDateIntervalChangeHandler(this._dateIntervalChangeHandler);
 
-    this._component = new UserStatisticView(this._cards, this._countedCards, this._currentDateInterval);
+    render(this._container, this._statisticsComponent, RenderPosition.BEFOREEND);
+  }
 
+  removeStatistics() {
+    remove(this._statisticsComponent);
+    this._statisticsComponent = null;
+  }
 
-    if (previousComponent === null) {
-      render(this._container, this._component, RenderPosition.BEFOREEND);
+  _getStatisticsData() {
+    const filteredFilms = this._getWatchedFilms();
+    const genresCounter = this._getGenresCounter(filteredFilms);
+    const favoriteGenre = filteredFilms.length > 0 ? this._getFavoriteGenre(genresCounter) : ``;
 
-      this._setCharts();
-      this.setDateIntervalChangeHandler();
-
-      return;
-    }
-    replace(this._component, previousComponent);
-    remove(previousComponent);
+    return {
+      userRank: this._getUserRank(),
+      dateInterval: this._currentDateInterval,
+      genresCounter,
+      watchedFilmsCount: filteredFilms.length,
+      totalDuration: this._getTotalDuration(filteredFilms),
+      favoriteGenre
+    };
   }
 
   _dateIntervalChangeHandler(evt) {
@@ -52,37 +53,57 @@ export default class UserStatistic {
     }
     this._currentDateInterval = evt.target.value;
 
-    remove(this._component);
-    render(this._container, this._component, RenderPosition.BEFOREEND);
-    this.restoreHandlers();
+    this.removeStatistics();
+    this.init();
+  }
 
-    // console.log(evt.target);
-    this._countedCards.dateFrom = this._getDateFrom();
-    this._countedCards.cards = listOfWatchedFilmsInDateRange(this._cards, this._countedCards.dateFrom, this._countedCards.dateTo);
+  _getListOfWatchedFilmsInDateRange(cards, dateFrom, dateTo) {
+    return cards.filter((card) =>
+      (moment(card.watchingDate).isSame(dateFrom) ||
+    moment(card.watchingDate).isBetween(dateFrom, dateTo) ||
+    moment(card.watchingDate).isSame(dateTo))
+    );
+  }
 
-    // this._callback.changeIntervalClick(this._cards, this._countedCards);
-    if (this._countedCards.cards.length !== 0) {
-      this._setCharts();
+  _getWatchedFilms() {
+    return this._getListOfWatchedFilmsInDateRange(this._cards, this._getDateFrom(), new Date());
+  }
 
+  _getGenresCount(genres) {
+    const genresStorage = {};
+    genres.forEach((genre) => {
+      if (genresStorage[genre]) {
+        genresStorage[genre] += 1;
+      } else {
+        genresStorage[genre] = 1;
+      }
+    });
+    return genresStorage;
+  }
 
+  _getGenresCounter(cards) {
+    return cards.length > 0 ? this._getGenresCount(cards.map(({genres}) => genres).reduce((a, b) => a.concat(b))) : null;
+  }
+
+  _getFavoriteGenre(genresCounter) {
+    const counter = Math.max(...Object.values(genresCounter));
+    let favoriteGenre = ``;
+    for (let genre in genresCounter) {
+      if (genresCounter[genre] === counter) {
+        favoriteGenre = genre;
+      }
     }
+
+    return favoriteGenre;
   }
 
-  setDateIntervalChangeHandler() {
-    // this._callback.changeIntervalClick = callback;
-    this._component.getElement().addEventListener(`change`, this._dateIntervalChangeHandler);
+  _getUserRank() {
+    return generateUserRank(this._cards);
   }
 
-  restoreHandlers() {
-    this.setDateIntervalChangeHandler();
-    this._setCharts();
+  _getTotalDuration(cards) {
+    return getOverallDuration(cards);
   }
-
-  // handleDateIntervalClick() {
-  //   remove(this._component);
-  //   render(this._container, this._component, RenderPosition.BEFOREEND);
-  //   this._component.restoreHandlers();
-  // }
 
   _getDateFrom() {
     let date = getCurrentDate();
@@ -102,17 +123,4 @@ export default class UserStatistic {
     }
     return date;
   }
-
-  _setCharts() {
-    if (this._genresChart !== null) {
-      this._genresChart = null;
-    }
-
-    const {cards, dateFrom, dateTo} = this._countedCards;
-
-    const genresCtx = this._component.getElement().querySelector(`.statistic__chart`);
-
-    this._genresChart = this._component.renderGenresChart(genresCtx, cards, dateFrom, dateTo);
-  }
-
 }

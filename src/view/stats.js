@@ -1,5 +1,4 @@
 import SmartView from "./smart.js";
-import {MenuItem} from "../const.js";
 
 export default class StatsTemplate extends SmartView {
   constructor(menuItem) {
@@ -9,6 +8,14 @@ export default class StatsTemplate extends SmartView {
   }
 
   getTemplate() {
-    return `<a href="#stats" class="main-navigation__additional ${this._menuItem === MenuItem.STATS ? `main-navigation__item--active` : ``}">Stats</a>`;
+    return `<a href="#stats" class="main-navigation__additional main-navigation__item--active">Stats</a>`;
+  }
+
+  removeActiveClass() {
+    this.getElement().classList.remove(`main-navigation__item--active`);
+  }
+
+  addActiveClass() {
+    this.getElement().classList.add(`main-navigation__item--active`);
   }
 }

@@ -15,8 +15,6 @@ export const formatCardReleaseDate = (releaseDate) => moment(releaseDate).format
 
 export const formatCardRuntime = (runtime) => moment(runtime * MILLISECONDS_IN_MINUTE).format(`h[h] mm[m]`);
 
-export const formatCardsDuration = (runtime) => moment(runtime * MILLISECONDS_IN_MINUTE).format(`h[h] mm[m]`);
-
 export const formatCommentDate = (commentsDate) => moment(commentsDate).fromNow();
 
 export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
@@ -41,11 +39,15 @@ export const isDatesEqual = (dateA, dateB) => {
   return moment(dateA).isSame(dateB, `day`);
 };
 
+// временная функция расчета и вывода продолжительности - пока не работает форматирование с помощью moment
 export const getOverallDuration = (movies) => {
   let duration = 0;
   for (let i = 0; i < movies.length; i++) {
     duration += movies[i].runtime;
   }
-  return formatCardsDuration(duration);
+  const hours = Math.floor(duration / 60) > 0 ? Math.floor(duration / 60) + `h` : `0`;
+  const minutes = duration % 60 > 0 ? duration % 60 + `m` : ``;
+
+  return `${hours} ${minutes}`;
 };
 

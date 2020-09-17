@@ -12,8 +12,8 @@ import {generateUserRank} from "./mock/user.js";
 import MovieListPresenter from "./presenter/movie-list.js";
 import FilterPresenter from "./presenter/filter.js";
 import UserStatisticPresenter from "./presenter/user-statistic.js";
-import {render, RenderPosition, remove} from "./utils/render.js";
-import {MenuItem} from "./const.js";
+import {render, RenderPosition} from "./utils/render.js";
+import {MenuItem, UpdateType, FilterType} from "./const.js";
 
 const FilmsCount = {
   PER_STEP: 5,
@@ -22,9 +22,6 @@ const FilmsCount = {
 };
 
 const COMMENTS_COUNT = 4;
-
-const currentMenuItem = MenuItem.STATS;
-// console.log(currentMenuItem);
 
 // собирает в массив результаты вызова функции, генерирующей случайную карточку фильма
 const cards = new Array(FilmsCount.TOTAL).fill(``).map(generateCard);
@@ -58,11 +55,8 @@ const siteMainElement = document.querySelector(`.main`);
 const menuComponent = new SiteMenuView();
 render(siteMainElement, menuComponent, RenderPosition.BEFOREEND);
 
-const statsSectionSwitcher = new StatsTemplateView(currentMenuItem);
+const statsSectionSwitcher = new StatsTemplateView();
 render(menuComponent, statsSectionSwitcher, RenderPosition.BEFOREEND);
-
-// const userStatisticComponent = new UserStatisticView(cards);
-// render(menuComponent, userStatisticComponent, RenderPosition.AFTEREND);
 
 const movieListPresenter = new MovieListPresenter(siteMainElement, footerElement, cardsModel, commentsModel, filterModel, commentInput);
 const filterPresenter = new FilterPresenter(menuComponent, filterModel, cardsModel);
@@ -72,33 +66,20 @@ const userStatisticPresenter = new UserStatisticPresenter(siteMainElement, cards
 const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.MOVIES:
-      if (currentMenuItem === MenuItem.MOVIES) {
-        return;
-      }
-      // как менять текущий режим?
-      // currentMenuItem = MenuItem.MOVIES;
-      userStatisticPresenter.destroy();
-      remove(statsSectionSwitcher);
+      statsSectionSwitcher.removeActiveClass();
+      userStatisticPresenter.removeStatistics();
 
-      render(menuComponent, statsSectionSwitcher, RenderPosition.BEFOREEND);
       movieListPresenter.init();
       movieListPresenter.renderExtraFilmsLists();
       break;
     case MenuItem.STATS:
-      // currentMenuItem = MenuItem.STATS;
+      statsSectionSwitcher.addActiveClass();
       movieListPresenter.destroy();
+      filterModel.set(UpdateType.DISABLED, FilterType.DISABLED);
       userStatisticPresenter.init();
       break;
   }
 };
-
-// const handleDateIntervalClick = () => {
-//   remove(userStatisticComponent);
-//   render(menuComponent, userStatisticComponent, RenderPosition.AFTEREND);
-//   userStatisticComponent.restoreHandlers();
-// };
-
-// userStatisticComponent.setDateIntervalChangeHandler(handleDateIntervalClick);
 
 menuComponent.setMenuClickHandler(handleSiteMenuClick);
 

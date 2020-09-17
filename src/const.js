@@ -5,6 +5,7 @@ export const UserAction = {
 };
 
 export const UpdateType = {
+  DISABLED: `disabled`,
   PATCH: `PATCH`,
   MINOR: `MINOR`,
   MAJOR: `MAJOR`

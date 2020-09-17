@@ -16,7 +16,6 @@ export default class SiteMenu extends AbstractView {
   setMenuClickHandler(callback) {
     this._callback.menuClick = callback;
     this.getElement().addEventListener(`click`, this._menuClickHandler);
-    // console.log(this._menuItem);
   }
 
   _menuClickHandler(evt, menuItem) {

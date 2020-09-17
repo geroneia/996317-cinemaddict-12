@@ -54,24 +54,19 @@ export default class MovieList {
   }
 
   init() {
-    // this._renderSort();
-
     if (this._getCards().length === 0) {
       this._renderNoFilms();
       return;
     }
     this._renderBoard();
-    // this._renderFilmsListContainer();
-    // как добавить проверку - если уже есть эти списки, то не рисовать их?
+  }
+
+  renderExtraFilmsLists() {
     this._renderBestFilmsList();
     this._renderMostCommentedFilmsList();
   }
 
-  renderExtraFilmsLists() {
-
-  }
-
-  _destroy() {
+  destroy() {
     this._clearBoard({resetRenderedCardCount: true, resetSortType: true});
 
     [
@@ -83,6 +78,8 @@ export default class MovieList {
     this._cardPresenterBestFilmsList = {};
     this._cardPresenterMostCommentedFilmsList = {};
 
+    remove(this._bestFilmsComponent);
+    remove(this._commentedFilmsComponent);
     remove(this._showMoreButtonComponent);
     remove(this._sortComponent);
     remove(this._noFilmsComponent);
@@ -145,10 +142,12 @@ export default class MovieList {
         this._renderFilmsListContainer();
         break;
       case UpdateType.MAJOR:
-        this._clearBoard({resetRenderedCardCount: true, resetSortType: true});
+        this.destroy();
         this._renderSort();
         this._renderBoard();
         this._renderFilmsListContainer();
+        break;
+      case UpdateType.DISABLED:
         break;
     }
   }

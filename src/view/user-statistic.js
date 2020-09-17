@@ -1,44 +1,36 @@
 import SmartView from "./smart.js";
-import {generateUserRank} from "../mock/user";
-import {getOverallDuration} from "../utils/card.js";
 import Chart from "chart.js";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import {countWatchedFilmsInDateRange, makeItemsUniq, getGenresCount, getFavoriteGenre} from "../utils/statistic.js";
 import {DateInterval} from "../const.js";
 
-const createStatisticsTemplate = (allCards, {cards, dateFrom, dateTo}, dateInterval) => {
-  const watchedFilmsCount = countWatchedFilmsInDateRange(cards, dateFrom, dateTo);
+const BAR_HEIGHT = 50;
+
+const createStatisticsTemplate = (userRank, dateInterval, watchedFilmsCount, totalDuration, favoriteGenre) => {
+
   return `<section class="statistic">
     <p class="statistic__rank">
       Your rank
       <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-      <span class="statistic__rank-label">${generateUserRank(allCards)}</span>
+      <span class="statistic__rank-label">${userRank}</span>
     </p>
-
     <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
       <p class="statistic__filters-description">Show stats:</p>
-
       <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-all-time" value="${DateInterval.ALL_TIME}"
       ${DateInterval.ALL_TIME === dateInterval ? `checked` : ``}>
       <label for="statistic-all-time" class="statistic__filters-label">All time</label>
-
       <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-today" value="${DateInterval.TODAY}"
       ${DateInterval.TODAY === dateInterval ? `checked` : ``}>
       <label for="statistic-today" class="statistic__filters-label">Today</label>
-
       <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-week" value="${DateInterval.WEEK}"
       ${DateInterval.WEEK === dateInterval ? `checked` : ``}>
       <label for="statistic-week" class="statistic__filters-label">Week</label>
-
       <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-month" value="${DateInterval.MONTH}"
       ${DateInterval.MONTH === dateInterval ? `checked` : ``}>
       <label for="statistic-month" class="statistic__filters-label">Month</label>
-
       <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-year" value="${DateInterval.YEAR}"
       ${DateInterval.YEAR === dateInterval ? `checked` : ``}>
       <label for="statistic-year" class="statistic__filters-label">Year</label>
     </form>
-
     <ul class="statistic__text-list">
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">You watched</h4>
@@ -46,27 +38,31 @@ const createStatisticsTemplate = (allCards, {cards, dateFrom, dateTo}, dateInter
       </li>
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">Total duration</h4>
-        <p class="statistic__item-text">${cards.length === 0 ? `0` : getOverallDuration(cards)}</p>
+        <p class="statistic__item-text">${totalDuration}</p>
       </li>
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">Top genre</h4>
-        <p class="statistic__item-text">${cards.length === 0 ? `` : getFavoriteGenre(cards)}</p>
+        <p class="statistic__item-text">${favoriteGenre}</p>
       </li>
     </ul>
-
     <div class="statistic__chart-wrap">
       <canvas class="statistic__chart" width="1000"></canvas>
     </div>
-
   </section>`;
 };
 
 export default class UserStatistic extends SmartView {
-  constructor(cards, countedCards, dateInterval) {
+  constructor({userRank, dateInterval, genresCounter, watchedFilmsCount, totalDuration, favoriteGenre}) {
     super();
-    this._cards = cards;
-    this._countedCards = countedCards;
+    this._userRank = userRank;
     this._dateInterval = dateInterval;
+    this._watchedFilmsCount = watchedFilmsCount;
+    this._totalDuration = totalDuration;
+    this._favoriteGenre = favoriteGenre;
+
+    if (genresCounter !== null) {
+      this.renderGenresChart(genresCounter);
+    }
   }
 
   removeElement() {
@@ -78,16 +74,17 @@ export default class UserStatistic extends SmartView {
   }
 
   getTemplate() {
-    return createStatisticsTemplate(this._cards, this._countedCards, this._dateInterval);
+    return createStatisticsTemplate(this._userRank, this._dateInterval, this._watchedFilmsCount, this._totalDuration, this._favoriteGenre);
   }
 
-  renderGenresChart(genresCtx, cards) {
-    const cardGenres = cards.map(({genres}) => genres).reduce((a, b) => a.concat(b)
-    );
+  setDateIntervalChangeHandler(callback) {
+    this._callback.changeIntervalClick = callback;
+    this.getElement().addEventListener(`change`, callback);
+  }
 
-    const uniqGenres = makeItemsUniq(cardGenres);
-    const genresCounter = getGenresCount(cardGenres);
-    const BAR_HEIGHT = 50;
+  renderGenresChart(genresCounter) {
+    const genresCtx = this.getElement().querySelector(`.statistic__chart`);
+    const uniqGenres = Object.keys(genresCounter);
 
     genresCtx.style.height = `${BAR_HEIGHT * uniqGenres.length}`;
 
@@ -95,7 +92,7 @@ export default class UserStatistic extends SmartView {
       plugins: [ChartDataLabels],
       type: `horizontalBar`,
       data: {
-        labels: Object.keys(genresCounter),
+        labels: uniqGenres,
         datasets: [{
           data: Object.values(genresCounter),
           backgroundColor: `#ffe800`,
