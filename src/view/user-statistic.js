@@ -61,7 +61,7 @@ export default class UserStatistic extends SmartView {
     this._favoriteGenre = favoriteGenre;
 
     if (genresCounter !== null) {
-      this.renderGenresChart(genresCounter);
+      this._renderGenresChart(genresCounter);
     }
   }
 
@@ -82,7 +82,7 @@ export default class UserStatistic extends SmartView {
     this.getElement().addEventListener(`change`, callback);
   }
 
-  renderGenresChart(genresCounter) {
+  _renderGenresChart(genresCounter) {
     const genresCtx = this.getElement().querySelector(`.statistic__chart`);
     const uniqGenres = Object.keys(genresCounter);
 

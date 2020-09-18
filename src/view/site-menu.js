@@ -2,10 +2,10 @@ import AbstractView from "./abstract.js";
 import {MenuItem} from "../const.js";
 
 export default class SiteMenu extends AbstractView {
-  constructor(menuItem) {
+  constructor() {
     super();
 
-    this._menuItem = menuItem;
+    this._menuItem = ``;
     this._menuClickHandler = this._menuClickHandler.bind(this);
   }
 
@@ -18,13 +18,13 @@ export default class SiteMenu extends AbstractView {
     this.getElement().addEventListener(`click`, this._menuClickHandler);
   }
 
-  _menuClickHandler(evt, menuItem) {
+  _menuClickHandler(evt) {
     evt.preventDefault();
     if (evt.target.className === `main-navigation__additional`) {
-      menuItem = MenuItem.STATS;
+      this._menuItem = MenuItem.STATS;
     } else if (evt.target.className === `main-navigation__item `) {
-      menuItem = MenuItem.MOVIES;
+      this._menuItem = MenuItem.MOVIES;
     }
-    this._callback.menuClick(menuItem);
+    this._callback.menuClick(this._menuItem);
   }
 }

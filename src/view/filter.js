@@ -22,14 +22,14 @@ export const createFilterTemplate = (filterItems, currentType) => {
 export default class Filter extends AbstractView {
   constructor(filters, currentType) {
     super();
-    this._titles = filters;
+    this._filters = filters;
     this._currentType = currentType;
 
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
   }
 
   getTemplate() {
-    return createFilterTemplate(this._titles, this._currentType);
+    return createFilterTemplate(this._filters, this._currentType);
   }
 
   setTypeChangeHandler(callback) {
