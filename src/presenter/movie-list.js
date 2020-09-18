@@ -1,8 +1,8 @@
 import SortingView from "../view/sorting.js";
 import BoardView from "../view/board.js";
 import FilmsListView from "../view/films-list.js";
-import BestFilmsView from "../view/best-films-list.js";
-import CommentedFilmsView from "../view/commented-films-list.js";
+import BestFilmsView from "../view/best-films.js";
+import CommentedFilmsView from "../view/commented-films.js";
 import ShowMoreButtonView from "../view/show-more-button.js";
 import NoFilmsView from "../view/no-films.js";
 import MoviePresenter from "./movie.js";
@@ -86,6 +86,12 @@ export default class MovieList {
     remove(this._showMoreButtonComponent);
   }
 
+  renderFilmsListContainer() {
+    render(this._boardComponent, this._filmsListComponent, RenderPosition.AFTERBEGIN);
+    const filmsListContainer = this._filmsListComponent.getElement().querySelector(`.films-list .films-list__container`);
+    this._renderFilmsList(filmsListContainer);
+  }
+
   _getCards() {
     const filterType = this._filterModel.get();
     const cards = this._cardsModel.getCards();
@@ -139,13 +145,13 @@ export default class MovieList {
         this._clearBoard();
         this._renderSort();
         this._renderBoard();
-        this._renderFilmsListContainer();
+        this.renderFilmsListContainer();
         break;
       case UpdateType.MAJOR:
         this.destroy();
         this._renderSort();
         this._renderBoard();
-        this._renderFilmsListContainer();
+        this.renderFilmsListContainer();
         break;
       case UpdateType.DISABLED:
         break;
@@ -161,7 +167,7 @@ export default class MovieList {
     this._clearBoard({resetRenderedCardCount: true});
     this._renderSort();
     this._renderBoard();
-    this._renderFilmsListContainer();
+    this.renderFilmsListContainer();
   }
 
   _renderSort() {
@@ -237,12 +243,6 @@ export default class MovieList {
     if (resetSortType) {
       this._currentSortType = SortType.DEFAULT;
     }
-  }
-
-  _renderFilmsListContainer() {
-    render(this._boardComponent, this._filmsListComponent, RenderPosition.AFTERBEGIN);
-    const filmsListContainer = this._filmsListComponent.getElement().querySelector(`.films-list .films-list__container`);
-    this._renderFilmsList(filmsListContainer);
   }
 
   _renderFilmsList(container) {

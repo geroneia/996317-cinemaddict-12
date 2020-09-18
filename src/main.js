@@ -1,6 +1,6 @@
 import ProfileRatingView from "./view/profile-rating.js";
-import SiteMenuView from "./view/menu.js";
-import StatsTemplateView from "./view/stats.js";
+import SiteMenuView from "./view/site-menu.js";
+import StatsView from "./view/stats.js";
 import FilmsCounterView from "./view/films-counter.js";
 import MoviesModel from "./model/movies.js";
 import CommentsModel from "./model/comments.js";
@@ -55,7 +55,7 @@ const siteMainElement = document.querySelector(`.main`);
 const menuComponent = new SiteMenuView();
 render(siteMainElement, menuComponent, RenderPosition.BEFOREEND);
 
-const statsSectionSwitcher = new StatsTemplateView();
+const statsSectionSwitcher = new StatsView();
 render(menuComponent, statsSectionSwitcher, RenderPosition.BEFOREEND);
 
 const movieListPresenter = new MovieListPresenter(siteMainElement, footerElement, cardsModel, commentsModel, filterModel, commentInput);
@@ -66,14 +66,14 @@ const userStatisticPresenter = new UserStatisticPresenter(siteMainElement, cards
 const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.MOVIES:
-      statsSectionSwitcher.removeActiveClass();
+      statsSectionSwitcher.removeActive();
       userStatisticPresenter.removeStatistics();
 
       movieListPresenter.init();
       movieListPresenter.renderExtraFilmsLists();
       break;
     case MenuItem.STATS:
-      statsSectionSwitcher.addActiveClass();
+      statsSectionSwitcher.addActive();
       movieListPresenter.destroy();
       filterModel.set(UpdateType.DISABLED, FilterType.DISABLED);
       userStatisticPresenter.init();
@@ -84,7 +84,9 @@ const handleSiteMenuClick = (menuItem) => {
 menuComponent.setMenuClickHandler(handleSiteMenuClick);
 
 filterPresenter.init();
-userStatisticPresenter.init();
+movieListPresenter.init();
+movieListPresenter.renderFilmsListContainer();
+movieListPresenter.renderExtraFilmsLists();
 
 // рисует счетчик фильмов в футере
 const footerStatElement = footerElement.querySelector(`.footer__statistics`);

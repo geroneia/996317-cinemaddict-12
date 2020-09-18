@@ -39,14 +39,16 @@ export const isDatesEqual = (dateA, dateB) => {
   return moment(dateA).isSame(dateB, `day`);
 };
 
-// временная функция расчета и вывода продолжительности - пока не работает форматирование с помощью moment
 export const getOverallDuration = (movies) => {
   let duration = 0;
+
   for (let i = 0; i < movies.length; i++) {
     duration += movies[i].runtime;
   }
-  const hours = Math.floor(duration / 60) > 0 ? Math.floor(duration / 60) + `h` : `0`;
-  const minutes = duration % 60 > 0 ? duration % 60 + `m` : ``;
+  const lengthInHours = Math.floor(duration / 60);
+  const lengthInMinutes = duration % 60;
+  const hours = lengthInHours > 0 ? lengthInHours + `h` : `0`;
+  const minutes = lengthInMinutes > 0 ? lengthInMinutes + `m` : ``;
 
   return `${hours} ${minutes}`;
 };

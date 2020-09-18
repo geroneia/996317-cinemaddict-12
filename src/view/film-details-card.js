@@ -1,7 +1,5 @@
 import SmartView from "./smart.js";
 
-import he from "he";
-
 import {formatCardReleaseDate, formatCardRuntime, formatCardReleaseYear, formatCommentDate} from "../utils/card.js";
 
 // разметка дополнительной информации о фильме
@@ -182,7 +180,6 @@ export default class FilmDetailsCard extends SmartView {
     this._watchedToggleHandler = this._watchedToggleHandler.bind(this);
     this._commentDeleteClickHandler = this._commentDeleteClickHandler.bind(this);
     this._descriptionInputHandler = this._descriptionInputHandler.bind(this);
-    this._formSubmitHandler = this._formSubmitHandler.bind(this);
 
     this.setDescriptionInputHandler();
     this._setEmojiInputHandler();
@@ -197,6 +194,19 @@ export default class FilmDetailsCard extends SmartView {
 
   getTemplate() {
     return createFilmDetailsCard(this._editableCard, this._commentsList);
+  }
+
+  getEmoji() {
+    return this._emoji;
+  }
+
+  getMessage() {
+    return this._message;
+  }
+
+  clearCommentForm() {
+    this._emoji = ``;
+    this._message = ``;
   }
 
   restoreHandlers() {
@@ -245,22 +255,6 @@ export default class FilmDetailsCard extends SmartView {
   setDescriptionInputHandler() {
     this.getElement().querySelector(`.film-details__comment-input`)
   .addEventListener(`input`, this._descriptionInputHandler);
-  }
-
-  setFormSubmitHandler(callback) {
-    this._callback.formSubmit = callback;
-    document.addEventListener(`keydown`, this._formSubmitHandler);
-  }
-
-  _formSubmitHandler(evt) {
-    if ((evt.ctrlKey || evt.metaKey) && evt.key === `Enter`) {
-      evt.preventDefault();
-      if (this._emoji !== `` && this._message !== ``) {
-        this._callback.formSubmit(he.encode(this._message), this._emoji);
-      }
-      this._emoji = ``;
-      this._message = ``;
-    }
   }
 
   _addToWatchlistToggleHandler(evt) {

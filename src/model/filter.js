@@ -4,7 +4,7 @@ import {FilterType} from "../const.js";
 export default class Filter extends Observer {
   constructor() {
     super();
-    this._activeType = FilterType.DISABLED;
+    this._activeType = FilterType.ALL_MOVIES;
   }
 
   set(updateType, filter) {

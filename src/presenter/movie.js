@@ -55,7 +55,7 @@ export default class Movie {
     this._cardDetailsComponent.setWatchedLabelClickHandler(this._handleWatchedClick);
     this._cardDetailsComponent.setClickHandler(this._handleCloseCardClick);
     this._cardDetailsComponent.setDeleteClickHandler(this._handleDeleteClick);
-    this._cardDetailsComponent.setFormSubmitHandler(this._handleFormSubmit);
+    document.addEventListener(`keydown`, this._handleFormSubmit);
 
     if (prevCardComponent === null) {
       render(this._container, this._cardComponent, RenderPosition.BEFOREEND);
@@ -177,21 +177,29 @@ export default class Movie {
     );
   }
 
-  _handleFormSubmit(message, emoji) {
-    const addedComment = {
-      id: generateId(),
-      message: he.encode(message),
-      emoji,
-      name: getRandomItem(NAMES),
-      currentDate: new Date()
-    };
-    this._changeData(
-        UserAction.ADD_COMMENT,
-        UpdateType.PATCH,
-        this._card,
-        this._comments,
-        addedComment
-    );
+  _handleFormSubmit(evt) {
+    if ((evt.ctrlKey || evt.metaKey) && evt.key === `Enter`) {
+      evt.preventDefault();
+      const emoji = this._cardDetailsComponent.getEmoji();
+      const message = this._cardDetailsComponent.getMessage();
+      if (emoji !== `` && message !== ``) {
+        const addedComment = {
+          id: generateId(),
+          message: he.encode(message),
+          emoji,
+          name: getRandomItem(NAMES),
+          currentDate: new Date()
+        };
 
+        this._changeData(
+            UserAction.ADD_COMMENT,
+            UpdateType.PATCH,
+            this._card,
+            this._comments,
+            addedComment
+        );
+      }
+      this._cardDetailsComponent.clearCommentForm();
+    }
   }
 }

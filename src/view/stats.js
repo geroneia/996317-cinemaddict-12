@@ -1,21 +1,15 @@
 import SmartView from "./smart.js";
 
-export default class StatsTemplate extends SmartView {
-  constructor(menuItem) {
-    super();
-
-    this._menuItem = menuItem;
-  }
-
+export default class Stats extends SmartView {
   getTemplate() {
-    return `<a href="#stats" class="main-navigation__additional main-navigation__item--active">Stats</a>`;
+    return `<a href="#stats" class="main-navigation__additional">Stats</a>`;
   }
 
-  removeActiveClass() {
+  removeActive() {
     this.getElement().classList.remove(`main-navigation__item--active`);
   }
 
-  addActiveClass() {
+  addActive() {
     this.getElement().classList.add(`main-navigation__item--active`);
   }
 }
