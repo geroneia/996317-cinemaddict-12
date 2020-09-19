@@ -57,7 +57,7 @@ const createFilmDetailsCard = (data, comments) => {
               </div>
               <div class="film-details__info-wrap">
                 <div class="film-details__poster">
-                  <img class="film-details__poster-img" src="./images/posters/${poster}" alt="${title}(${formatCardReleaseYear(releaseDate)})">
+                  <img class="film-details__poster-img" src="./${poster}" alt="${title}(${formatCardReleaseYear(releaseDate)})">
 
                   <p class="film-details__age">${ageRating}+</p>
                 </div>
@@ -97,7 +97,7 @@ const createFilmDetailsCard = (data, comments) => {
                     </tr>
                     <tr class="film-details__row">
                       <td class="film-details__term">Country</td>
-                      <td class="film-details__cell">${country.join(`, `)}</td>
+                      <td class="film-details__cell">${country}</td>
                     </tr>
                     <tr class="film-details__row">
                       <td class="film-details__term">Genres</td>

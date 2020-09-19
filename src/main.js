@@ -35,7 +35,7 @@ api.getMovies()
   .then((movies) => {
     cardsModel.setCards(UpdateType.INIT, movies);
 
-
+    // console.log(movies);
     // рисует звание пользователя на странице
     render(siteHeaderElement, new ProfileRatingView(generateUserRank(cardsModel.getCards())), RenderPosition.BEFOREEND);
 
@@ -55,7 +55,7 @@ api.getComments(1).then((comments) => {
   commentsModel.set(UpdateType.INIT, comments);
   // console.log(comments);
 });
-// console.log(commentsModel.get());
+
 
 // рисует меню
 render(siteMainElement, menuComponent, RenderPosition.BEFOREEND);
@@ -85,7 +85,7 @@ const handleSiteMenuClick = (menuItem) => {
 
 menuComponent.setMenuClickHandler(handleSiteMenuClick);
 const filterPresenter = new FilterPresenter(menuComponent, filterModel, cardsModel);
-const movieListPresenter = new MovieListPresenter(siteMainElement, footerElement, cardsModel, commentsModel, filterModel, commentInput);
+const movieListPresenter = new MovieListPresenter(siteMainElement, footerElement, cardsModel, commentsModel, filterModel, commentInput, api);
 
 
 movieListPresenter.renderFilmsListContainer();

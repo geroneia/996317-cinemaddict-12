@@ -19,7 +19,7 @@ const FilmsCount = {
 };
 
 export default class MovieList {
-  constructor(movieListContainer, popupContainer, cardsModel, commentsModel, filterModel) {
+  constructor(movieListContainer, popupContainer, cardsModel, commentsModel, filterModel, api) {
     this._movieListContainer = movieListContainer;
     this._popupContainer = popupContainer;
     this._cardsModel = cardsModel;
@@ -31,6 +31,7 @@ export default class MovieList {
     this._cardPresenterBestFilmsList = {};
     this._cardPresenterMostCommentedFilmsList = {};
     this._isLoading = true;
+    this._api = api;
 
     this._sortComponent = null;
     this._showMoreButtonComponent = null;
@@ -127,7 +128,9 @@ export default class MovieList {
   _handleViewAction(actionType, updateType, updateCard, updateComments, updateComment) {
     switch (actionType) {
       case UserAction.UPDATE_CARD:
-        this._cardsModel.updateCard(updateType, updateCard, updateComments);
+        this._api.updateMovie(updateCard).then((response) => {
+          this._cardsModel.updateCard(updateType, response, updateComments);
+        });
         break;
       case UserAction.ADD_COMMENT:
         this._commentsModel.add(updateType, updateCard, updateComments, updateComment);
