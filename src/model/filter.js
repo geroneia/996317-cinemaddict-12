@@ -4,15 +4,15 @@ import {FilterType} from "../const.js";
 export default class Filter extends Observer {
   constructor() {
     super();
-    this._activeFilter = FilterType.ALL_MOVIES;
+    this._activeType = FilterType.ALL_MOVIES;
   }
 
-  setFilter(updateType, filter) {
-    this._activeFilter = filter;
+  set(updateType, filter) {
+    this._activeType = filter;
     this._notify(updateType, filter);
   }
 
-  getFilter() {
-    return this._activeFilter;
+  get() {
+    return this._activeType;
   }
 }

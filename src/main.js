@@ -1,8 +1,8 @@
 import ProfileRatingView from "./view/profile-rating.js";
-import SiteMenuView from "./view/menu.js";
-import StatsTemplateView from "./view/stats.js";
+import SiteMenuView from "./view/site-menu.js";
+import StatsView from "./view/stats.js";
 import FilmsCounterView from "./view/films-counter.js";
-import CardsModel from "./model/movies.js";
+import MoviesModel from "./model/movies.js";
 import CommentsModel from "./model/comments.js";
 import FilterModel from "./model/filter.js";
 
@@ -11,8 +11,9 @@ import {generateListOfComments} from "./mock/comment.js";
 import {generateUserRank} from "./mock/user.js";
 import MovieListPresenter from "./presenter/movie-list.js";
 import FilterPresenter from "./presenter/filter.js";
+import UserStatisticPresenter from "./presenter/user-statistic.js";
 import {render, RenderPosition} from "./utils/render.js";
-// import MovieList from "./presenter/movie-list.js";
+import {MenuItem, UpdateType, FilterType} from "./const.js";
 
 const FilmsCount = {
   PER_STEP: 5,
@@ -33,11 +34,11 @@ const getCommentsId = (film) => {
 };
 cards.forEach((card) => getCommentsId(card));
 
-const cardsModel = new CardsModel();
+const cardsModel = new MoviesModel();
 cardsModel.setCards(cards);
 
 const commentsModel = new CommentsModel();
-commentsModel.setComments(comments);
+commentsModel.set(comments);
 
 const filterModel = new FilterModel();
 
@@ -54,13 +55,38 @@ const siteMainElement = document.querySelector(`.main`);
 const menuComponent = new SiteMenuView();
 render(siteMainElement, menuComponent, RenderPosition.BEFOREEND);
 
-render(menuComponent, new StatsTemplateView(), RenderPosition.BEFOREEND);
+const statsSectionSwitcher = new StatsView();
+render(menuComponent, statsSectionSwitcher, RenderPosition.BEFOREEND);
 
 const movieListPresenter = new MovieListPresenter(siteMainElement, footerElement, cardsModel, commentsModel, filterModel, commentInput);
 const filterPresenter = new FilterPresenter(menuComponent, filterModel, cardsModel);
 
+const userStatisticPresenter = new UserStatisticPresenter(siteMainElement, cardsModel.getCards());
+
+const handleSiteMenuClick = (menuItem) => {
+  switch (menuItem) {
+    case MenuItem.MOVIES:
+      statsSectionSwitcher.removeActive();
+      userStatisticPresenter.removeStatistics();
+
+      movieListPresenter.init();
+      movieListPresenter.renderExtraFilmsLists();
+      break;
+    case MenuItem.STATS:
+      statsSectionSwitcher.addActive();
+      movieListPresenter.destroy();
+      filterModel.set(UpdateType.DISABLED, FilterType.DISABLED);
+      userStatisticPresenter.init();
+      break;
+  }
+};
+
+menuComponent.setMenuClickHandler(handleSiteMenuClick);
+
 filterPresenter.init();
 movieListPresenter.init();
+movieListPresenter.renderFilmsListContainer();
+movieListPresenter.renderExtraFilmsLists();
 
 // рисует счетчик фильмов в футере
 const footerStatElement = footerElement.querySelector(`.footer__statistics`);

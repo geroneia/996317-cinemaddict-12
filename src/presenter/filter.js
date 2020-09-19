@@ -5,35 +5,35 @@ import {FilterType, UpdateType} from "../const.js";
 
 export default class Filter {
   constructor(filterContainer, filterModel, cardsModel) {
-    this._filterContainer = filterContainer;
-    this._filterModel = filterModel;
+    this._container = filterContainer;
+    this._model = filterModel;
     this._cardsModel = cardsModel;
-    this._currentFilter = null;
+    this._currentType = null;
 
-    this._filterComponent = null;
+    this._component = null;
 
     this._handleModelEvent = this._handleModelEvent.bind(this);
-    this._handleFilterTypeChange = this._handleFilterTypeChange.bind(this);
+    this._handleTypeChange = this._handleTypeChange.bind(this);
 
     this._cardsModel.addObserver(this._handleModelEvent);
-    this._filterModel.addObserver(this._handleModelEvent);
+    this._model.addObserver(this._handleModelEvent);
   }
 
   init() {
-    this._currentFilter = this._filterModel.getFilter();
+    this._currentType = this._model.get();
 
-    const filters = this._getFilters();
-    const prevFilterComponent = this._filterComponent;
+    const filters = this._get();
+    const prevFilterComponent = this._component;
 
-    this._filterComponent = new FilterView(filters, this._currentFilter);
-    this._filterComponent.setFilterTypeChangeHandler(this._handleFilterTypeChange);
+    this._component = new FilterView(filters, this._currentType);
+    this._component.setTypeChangeHandler(this._handleTypeChange);
 
     if (prevFilterComponent === null) {
-      render(this._filterContainer, this._filterComponent, RenderPosition.AFTERBEGIN);
+      render(this._container, this._component, RenderPosition.AFTERBEGIN);
       return;
     }
 
-    replace(this._filterComponent, prevFilterComponent);
+    replace(this._component, prevFilterComponent);
     remove(prevFilterComponent);
   }
 
@@ -41,15 +41,15 @@ export default class Filter {
     this.init();
   }
 
-  _handleFilterTypeChange(filterType) {
-    if (this._currentFilter === filterType) {
+  _handleTypeChange(filterType) {
+    if (this._currentType === filterType) {
       return;
     }
 
-    this._filterModel.setFilter(UpdateType.MAJOR, filterType);
+    this._model.set(UpdateType.MAJOR, filterType);
   }
 
-  _getFilters() {
+  _get() {
     const cards = this._cardsModel.getCards();
 
     return [

@@ -16,3 +16,36 @@ export const formatCardReleaseDate = (releaseDate) => moment(releaseDate).format
 export const formatCardRuntime = (runtime) => moment(runtime * MILLISECONDS_IN_MINUTE).format(`h[h] mm[m]`);
 
 export const formatCommentDate = (commentsDate) => moment(commentsDate).fromNow();
+
+export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+
+export const getCurrentDate = () => {
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
+
+  return new Date(currentDate);
+};
+
+export const getEarliestDate = () => {
+  const earliestDate = new Date(0);
+  return new Date(earliestDate);
+};
+
+export const isDatesEqual = (dateA, dateB) => {
+  if (dateA === null && dateB === null) {
+    return true;
+  }
+
+  return moment(dateA).isSame(dateB, `day`);
+};
+
+export const getOverallDuration = (movies) => {
+  const duration = movies.map((movie) => movie.runtime).reduce((a, b) => a + b);
+  const lengthInHours = Math.floor(duration / 60);
+  const lengthInMinutes = duration % 60;
+  const hours = lengthInHours > 0 ? lengthInHours + `h` : `0`;
+  const minutes = lengthInMinutes > 0 ? lengthInMinutes + `m` : ``;
+
+  return `${hours} ${minutes}`;
+};
+

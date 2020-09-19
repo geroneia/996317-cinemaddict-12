@@ -3,63 +3,63 @@ import Observer from "../utils/observer.js";
 export default class Comments extends Observer {
   constructor() {
     super();
-    this._comments = [];
+    this._items = [];
   }
 
-  setComments(comments) {
-    this._comments = comments.slice();
+  set(items) {
+    this._items = items.slice();
   }
 
-  getComments() {
-    return this._comments;
+  get() {
+    return this._items;
   }
 
-  updateComment(updateType, update) {
-    const index = this._comments.findIndex((comment) => comment.id === update.id);
+  update(updateType, update) {
+    const index = this._items.findIndex((item) => item.id === update.id);
 
     if (index === -1) {
       throw new Error(`Can't update unexisting comment`);
     }
 
-    this._comments = [
-      ...this._comments.slice(0, index),
+    this._items = [
+      ...this._items.slice(0, index),
       update,
-      ...this._comments.slice(index + 1)
+      ...this._items.slice(index + 1)
     ];
 
     this._notify(updateType, update);
   }
 
-  addComment(updateType, card, currentComments, update) {
-    this._comments = [
-      ...this._comments,
+  add(updateType, card, currentItems, update) {
+    this._items = [
+      ...this._items,
       update
     ];
-    currentComments = [
-      ...currentComments,
+    currentItems = [
+      ...currentItems,
       update
     ];
 
-    this._notify(updateType, card, currentComments);
+    this._notify(updateType, card, currentItems);
   }
 
-  deleteComment(updateType, card, currentComments, update) {
-    const index = currentComments.findIndex((comment) => comment.id === update.id);
+  delete(updateType, card, currentItems, update) {
+    const index = currentItems.findIndex((item) => item.id === update.id);
 
     if (index === -1) {
       throw new Error(`Can't delete unexisting comment`);
     }
 
-    this._comments = [
-      ...this._comments.slice(0, index),
-      ...this._comments.slice(index + 1)
+    this._items = [
+      ...this._items.slice(0, index),
+      ...this._items.slice(index + 1)
     ];
 
-    currentComments = [
-      ...currentComments.slice(0, index),
-      ...currentComments.slice(index + 1)
+    currentItems = [
+      ...currentItems.slice(0, index),
+      ...currentItems.slice(index + 1)
     ];
 
-    this._notify(updateType, card, currentComments);
+    this._notify(updateType, card, currentItems);
   }
 }

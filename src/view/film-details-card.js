@@ -1,8 +1,4 @@
 import SmartView from "./smart.js";
-import {generateId} from "../mock/film.js";
-import {getRandomItem} from "../utils/common.js";
-import {NAMES} from "../mock/film.js";
-import he from "he";
 
 import {formatCardReleaseDate, formatCardRuntime, formatCardReleaseYear, formatCommentDate} from "../utils/card.js";
 
@@ -172,7 +168,7 @@ const createFilmDetailsCard = (data, comments) => {
 export default class FilmDetailsCard extends SmartView {
   constructor(card, commentsList) {
     super();
-    this._data = FilmDetailsCard.parseCardToData(card);
+    this._editableCard = FilmDetailsCard.parseCardToEditableCard(card);
     this._commentsList = commentsList;
     this._clickHandler = this._clickHandler.bind(this);
     this._message = ``;
@@ -184,7 +180,6 @@ export default class FilmDetailsCard extends SmartView {
     this._watchedToggleHandler = this._watchedToggleHandler.bind(this);
     this._commentDeleteClickHandler = this._commentDeleteClickHandler.bind(this);
     this._descriptionInputHandler = this._descriptionInputHandler.bind(this);
-    this._formSubmitHandler = this._formSubmitHandler.bind(this);
 
     this.setDescriptionInputHandler();
     this._setEmojiInputHandler();
@@ -193,36 +188,25 @@ export default class FilmDetailsCard extends SmartView {
   // Выход без сохранения
   reset(card) {
     this.updateData(
-        FilmDetailsCard.parseCardToData(card)
+        FilmDetailsCard.parseCardToEditableCard(card)
     );
   }
 
   getTemplate() {
-    return createFilmDetailsCard(this._data, this._commentsList);
+    return createFilmDetailsCard(this._editableCard, this._commentsList);
   }
 
-  _favoriteToggleHandler(evt) {
-    evt.preventDefault();
-    this._callback.favoriteClick(FilmDetailsCard.parseDataToCard(this._data));
-    this.updateData({
-      isFavorite: !this._data.isFavorite
-    });
+  getEmoji() {
+    return this._emoji;
   }
 
-  _addToWatchlistToggleHandler(evt) {
-    evt.preventDefault();
-    this._callback.addToWatchlistClick(FilmDetailsCard.parseDataToCard(this._data));
-    this.updateData({
-      isAddedToWatchlist: !this._data.isAddedToWatchlist
-    });
+  getMessage() {
+    return this._message;
   }
 
-  _watchedToggleHandler(evt) {
-    evt.preventDefault();
-    this._callback.watchedClick(FilmDetailsCard.parseDataToCard(this._data));
-    this.updateData({
-      isWatched: !this._data.isWatched
-    });
+  clearCommentForm() {
+    this._emoji = ``;
+    this._message = ``;
   }
 
   restoreHandlers() {
@@ -232,13 +216,6 @@ export default class FilmDetailsCard extends SmartView {
     this.setClickHandler(this._callback.click);
     this._setEmojiInputHandler();
     this.setDeleteClickHandler(this._callback.deleteClick);
-  }
-
-  setFavoriteLabelClickHandler(callback) {
-    this._callback.favoriteClick = callback;
-    this.getElement()
-    .querySelector(`.film-details__control-label--favorite`)
-    .addEventListener(`click`, this._favoriteToggleHandler);
   }
 
   setAddToWatchlistLabelClickHandler(callback) {
@@ -252,6 +229,56 @@ export default class FilmDetailsCard extends SmartView {
     this._callback.watchedClick = callback;
     this.getElement().querySelector(`.film-details__control-label--watched`)
       .addEventListener(`click`, this._watchedToggleHandler);
+  }
+
+  setFavoriteLabelClickHandler(callback) {
+    this._callback.favoriteClick = callback;
+    this.getElement()
+    .querySelector(`.film-details__control-label--favorite`)
+    .addEventListener(`click`, this._favoriteToggleHandler);
+  }
+
+  setClickHandler(callback) {
+    this._callback.click = callback;
+    this.getElement().querySelector(`.film-details__close-btn`)
+    .addEventListener(`click`, this._clickHandler);
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    const buttons = this.getElement().querySelectorAll(`.film-details__comment-delete`);
+    if (buttons) {
+      buttons.forEach((button) => button.addEventListener(`click`, this._commentDeleteClickHandler));
+    }
+  }
+
+  setDescriptionInputHandler() {
+    this.getElement().querySelector(`.film-details__comment-input`)
+  .addEventListener(`input`, this._descriptionInputHandler);
+  }
+
+  _addToWatchlistToggleHandler(evt) {
+    evt.preventDefault();
+    this._callback.addToWatchlistClick(FilmDetailsCard.parseEditableCardToCard(this._editableCard));
+    this.updateData({
+      isAddedToWatchlist: !this._editableCard.isAddedToWatchlist
+    });
+  }
+
+  _watchedToggleHandler(evt) {
+    evt.preventDefault();
+    this._callback.watchedClick(FilmDetailsCard.parseEditableCardToCard(this._editableCard));
+    this.updateData({
+      isWatched: !this._editableCard.isWatched
+    });
+  }
+
+  _favoriteToggleHandler(evt) {
+    evt.preventDefault();
+    this._callback.favoriteClick(FilmDetailsCard.parseEditableCardToCard(this._editableCard));
+    this.updateData({
+      isFavorite: !this._editableCard.isFavorite
+    });
   }
 
   _setEmojiInputHandler() {
@@ -271,29 +298,14 @@ export default class FilmDetailsCard extends SmartView {
 
   _clickHandler(evt) {
     evt.preventDefault();
-    this._callback.click(FilmDetailsCard.parseDataToCard(this._data));
-  }
-
-  setClickHandler(callback) {
-    this._callback.click = callback;
-    this.getElement().querySelector(`.film-details__close-btn`)
-    .addEventListener(`click`, this._clickHandler);
+    this._callback.click(FilmDetailsCard.parseEditableCardToCard(this._editableCard));
   }
 
   _commentDeleteClickHandler(evt) {
     evt.preventDefault();
-    const value = evt.target.dataset.id;
-    const index = this._commentsList.findIndex((comment) => comment.id === +value);
-    const deletedComment = this._commentsList[index];
+    const currentCommentId = +evt.target.dataset.id;
+    const deletedComment = this._commentsList.find(({id}) => id === currentCommentId);
     this._callback.deleteClick(deletedComment);
-  }
-
-  setDeleteClickHandler(callback) {
-    this._callback.deleteClick = callback;
-    const buttons = this.getElement().querySelectorAll(`.film-details__comment-delete`);
-    if (buttons) {
-      buttons.forEach((button) => button.addEventListener(`click`, this._commentDeleteClickHandler));
-    }
   }
 
   _descriptionInputHandler(evt) {
@@ -301,37 +313,7 @@ export default class FilmDetailsCard extends SmartView {
     this._message = evt.target.value;
   }
 
-  setDescriptionInputHandler() {
-    this.getElement()
-  .querySelector(`.film-details__comment-input`)
-  .addEventListener(`input`, this._descriptionInputHandler);
-  }
-
-
-  _formSubmitHandler(evt) {
-    if ((evt.ctrlKey || evt.metaKey) && (evt.key === `Enter`)) {
-      evt.preventDefault();
-      if (this._emoji !== `` && this._message !== ``) {
-        const addedComment = {
-          id: generateId(),
-          message: he.encode(this._message),
-          emoji: this._emoji,
-          name: getRandomItem(NAMES),
-          currentDate: new Date()
-        };
-        this._callback.formSubmit(addedComment);
-      }
-      this._emoji = ``;
-      this._message = ``;
-    }
-  }
-
-  setFormSubmitHandler(callback) {
-    this._callback.formSubmit = callback;
-    document.addEventListener(`keydown`, this._formSubmitHandler);
-  }
-
-  static parseCardToData(card) {
+  static parseCardToEditableCard(card) {
     return Object.assign(
         {},
         card,
@@ -343,13 +325,13 @@ export default class FilmDetailsCard extends SmartView {
     );
   }
 
-  static parseDataToCard(data) {
-    data = Object.assign({}, data);
+  static parseEditableCardToCard(editableCard) {
+    editableCard = Object.assign({}, editableCard);
 
-    delete data.isAddedToWatchlist;
-    delete data.isWatched;
-    delete data.isFavorite;
+    delete editableCard.isAddedToWatchlist;
+    delete editableCard.isWatched;
+    delete editableCard.isFavorite;
 
-    return data;
+    return editableCard;
   }
 }

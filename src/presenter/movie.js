@@ -1,18 +1,22 @@
-import CardView from "../view/card.js";
+import MovieView from "../view/movie.js";
 import FilmDetailsCardView from "../view/film-details-card.js";
 import {render, RenderPosition, remove, replace} from "../utils/render.js";
 import {UserAction, UpdateType} from "../const.js";
+
+import {generateId} from "../utils/card.js";
+import {getRandomItem} from "../utils/common.js";
+import {NAMES} from "../mock/film.js";
+import he from "he";
 
 const Mode = {
   DEFAULT: `DEFAULT`,
   EDITING: `EDITING`
 };
 
-export default class Card {
+export default class Movie {
   constructor(container, popupContainer, changeData, changeMode) {
     this._container = container;
     this._popupContainer = popupContainer;
-    // this._commentInput = commentInput;
     this._changeData = changeData;
     this._changeMode = changeMode;
 
@@ -28,9 +32,6 @@ export default class Card {
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
-    // this._checkUpdateType = this._checkUpdateType.bind(this);
-
-    this._footerComponent = document.querySelector(`.footer`);
   }
 
   init(card, comments) {
@@ -40,7 +41,7 @@ export default class Card {
     const prevCardComponent = this._cardComponent;
     const prevCardDetailsComponent = this._cardDetailsComponent;
 
-    this._cardComponent = new CardView(card, comments);
+    this._cardComponent = new MovieView(card, comments);
     this._cardDetailsComponent = new FilmDetailsCardView(card, comments);
 
     // устанавливает обработчики
@@ -54,7 +55,7 @@ export default class Card {
     this._cardDetailsComponent.setWatchedLabelClickHandler(this._handleWatchedClick);
     this._cardDetailsComponent.setClickHandler(this._handleCloseCardClick);
     this._cardDetailsComponent.setDeleteClickHandler(this._handleDeleteClick);
-    this._cardDetailsComponent.setFormSubmitHandler(this._handleFormSubmit);
+    document.addEventListener(`keydown`, this._handleFormSubmit);
 
     if (prevCardComponent === null) {
       render(this._container, this._cardComponent, RenderPosition.BEFOREEND);
@@ -85,7 +86,6 @@ export default class Card {
   _showFilmDetails() {
     // восстанавливает обработчики при повторном открытии того же попапа (без init)
     this._cardDetailsComponent.restoreHandlers();
-    // рисует попап с дополнительной информацией о фильме
     render(this._popupContainer, this._cardDetailsComponent, RenderPosition.AFTEREND);
   }
 
@@ -102,7 +102,7 @@ export default class Card {
   _handleFavoriteClick() {
     this._changeData(
         UserAction.UPDATE_CARD,
-        this._mode = Mode.DEFAULT ? UpdateType.MINOR
+        this._mode === Mode.DEFAULT ? UpdateType.MINOR
           : UpdateType.PATCH,
         Object.assign(
             {},
@@ -118,7 +118,7 @@ export default class Card {
   _handleAddToWatchlistClick() {
     this._changeData(
         UserAction.UPDATE_CARD,
-        this._mode = Mode.DEFAULT ? UpdateType.MINOR
+        this._mode === Mode.DEFAULT ? UpdateType.MINOR
           : UpdateType.PATCH,
         Object.assign(
             {},
@@ -134,7 +134,7 @@ export default class Card {
   _handleWatchedClick() {
     this._changeData(
         UserAction.UPDATE_CARD,
-        this._mode = Mode.DEFAULT ? UpdateType.MINOR
+        this._mode === Mode.DEFAULT ? UpdateType.MINOR
           : UpdateType.PATCH,
         Object.assign(
             {},
@@ -150,13 +150,19 @@ export default class Card {
   _handleCloseCardClick() {
     this._mode = Mode.DEFAULT;
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
+    this._changeData(
+        UserAction.UPDATE_CARD,
+        UpdateType.MINOR,
+        this._card,
+        this._comments
+    );
     remove(this._cardDetailsComponent);
   }
 
   _handleShowMoreClick() {
     this._changeMode();
-    this._mode = Mode.EDITING;
     this._showFilmDetails();
+    this._mode = Mode.EDITING;
 
     document.addEventListener(`keydown`, this._escKeyDownHandler);
   }
@@ -171,14 +177,29 @@ export default class Card {
     );
   }
 
-  _handleFormSubmit(addedComment) {
-    this._changeData(
-        UserAction.ADD_COMMENT,
-        UpdateType.PATCH,
-        this._card,
-        this._comments,
-        addedComment
-    );
+  _handleFormSubmit(evt) {
+    if ((evt.ctrlKey || evt.metaKey) && evt.key === `Enter`) {
+      evt.preventDefault();
+      const emoji = this._cardDetailsComponent.getEmoji();
+      const message = this._cardDetailsComponent.getMessage();
+      if (emoji !== `` && message !== ``) {
+        const addedComment = {
+          id: generateId(),
+          message: he.encode(message),
+          emoji,
+          name: getRandomItem(NAMES),
+          currentDate: new Date()
+        };
 
+        this._changeData(
+            UserAction.ADD_COMMENT,
+            UpdateType.PATCH,
+            this._card,
+            this._comments,
+            addedComment
+        );
+      }
+      this._cardDetailsComponent.clearCommentForm();
+    }
   }
 }
