@@ -4,6 +4,7 @@ import FilmsListView from "../view/films-list.js";
 import BestFilmsView from "../view/best-films.js";
 import CommentedFilmsView from "../view/commented-films.js";
 import ShowMoreButtonView from "../view/show-more-button.js";
+import LoadingView from "../view/loading.js";
 import NoFilmsView from "../view/no-films.js";
 import MoviePresenter from "./movie.js";
 import {SortType} from "../view/sorting.js";
@@ -29,6 +30,7 @@ export default class MovieList {
     this._cardPresenterCommonFilmsList = {};
     this._cardPresenterBestFilmsList = {};
     this._cardPresenterMostCommentedFilmsList = {};
+    this._isLoading = true;
 
     this._sortComponent = null;
     this._showMoreButtonComponent = null;
@@ -40,6 +42,7 @@ export default class MovieList {
     this._filmsListComponent = new FilmsListView();
     this._bestFilmsComponent = new BestFilmsView();
     this._commentedFilmsComponent = new CommentedFilmsView();
+    this._loadingComponent = new LoadingView();
     this._noFilmsComponent = new NoFilmsView();
 
     this._handleViewAction = this._handleViewAction.bind(this);
@@ -83,6 +86,7 @@ export default class MovieList {
     remove(this._showMoreButtonComponent);
     remove(this._sortComponent);
     remove(this._noFilmsComponent);
+    remove(this._loadingComponent);
     remove(this._showMoreButtonComponent);
   }
 
@@ -155,6 +159,11 @@ export default class MovieList {
         break;
       case UpdateType.DISABLED:
         break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        remove(this._loadingComponent);
+        this._renderBoard();
+        break;
     }
   }
 
@@ -189,6 +198,10 @@ export default class MovieList {
 
   _renderCards(container, cards, commentsList) {
     cards.forEach((card) => this._renderCard(container, card, commentsList, this._cardPresenterCommonFilmsList));
+  }
+
+  _renderLoading() {
+    render(this._movieListContainer, this._noFilmsComponent, RenderPosition.BEFOREEND);
   }
 
   _renderNoFilms() {
@@ -232,6 +245,7 @@ export default class MovieList {
 
     remove(this._sortComponent);
     remove(this._noFilmsComponent);
+    remove(this._loadingComponent);
     remove(this._showMoreButtonComponent);
 
     if (resetRenderedCardCount) {
@@ -288,6 +302,11 @@ export default class MovieList {
   }
 
   _renderBoard() {
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
+
     render(this._movieListContainer, this._boardComponent, RenderPosition.BEFOREEND);
   }
 }

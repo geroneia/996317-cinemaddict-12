@@ -26,10 +26,7 @@ export const getCurrentDate = () => {
   return new Date(currentDate);
 };
 
-export const getEarliestDate = () => {
-  const earliestDate = new Date(0);
-  return new Date(earliestDate);
-};
+export const getEarliestDate = () => new Date(0);
 
 export const isDatesEqual = (dateA, dateB) => {
   if (dateA === null && dateB === null) {
@@ -40,7 +37,10 @@ export const isDatesEqual = (dateA, dateB) => {
 };
 
 export const getOverallDuration = (movies) => {
-  const duration = movies.map((movie) => movie.runtime).reduce((a, b) => a + b);
+  let duration = 0;
+  if (movies.length !== 0) {
+    duration = movies.map((movie) => movie.runtime).reduce((a, b) => a + b);
+  }
   const lengthInHours = Math.floor(duration / 60);
   const lengthInMinutes = duration % 60;
   const hours = lengthInHours > 0 ? lengthInHours + `h` : `0`;
@@ -49,3 +49,26 @@ export const getOverallDuration = (movies) => {
   return `${hours} ${minutes}`;
 };
 
+const Ranks = {
+  NOVICE: `novice`,
+  FAN: `fan`,
+  MOVIE_BUFF: `movie buff`
+};
+
+const getWatchedFilmsCount = (films) =>
+  films.filter((film) => film.isWatched).length;
+
+export const generateUserRank = (cards) => {
+
+  const watchedFilmsCount = getWatchedFilmsCount(cards);
+  let userRank = ``;
+
+  if (watchedFilmsCount > 0 && watchedFilmsCount <= 10) {
+    userRank = Ranks.NOVICE;
+  } else if (watchedFilmsCount > 10 && watchedFilmsCount <= 20) {
+    userRank = Ranks.FAN;
+  } else if (watchedFilmsCount > 20) {
+    userRank = Ranks.MOVIE_BUFF;
+  }
+  return userRank;
+};

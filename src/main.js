@@ -6,60 +6,62 @@ import MoviesModel from "./model/movies.js";
 import CommentsModel from "./model/comments.js";
 import FilterModel from "./model/filter.js";
 
-import {generateCard} from "./mock/film.js";
-import {generateListOfComments} from "./mock/comment.js";
-import {generateUserRank} from "./mock/user.js";
+import {generateUserRank} from "./utils/card.js";
 import MovieListPresenter from "./presenter/movie-list.js";
 import FilterPresenter from "./presenter/filter.js";
 import UserStatisticPresenter from "./presenter/user-statistic.js";
 import {render, RenderPosition} from "./utils/render.js";
 import {MenuItem, UpdateType, FilterType} from "./const.js";
 
-const FilmsCount = {
-  PER_STEP: 5,
-  TOTAL: 20,
-  EXTRA: 2
-};
+import Api from "./api.js";
 
-const COMMENTS_COUNT = 4;
-
-// собирает в массив результаты вызова функции, генерирующей случайную карточку фильма
-const cards = new Array(FilmsCount.TOTAL).fill(``).map(generateCard);
-const comments = generateListOfComments();
-let counter = 0;
-const commentsID = comments.map((comment) => comment.id);
-const getCommentsId = (film) => {
-  film.comments = commentsID.slice(counter, COMMENTS_COUNT + counter);
-  counter += COMMENTS_COUNT;
-};
-cards.forEach((card) => getCommentsId(card));
-
-const cardsModel = new MoviesModel();
-cardsModel.setCards(cards);
-
-const commentsModel = new CommentsModel();
-commentsModel.set(comments);
-
-const filterModel = new FilterModel();
+const AUTHORIZATION = `Basic er3hgr8nv56890iml6gd8xv69a`;
+const END_POINT = `https://12.ecmascript.pages.academy/cinemaddict`;
 
 const siteHeaderElement = document.querySelector(`.header`);
+const siteMainElement = document.querySelector(`.main`);
 const footerElement = document.querySelector(`.footer`);
 const commentInput = document.querySelector(`.film-details__comment-input`);
 
-// рисует звание пользователя на странице
-render(siteHeaderElement, new ProfileRatingView(generateUserRank(cards)), RenderPosition.BEFOREEND);
+const cardsModel = new MoviesModel();
+const commentsModel = new CommentsModel();
 
-const siteMainElement = document.querySelector(`.main`);
+const filterModel = new FilterModel();
+
+const menuComponent = new SiteMenuView();
+
+const api = new Api(END_POINT, AUTHORIZATION);
+api.getMovies()
+  .then((movies) => {
+    cardsModel.setCards(UpdateType.INIT, movies);
+
+
+    // рисует звание пользователя на странице
+    render(siteHeaderElement, new ProfileRatingView(generateUserRank(cardsModel.getCards())), RenderPosition.BEFOREEND);
+
+    filterPresenter.init();
+    movieListPresenter.init();
+  })
+  .catch(() => {
+    cardsModel.setCards(UpdateType.INIT, []);
+
+
+  });
+
+// console.log(cardsModel.getCards);
+
+// как получить массив всех комментов?
+api.getComments(1).then((comments) => {
+  commentsModel.set(UpdateType.INIT, comments);
+  // console.log(comments);
+});
+// console.log(commentsModel.get());
 
 // рисует меню
-const menuComponent = new SiteMenuView();
 render(siteMainElement, menuComponent, RenderPosition.BEFOREEND);
 
 const statsSectionSwitcher = new StatsView();
 render(menuComponent, statsSectionSwitcher, RenderPosition.BEFOREEND);
-
-const movieListPresenter = new MovieListPresenter(siteMainElement, footerElement, cardsModel, commentsModel, filterModel, commentInput);
-const filterPresenter = new FilterPresenter(menuComponent, filterModel, cardsModel);
 
 const userStatisticPresenter = new UserStatisticPresenter(siteMainElement, cardsModel.getCards());
 
@@ -82,13 +84,14 @@ const handleSiteMenuClick = (menuItem) => {
 };
 
 menuComponent.setMenuClickHandler(handleSiteMenuClick);
+const filterPresenter = new FilterPresenter(menuComponent, filterModel, cardsModel);
+const movieListPresenter = new MovieListPresenter(siteMainElement, footerElement, cardsModel, commentsModel, filterModel, commentInput);
 
-filterPresenter.init();
-movieListPresenter.init();
+
 movieListPresenter.renderFilmsListContainer();
 movieListPresenter.renderExtraFilmsLists();
 
 // рисует счетчик фильмов в футере
 const footerStatElement = footerElement.querySelector(`.footer__statistics`);
-render(footerStatElement, new FilmsCounterView(cards), RenderPosition.BEFOREEND);
+render(footerStatElement, new FilmsCounterView(cardsModel.getCards()), RenderPosition.BEFOREEND);
 

@@ -5,7 +5,7 @@ import {UserAction, UpdateType} from "../const.js";
 
 import {generateId} from "../utils/card.js";
 import {getRandomItem} from "../utils/common.js";
-import {NAMES} from "../mock/film.js";
+import {NAMES} from "../const.js";
 import he from "he";
 
 const Mode = {
