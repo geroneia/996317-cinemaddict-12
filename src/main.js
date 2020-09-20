@@ -64,6 +64,7 @@ api.getMovies()
           break;
       }
     };
+
     menuComponent.setMenuClickHandler(handleSiteMenuClick);
     // рисует счетчик фильмов в футере
     render(footerStatElement, new FilmsCounterView(cardsModel.getCards()), RenderPosition.BEFOREEND);
