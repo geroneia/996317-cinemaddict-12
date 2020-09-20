@@ -22,6 +22,7 @@ const siteHeaderElement = document.querySelector(`.header`);
 const siteMainElement = document.querySelector(`.main`);
 const footerElement = document.querySelector(`.footer`);
 const commentInput = document.querySelector(`.film-details__comment-input`);
+const footerStatElement = footerElement.querySelector(`.footer__statistics`);
 
 const cardsModel = new MoviesModel();
 const commentsModel = new CommentsModel();
@@ -29,6 +30,8 @@ const commentsModel = new CommentsModel();
 const filterModel = new FilterModel();
 
 const menuComponent = new SiteMenuView();
+
+const statsSectionSwitcher = new StatsView();
 
 const api = new Api(END_POINT, AUTHORIZATION);
 api.getMovies()
@@ -41,6 +44,31 @@ api.getMovies()
 
     filterPresenter.init();
     movieListPresenter.init();
+    movieListPresenter.renderFilmsListContainer();
+    movieListPresenter.renderExtraFilmsLists();
+
+    const userStatisticPresenter = new UserStatisticPresenter(siteMainElement, cardsModel.getCards());
+
+    const handleSiteMenuClick = (menuItem) => {
+      switch (menuItem) {
+        case MenuItem.MOVIES:
+          statsSectionSwitcher.removeActive();
+          userStatisticPresenter.removeStatistics();
+
+          movieListPresenter.init();
+          movieListPresenter.renderExtraFilmsLists();
+          break;
+        case MenuItem.STATS:
+          statsSectionSwitcher.addActive();
+          movieListPresenter.destroy();
+          filterModel.set(UpdateType.DISABLED, FilterType.DISABLED);
+          userStatisticPresenter.init();
+          break;
+      }
+    };
+    menuComponent.setMenuClickHandler(handleSiteMenuClick);
+    // рисует счетчик фильмов в футере
+    render(footerStatElement, new FilmsCounterView(cardsModel.getCards()), RenderPosition.BEFOREEND);
   })
   .catch(() => {
     cardsModel.setCards(UpdateType.INIT, []);
@@ -48,50 +76,10 @@ api.getMovies()
 
   });
 
-// console.log(cardsModel.getCards);
-
-// как получить массив всех комментов?
-api.getComments(1).then((comments) => {
-  commentsModel.set(UpdateType.INIT, comments);
-  // console.log(comments);
-});
-
-
 // рисует меню
 render(siteMainElement, menuComponent, RenderPosition.BEFOREEND);
 
-const statsSectionSwitcher = new StatsView();
 render(menuComponent, statsSectionSwitcher, RenderPosition.BEFOREEND);
 
-const userStatisticPresenter = new UserStatisticPresenter(siteMainElement, cardsModel.getCards());
-
-const handleSiteMenuClick = (menuItem) => {
-  switch (menuItem) {
-    case MenuItem.MOVIES:
-      statsSectionSwitcher.removeActive();
-      userStatisticPresenter.removeStatistics();
-
-      movieListPresenter.init();
-      movieListPresenter.renderExtraFilmsLists();
-      break;
-    case MenuItem.STATS:
-      statsSectionSwitcher.addActive();
-      movieListPresenter.destroy();
-      filterModel.set(UpdateType.DISABLED, FilterType.DISABLED);
-      userStatisticPresenter.init();
-      break;
-  }
-};
-
-menuComponent.setMenuClickHandler(handleSiteMenuClick);
 const filterPresenter = new FilterPresenter(menuComponent, filterModel, cardsModel);
 const movieListPresenter = new MovieListPresenter(siteMainElement, footerElement, cardsModel, commentsModel, filterModel, commentInput, api);
-
-
-movieListPresenter.renderFilmsListContainer();
-movieListPresenter.renderExtraFilmsLists();
-
-// рисует счетчик фильмов в футере
-const footerStatElement = footerElement.querySelector(`.footer__statistics`);
-render(footerStatElement, new FilmsCounterView(cardsModel.getCards()), RenderPosition.BEFOREEND);
-
