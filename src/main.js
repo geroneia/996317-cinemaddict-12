@@ -3,7 +3,6 @@ import SiteMenuView from "./view/site-menu.js";
 import StatsView from "./view/stats.js";
 import FilmsCounterView from "./view/films-counter.js";
 import MoviesModel from "./model/movies.js";
-import CommentsModel from "./model/comments.js";
 import FilterModel from "./model/filter.js";
 
 import {generateUserRank} from "./utils/card.js";
@@ -25,7 +24,6 @@ const commentInput = document.querySelector(`.film-details__comment-input`);
 const footerStatElement = footerElement.querySelector(`.footer__statistics`);
 
 const cardsModel = new MoviesModel();
-const commentsModel = new CommentsModel();
 
 const filterModel = new FilterModel();
 
@@ -82,4 +80,4 @@ render(siteMainElement, menuComponent, RenderPosition.BEFOREEND);
 render(menuComponent, statsSectionSwitcher, RenderPosition.BEFOREEND);
 
 const filterPresenter = new FilterPresenter(menuComponent, filterModel, cardsModel);
-const movieListPresenter = new MovieListPresenter(siteMainElement, footerElement, cardsModel, commentsModel, filterModel, commentInput, api);
+const movieListPresenter = new MovieListPresenter(siteMainElement, footerElement, cardsModel, filterModel, api, commentInput);
