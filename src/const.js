@@ -33,23 +33,3 @@ export const DateInterval = {
   MONTH: `month`,
   YEAR: `year`
 };
-
-
-export const NAMES = [
-  `Frank Sinatra`,
-  `Amitabh Bachchan`,
-  `Yash Chopra`,
-  `Shah Rukh Khan`,
-  `Rani Mukerji`,
-  `Kiron Kher`,
-  `Hema Malini`,
-  `Deepika Padukone`,
-  `Ranveer Singh`,
-  `Naseeruddin Shah`,
-  `Dimple Kapadia`,
-  `Joseph L. Mankiewicz`,
-  `Bette Davis`,
-  `Marilyn Monroe`,
-  `Billy Wilder`,
-  `Gregory Peck`
-];

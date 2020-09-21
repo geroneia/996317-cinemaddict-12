@@ -11,6 +11,11 @@ const SuccessHTTPStatusRange = {
   MAX: 299
 };
 
+const Url = {
+  MOVIES: `movies`,
+  COMMENTS: `comments`
+};
+
 export default class Api {
   constructor(endPoint, authorization) {
     this._endPoint = endPoint;
@@ -18,20 +23,20 @@ export default class Api {
   }
 
   getMovies() {
-    return this._load({url: `movies`})
+    return this._load({url: Url.MOVIES})
       .then(Api.toJSON)
       .then((cards) => cards.map(MoviesModel.adaptToClient));
   }
 
   getComments(id) {
-    return this._load({url: `comments/${id}`})
+    return this._load({url: `${Url.COMMENTS}/${id}`})
       .then(Api.toJSON)
       .then((comments) => comments.map(CommentsModel.adaptToClient));
   }
 
   updateMovie(card) {
     return this._load({
-      url: `movies/${card.id}`,
+      url: `${Url.MOVIES}/${card.id}`,
       method: Method.PUT,
       body: JSON.stringify(MoviesModel.adaptToServer(card)),
       headers: new Headers({"Content-Type": `application/json`})
@@ -42,7 +47,7 @@ export default class Api {
 
   updateComment(card, comment) {
     return this._load({
-      url: `comments/${card.id}/${comment.id}`,
+      url: `${Url.COMMENTS}/${card.id}/${comment.id}`,
       method: Method.PUT,
       body: JSON.stringify(CommentsModel.adaptToServer(comment)),
       headers: new Headers({"Content-Type": `application/json`})

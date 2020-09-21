@@ -32,6 +32,7 @@ const menuComponent = new SiteMenuView();
 const statsSectionSwitcher = new StatsView();
 
 const api = new Api(END_POINT, AUTHORIZATION);
+
 api.getMovies()
   .then((movies) => {
     cardsModel.setCards(UpdateType.INIT, movies);

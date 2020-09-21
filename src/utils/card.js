@@ -35,10 +35,9 @@ export const isDatesEqual = (dateA, dateB) => {
 };
 
 export const getOverallDuration = (movies) => {
-  let duration = 0;
-  if (movies.length !== 0) {
-    duration = movies.map((movie) => movie.runtime).reduce((a, b) => a + b);
-  }
+  const duration = movies.length !== 0 ?
+    movies.map((movie) => movie.runtime).reduce((a, b) => a + b) : 0;
+
   const lengthInHours = Math.floor(duration / 60);
   const lengthInMinutes = duration % 60;
   const hours = lengthInHours > 0 ? lengthInHours + `h` : `0`;

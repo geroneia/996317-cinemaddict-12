@@ -4,8 +4,6 @@ import {render, RenderPosition, remove, replace} from "../utils/render.js";
 import {UserAction, UpdateType} from "../const.js";
 
 import {generateId} from "../utils/card.js";
-import {getRandomItem} from "../utils/common.js";
-import {NAMES} from "../const.js";
 import he from "he";
 
 const Mode = {
@@ -187,7 +185,7 @@ export default class Movie {
           id: generateId(),
           message: he.encode(message),
           emoji,
-          name: getRandomItem(NAMES),
+          name,
           currentDate: new Date()
         };
 
