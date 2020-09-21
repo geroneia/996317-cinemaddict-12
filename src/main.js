@@ -41,8 +41,6 @@ api.getMovies()
     // рисует звание пользователя на странице
     render(siteHeaderElement, new ProfileRatingView(generateUserRank(cardsModel.getCards())), RenderPosition.BEFOREEND);
 
-    filterPresenter.init();
-    movieListPresenter.init();
     movieListPresenter.renderFilmsListContainer();
     movieListPresenter.renderExtraFilmsLists();
 
@@ -83,3 +81,6 @@ render(menuComponent, statsSectionSwitcher, RenderPosition.BEFOREEND);
 
 const filterPresenter = new FilterPresenter(menuComponent, filterModel, cardsModel);
 const movieListPresenter = new MovieListPresenter(siteMainElement, footerElement, cardsModel, filterModel, api, commentInput);
+// movieListPresenter.init();
+filterPresenter.init();
+

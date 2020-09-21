@@ -149,23 +149,28 @@ export default class MovieList {
         this._updatePresenter(this._cardPresenterCommonFilmsList, card, updateComments);
         this._updatePresenter(this._cardPresenterBestFilmsList, card, updateComments);
         this._updatePresenter(this._cardPresenterMostCommentedFilmsList, card, updateComments);
+        console.log(`Card-info changed`);
         break;
       case UpdateType.MINOR:
         this._clearBoard();
         this._renderSort();
         this._renderBoard();
         this.renderFilmsListContainer();
+        console.log(`Card closed`);
         break;
       case UpdateType.MAJOR:
         this.destroy();
-        this._renderBoard();
+        // this._renderBoard();
         this.renderFilmsListContainer();
+        console.log(`Filter selected`);
         break;
       case UpdateType.DISABLED:
         break;
       case UpdateType.INIT:
         this._isLoading = false;
         remove(this._loadingComponent);
+        console.log(`Init`);
+        this._renderSort();
         this._renderBoard();
         break;
     }
@@ -175,7 +180,7 @@ export default class MovieList {
     if (this._currentSortType === sortType) {
       return;
     }
-
+    console.log(`Sort changed`);
     this._currentSortType = sortType;
     this._clearBoard({resetRenderedCardCount: true});
     this._renderSort();
@@ -187,7 +192,7 @@ export default class MovieList {
     if (this._sortComponent !== null) {
       this._sortComponent = null;
     }
-
+    console.log(`Sort rendered`);
     this._sortComponent = new SortingView(this._currentSortType);
     this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
     render(this._movieListContainer, this._sortComponent, RenderPosition.BEFOREEND);
@@ -264,6 +269,7 @@ export default class MovieList {
 
   _renderFilmsList(container) {
     // рисует основной список фильмов
+    console.log(`Main films list rendered`);
     const cardCount = this._getCards().length;
     const cards = this._getCards();
 
@@ -304,7 +310,7 @@ export default class MovieList {
       this._renderLoading();
       return;
     }
-
+    console.log(`Container for films lists rendered`);
     render(this._movieListContainer, this._boardComponent, RenderPosition.BEFOREEND);
   }
 }
