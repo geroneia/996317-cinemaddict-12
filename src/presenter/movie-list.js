@@ -149,27 +149,27 @@ export default class MovieList {
         this._updatePresenter(this._cardPresenterCommonFilmsList, card, updateComments);
         this._updatePresenter(this._cardPresenterBestFilmsList, card, updateComments);
         this._updatePresenter(this._cardPresenterMostCommentedFilmsList, card, updateComments);
-        console.log(`Card-info changed`);
+        // console.log(`Card-info changed`);
         break;
       case UpdateType.MINOR:
         this._clearBoard();
         this._renderSort();
         this._renderBoard();
         this.renderFilmsListContainer();
-        console.log(`Card closed`);
+        // console.log(`Card closed`);
         break;
       case UpdateType.MAJOR:
         this.destroy();
         // this._renderBoard();
         this.renderFilmsListContainer();
-        console.log(`Filter selected`);
+        // console.log(`Filter selected`);
         break;
       case UpdateType.DISABLED:
         break;
       case UpdateType.INIT:
         this._isLoading = false;
         remove(this._loadingComponent);
-        console.log(`Init`);
+        // console.log(`Init`);
         this._renderSort();
         this._renderBoard();
         break;
@@ -180,7 +180,7 @@ export default class MovieList {
     if (this._currentSortType === sortType) {
       return;
     }
-    console.log(`Sort changed`);
+    // console.log(`Sort changed`);
     this._currentSortType = sortType;
     this._clearBoard({resetRenderedCardCount: true});
     this._renderSort();
@@ -192,22 +192,20 @@ export default class MovieList {
     if (this._sortComponent !== null) {
       this._sortComponent = null;
     }
-    console.log(`Sort rendered`);
+    // console.log(`Sort rendered`);
     this._sortComponent = new SortingView(this._currentSortType);
     this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
     render(this._movieListContainer, this._sortComponent, RenderPosition.BEFOREEND);
   }
 
-  _renderCard(container, movieCard, presenterStore) {
-    this._api.getComments(movieCard.id).then((comments) => {
-      const cardPresenter = new MoviePresenter(container, this._popupContainer, this._handleViewAction, this._handleModeChange);
-      cardPresenter.init(movieCard, comments);
-      presenterStore[movieCard.id] = cardPresenter;
-    });
+  _renderCard(container, movieCard, presenterStore, api) {
+    const cardPresenter = new MoviePresenter(container, this._popupContainer, this._handleViewAction, this._handleModeChange, api);
+    cardPresenter.init(movieCard);
+    presenterStore[movieCard.id] = cardPresenter;
   }
 
   _renderCards(container, cards) {
-    cards.forEach((card) => this._renderCard(container, card, this._cardPresenterCommonFilmsList));
+    cards.forEach((card) => this._renderCard(container, card, this._cardPresenterCommonFilmsList, this._api));
   }
 
   _renderLoading() {
@@ -269,7 +267,7 @@ export default class MovieList {
 
   _renderFilmsList(container) {
     // рисует основной список фильмов
-    console.log(`Main films list rendered`);
+    // console.log(`Main films list rendered`);
     const cardCount = this._getCards().length;
     const cards = this._getCards();
 
@@ -310,7 +308,7 @@ export default class MovieList {
       this._renderLoading();
       return;
     }
-    console.log(`Container for films lists rendered`);
+    // console.log(`Container for films lists rendered`);
     render(this._movieListContainer, this._boardComponent, RenderPosition.BEFOREEND);
   }
 }

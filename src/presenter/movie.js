@@ -12,11 +12,13 @@ const Mode = {
 };
 
 export default class Movie {
-  constructor(container, popupContainer, changeData, changeMode) {
+  constructor(container, popupContainer, changeData, changeMode, api) {
     this._container = container;
     this._popupContainer = popupContainer;
     this._changeData = changeData;
     this._changeMode = changeMode;
+    this._api = api;
+
 
     this._cardComponent = null;
     this._cardDetailsComponent = null;
@@ -32,28 +34,31 @@ export default class Movie {
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
   }
 
-  init(card, comments) {
+  init(card) {
     this._card = card;
-    this._comments = comments;
 
     const prevCardComponent = this._cardComponent;
     const prevCardDetailsComponent = this._cardDetailsComponent;
 
-    this._cardComponent = new MovieView(card, comments);
-    this._cardDetailsComponent = new FilmDetailsCardView(card, comments);
+    this._cardComponent = new MovieView(card);
+
+    this._api.getComments(card.id)
+    .then((comments) => {
+      this._cardDetailsComponent = new FilmDetailsCardView(card, comments);
+      this._cardComponent.setClickHandler(this._handleShowMoreClick);
+
+      this._cardDetailsComponent.setFavoriteLabelClickHandler(this._handleFavoriteClick);
+      this._cardDetailsComponent.setAddToWatchlistLabelClickHandler(this._handleAddToWatchlistClick);
+      this._cardDetailsComponent.setWatchedLabelClickHandler(this._handleWatchedClick);
+      this._cardDetailsComponent.setClickHandler(this._handleCloseCardClick);
+      this._cardDetailsComponent.setDeleteClickHandler(this._handleDeleteClick);
+      document.addEventListener(`keydown`, this._handleFormSubmit);
+    });
 
     // устанавливает обработчики
     this._cardComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     this._cardComponent.setAddToWatchlistClickHandler(this._handleAddToWatchlistClick);
     this._cardComponent.setWatchedClickHandler(this._handleWatchedClick);
-    this._cardComponent.setClickHandler(this._handleShowMoreClick);
-
-    this._cardDetailsComponent.setFavoriteLabelClickHandler(this._handleFavoriteClick);
-    this._cardDetailsComponent.setAddToWatchlistLabelClickHandler(this._handleAddToWatchlistClick);
-    this._cardDetailsComponent.setWatchedLabelClickHandler(this._handleWatchedClick);
-    this._cardDetailsComponent.setClickHandler(this._handleCloseCardClick);
-    this._cardDetailsComponent.setDeleteClickHandler(this._handleDeleteClick);
-    document.addEventListener(`keydown`, this._handleFormSubmit);
 
     if (prevCardComponent === null) {
       render(this._container, this._cardComponent, RenderPosition.BEFOREEND);

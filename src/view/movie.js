@@ -52,10 +52,10 @@ const createCardTemplate = (card) => {
 };
 
 export default class Movie extends AbstractView {
-  constructor(card, commentsList) {
+  constructor(card) {
     super();
     this._card = card;
-    this._commentsList = commentsList;
+    this._commentsList = card.comments;
     this._clickHandler = this._clickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
     this._addToWatchlistClickHandler = this._addToWatchlistClickHandler.bind(this);
