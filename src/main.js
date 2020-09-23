@@ -42,7 +42,7 @@ api.getMovies()
     render(siteHeaderElement, new ProfileRatingView(generateUserRank(cardsModel.getCards())), RenderPosition.BEFOREEND);
 
     movieListPresenter.renderFilmsListContainer();
-    movieListPresenter.renderExtraFilmsLists();
+    // movieListPresenter.renderExtraFilmsLists();
 
     const userStatisticPresenter = new UserStatisticPresenter(siteMainElement, cardsModel.getCards());
 
@@ -83,4 +83,3 @@ const filterPresenter = new FilterPresenter(menuComponent, filterModel, cardsMod
 const movieListPresenter = new MovieListPresenter(siteMainElement, footerElement, cardsModel, filterModel, api, commentInput);
 // movieListPresenter.init();
 filterPresenter.init();
-

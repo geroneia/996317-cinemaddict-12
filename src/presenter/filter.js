@@ -42,7 +42,6 @@ export default class Filter {
   }
 
   _handleTypeChange(filterType) {
-    // Здесь есть проверка на текущий фильтр, но при клике следом рендерится еще раз сортировка
     if (this._currentType === filterType) {
       return;
     }

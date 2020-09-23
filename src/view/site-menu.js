@@ -19,10 +19,12 @@ export default class SiteMenu extends AbstractView {
   }
 
   _menuClickHandler(evt) {
-    evt.preventDefault();
-    if (evt.target.className === `main-navigation__additional`) {
+    if (evt.target.classList.contains(`main-navigation__item--active`) || evt.target.classList.contains(`main-navigation__item-count`)) {
+      return;
+    }
+    if (evt.target.classList.contains(`main-navigation__additional`)) {
       this._menuItem = MenuItem.STATS;
-    } else if (evt.target.className === `main-navigation__item `) {
+    } else if (evt.target.classList.contains(`main-navigation__item`)) {
       this._menuItem = MenuItem.MOVIES;
     }
     this._callback.menuClick(this._menuItem);
