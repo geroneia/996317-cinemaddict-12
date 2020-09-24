@@ -172,6 +172,7 @@ export default class MovieList {
       case UpdateType.INIT:
         this._isLoading = false;
         remove(this._loadingComponent);
+        this._renderSort();
         this.init();
         this.renderExtraFilmsLists();
         break;
