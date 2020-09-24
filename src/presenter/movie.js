@@ -53,6 +53,11 @@ export default class Movie {
       this._cardDetailsComponent.setClickHandler(this._handleCloseCardClick);
       this._cardDetailsComponent.setDeleteClickHandler(this._handleDeleteClick);
       document.addEventListener(`keydown`, this._handleFormSubmit);
+
+      if (this._mode === Mode.EDITING) {
+        replace(this._cardDetailsComponent, prevCardDetailsComponent);
+        remove(prevCardDetailsComponent);
+      }
     });
 
     // устанавливает обработчики
@@ -67,12 +72,7 @@ export default class Movie {
       replace(this._cardComponent, prevCardComponent);
     }
 
-    if (this._mode === Mode.EDITING) {
-      replace(this._cardDetailsComponent, prevCardDetailsComponent);
-    }
-
     remove(prevCardComponent);
-    remove(prevCardDetailsComponent);
   }
 
   destroy() {

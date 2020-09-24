@@ -151,10 +151,10 @@ export default class MovieList {
         this._updatePresenter(this._cardPresenterMostCommentedFilmsList, card);
         break;
       case UpdateType.MINOR:
-        this._clearBoard();
-        this._renderSort();
-        this._renderBoard();
+        this.destroy();
+        this.init();
         this.renderFilmsListContainer();
+        this.renderExtraFilmsLists();
         break;
       case UpdateType.MAJOR:
         this._clearBoard({resetRenderedCardCount: true, resetSortType: true});
@@ -167,7 +167,6 @@ export default class MovieList {
         remove(this._loadingComponent);
         this.init();
         this.renderExtraFilmsLists();
-        console.log(`Render extra from init on start`);
         break;
     }
   }
@@ -207,7 +206,7 @@ export default class MovieList {
   }
 
   _renderNoFilms() {
-    render(this._movieListContainer, this._noFilmsComponent, RenderPosition.BEFOREEND);
+    render(this._boardComponent, this._noFilmsComponent, RenderPosition.AFTERBEGIN);
   }
 
   _handleShowMoreButtonClick() {
@@ -277,7 +276,7 @@ export default class MovieList {
 
     const bestFilmsListElement = this._boardComponent.getElement().querySelector(`.films-list--extra .films-list__container`);
 
-    this._sortedByRatingsFilms = this._getCards().slice().sort(sortByRating);
+    this._sortedByRatingsFilms = this._cardsModel.getCards().sort(sortByRating);
 
     for (let i = 0; i < FilmsCount.EXTRA; i++) {
       this._renderCard(bestFilmsListElement, this._sortedByRatingsFilms[i], this._cardPresenterBestFilmsList);
@@ -289,7 +288,7 @@ export default class MovieList {
 
     const commentedFilmsListElement = this._boardComponent.getElement().querySelector(`.films-list--extra:last-of-type .films-list__container`);
 
-    this._sortedByCommentsFilms = this._getCards().slice().sort(sortByComments);
+    this._sortedByCommentsFilms = this._cardsModel.getCards().sort(sortByComments);
 
     for (let i = 0; i < FilmsCount.EXTRA; i++) {
       this._renderCard(commentedFilmsListElement, this._sortedByCommentsFilms[i], this._cardPresenterMostCommentedFilmsList);

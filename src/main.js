@@ -1,6 +1,5 @@
 import ProfileRatingView from "./view/profile-rating.js";
 import SiteMenuView from "./view/site-menu.js";
-import StatsView from "./view/stats.js";
 import FilmsCounterView from "./view/films-counter.js";
 import MoviesModel from "./model/movies.js";
 import FilterModel from "./model/filter.js";
@@ -29,34 +28,30 @@ const filterModel = new FilterModel();
 
 const menuComponent = new SiteMenuView();
 
-const statsSectionSwitcher = new StatsView();
-
 const api = new Api(END_POINT, AUTHORIZATION);
 
 api.getMovies()
   .then((movies) => {
     cardsModel.setCards(UpdateType.INIT, movies);
 
-    // console.log(movies);
     // рисует звание пользователя на странице
     render(siteHeaderElement, new ProfileRatingView(generateUserRank(cardsModel.getCards())), RenderPosition.BEFOREEND);
 
     movieListPresenter.renderFilmsListContainer();
-    // movieListPresenter.renderExtraFilmsLists();
 
     const userStatisticPresenter = new UserStatisticPresenter(siteMainElement, cardsModel.getCards());
 
     const handleSiteMenuClick = (menuItem) => {
       switch (menuItem) {
         case MenuItem.MOVIES:
-          statsSectionSwitcher.removeActive();
+          menuComponent.removeActive();
           userStatisticPresenter.removeStatistics();
           movieListPresenter.init();
           movieListPresenter.renderExtraFilmsLists();
           console.log(`Render extra from menu-switcher`);
           break;
         case MenuItem.STATS:
-          statsSectionSwitcher.addActive();
+          menuComponent.addActive();
           movieListPresenter.destroy();
           filterModel.set(UpdateType.DISABLED, FilterType.DISABLED);
           userStatisticPresenter.init();
@@ -76,8 +71,6 @@ api.getMovies()
 
 // рисует меню
 render(siteMainElement, menuComponent, RenderPosition.BEFOREEND);
-
-render(menuComponent, statsSectionSwitcher, RenderPosition.BEFOREEND);
 
 const filterPresenter = new FilterPresenter(menuComponent, filterModel, cardsModel);
 const movieListPresenter = new MovieListPresenter(siteMainElement, footerElement, cardsModel, filterModel, api, commentInput);
