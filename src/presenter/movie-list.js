@@ -63,7 +63,7 @@ export default class MovieList {
       this._renderNoFilms();
       return;
     }
-    this._renderSort();
+    // this._renderSort();
     this._renderBoard();
   }
 
@@ -158,7 +158,14 @@ export default class MovieList {
         break;
       case UpdateType.MAJOR:
         this._clearBoard({resetRenderedCardCount: true, resetSortType: true});
+        if (this._getCards().length === 0) {
+          this._renderNoFilms();
+          return;
+        }
+        this._renderSort();
+        this.init();
         this.renderFilmsListContainer();
+
         break;
       case UpdateType.DISABLED:
         break;

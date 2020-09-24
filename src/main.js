@@ -48,8 +48,8 @@ api.getMovies()
           userStatisticPresenter.removeStatistics();
           movieListPresenter.init();
           movieListPresenter.renderExtraFilmsLists();
-          console.log(`Render extra from menu-switcher`);
           break;
+
         case MenuItem.STATS:
           menuComponent.addActive();
           movieListPresenter.destroy();
