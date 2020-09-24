@@ -157,7 +157,7 @@ export default class MovieList {
         this.renderFilmsListContainer();
         break;
       case UpdateType.MAJOR:
-        this._clearBoard();
+        this._clearBoard({resetRenderedCardCount: true, resetSortType: true});
         this.renderFilmsListContainer();
         break;
       case UpdateType.DISABLED:
@@ -165,9 +165,9 @@ export default class MovieList {
       case UpdateType.INIT:
         this._isLoading = false;
         remove(this._loadingComponent);
-        this._renderSort();
-        this._renderBoard();
+        this.init();
         this.renderExtraFilmsLists();
+        console.log(`Render extra from init on start`);
         break;
     }
   }

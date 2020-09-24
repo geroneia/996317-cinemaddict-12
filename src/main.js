@@ -51,9 +51,9 @@ api.getMovies()
         case MenuItem.MOVIES:
           statsSectionSwitcher.removeActive();
           userStatisticPresenter.removeStatistics();
-
           movieListPresenter.init();
           movieListPresenter.renderExtraFilmsLists();
+          console.log(`Render extra from menu-switcher`);
           break;
         case MenuItem.STATS:
           statsSectionSwitcher.addActive();
