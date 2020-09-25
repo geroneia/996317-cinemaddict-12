@@ -66,7 +66,8 @@ export default class UserStatistic {
   }
 
   _getWatchedFilms() {
-    return this._getListOfWatchedFilmsInDateRange(this._cards, this._getDateFrom(), new Date());
+    const watchedMovies = this._cards.filter((card) => card.isWatched);
+    return this._getListOfWatchedFilmsInDateRange(watchedMovies, this._getDateFrom(), new Date());
   }
 
   _getGenresCount(genres) {
