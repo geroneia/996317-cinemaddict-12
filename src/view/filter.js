@@ -39,11 +39,9 @@ export default class Filter extends AbstractView {
   }
 
   _typeChangeHandler(evt) {
-    if (evt.target.classList.contains(`main-navigation__item-count`)) {
-      return;
-    }
+    const clickedItem = evt.target.tagName === `A` ? evt.target : evt.target.closest(`a`);
     this._menuItem = MenuItem.MOVIES;
     evt.preventDefault();
-    this._callback.typeChange(evt.target.dataset.id);
+    this._callback.typeChange(clickedItem.dataset.id);
   }
 }

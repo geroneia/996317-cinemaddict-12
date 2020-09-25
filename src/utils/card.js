@@ -15,7 +15,7 @@ export const formatCardRuntime = (runtime) => moment.utc(moment.duration(runtime
 
 export const formatCommentDate = (commentsDate) => moment(commentsDate).fromNow();
 
-export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+// export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 
 export const getCurrentDate = () => {
   const currentDate = new Date();
@@ -52,12 +52,12 @@ const Ranks = {
   MOVIE_BUFF: `movie buff`
 };
 
-const getWatchedFilmsCount = (films) =>
+export const getWatchedFilmsCount = (films) =>
   films.filter((film) => film.isWatched).length;
 
-export const generateUserRank = (cards) => {
+export const generateUserRank = (watchedFilmsCount) => {
 
-  const watchedFilmsCount = getWatchedFilmsCount(cards);
+  // const watchedFilmsCount = getWatchedFilmsCount(cards);
   let userRank = ``;
 
   if (watchedFilmsCount > 0 && watchedFilmsCount <= 10) {

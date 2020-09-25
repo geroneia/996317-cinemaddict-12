@@ -32,15 +32,7 @@ export default class Comments extends Observer {
     this._notify(updateType, update);
   }
 
-  add(updateType, card, currentItems, update) {
-    this._items = [
-      ...this._items,
-      update
-    ];
-    currentItems = [
-      ...currentItems,
-      update
-    ];
+  add(updateType, card, currentItems) {
 
     this._notify(updateType, card, currentItems);
   }

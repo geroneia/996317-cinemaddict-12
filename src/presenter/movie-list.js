@@ -6,7 +6,7 @@ import CommentedFilmsView from "../view/commented-films.js";
 import ShowMoreButtonView from "../view/show-more-button.js";
 import LoadingView from "../view/loading.js";
 import NoFilmsView from "../view/no-films.js";
-import MoviePresenter from "./movie.js";
+import MoviePresenter, {State as MoviePresenterViewState} from "./movie.js";
 import CommentsModel from "../model/comments.js";
 import {SortType} from "../view/sorting.js";
 import {render, RenderPosition, remove} from "../utils/render.js";
@@ -127,18 +127,41 @@ export default class MovieList {
     }
   }
 
-  _handleViewAction(actionType, updateType, updateCard, updateComments, updateComment) {
+  _handleViewAction(actionType, updateType, updateCard, updateComments, updateComment, commentIndex) {
     switch (actionType) {
       case UserAction.UPDATE_CARD:
+
+        this._cardPresenterCommonFilmsList[updateCard.id].setViewState(MoviePresenterViewState.SAVING);
+
         this._api.updateMovie(updateCard).then((response) => {
           this._cardsModel.updateCard(updateType, response);
+        })
+        .catch(() => {
+          this._cardPresenterCommonFilmsList[updateCard.id].setViewState(MoviePresenterViewState.ABORTING);
         });
         break;
       case UserAction.ADD_COMMENT:
-        this._commentsModel.add(updateType, updateCard, updateComments, updateComment);
+
+        // this._cardPresenterCommonFilmsList[updateCard.id].setViewState(MoviePresenterViewState.SAVING);
+
+        this._api.addComment(updateCard, updateComment).then((response) => {
+          this._commentsModel.add(updateType, updateCard, updateComments, response);
+        });
+        // .catch(() => {
+        //   this._cardPresenterCommonFilmsList[updateCard.id].setViewState(MoviePresenterViewState.ABORTING);
+        // });
         break;
       case UserAction.DELETE_COMMENT:
-        this._commentsModel.delete(updateType, updateCard, updateComments, updateComment);
+
+        this._cardPresenterCommonFilmsList[updateCard.id].setViewState(MoviePresenterViewState.DELETING);
+
+        this._api.deleteComment(updateCard.id, commentIndex).then(() => {
+          this._commentsModel.delete(updateType, updateCard, updateComments, updateComment);
+        })
+        .catch(() => {
+          this._cardPresenterCommonFilmsList[updateCard.id].setViewState(MoviePresenterViewState.ABORTING);
+
+        });
         break;
     }
   }

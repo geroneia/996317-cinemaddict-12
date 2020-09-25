@@ -3,7 +3,7 @@ import UserStatisticView from "../view/user-statistic.js";
 import {render, RenderPosition, remove} from "../utils/render.js";
 import {getCurrentDate, getEarliestDate, getOverallDuration} from "../utils/card.js";
 import {DateInterval} from "../const.js";
-import {generateUserRank} from "../utils/card.js";
+import {generateUserRank, getWatchedFilmsCount} from "../utils/card.js";
 
 const DAYS_TO_FULL_WEEK = 6;
 
@@ -99,7 +99,7 @@ export default class UserStatistic {
   }
 
   _getUserRank() {
-    return generateUserRank(this._cards);
+    return generateUserRank(getWatchedFilmsCount(this._cards));
   }
 
   _getTotalDuration(cards) {

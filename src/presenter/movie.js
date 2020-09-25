@@ -3,12 +3,18 @@ import FilmDetailsCardView from "../view/film-details-card.js";
 import {render, RenderPosition, remove, replace} from "../utils/render.js";
 import {UserAction, UpdateType} from "../const.js";
 
-import {generateId} from "../utils/card.js";
+// import {generateId} from "../utils/card.js";
 import he from "he";
 
 const Mode = {
   DEFAULT: `DEFAULT`,
   EDITING: `EDITING`
+};
+
+export const State = {
+  SAVING: `SAVING`,
+  DELETING: `DELETING`,
+  ABORTING: `ABORTING`
 };
 
 export default class Movie {
@@ -46,6 +52,7 @@ export default class Movie {
     .then((comments) => {
       this._cardDetailsComponent = new FilmDetailsCardView(card, comments);
       this._cardComponent.setClickHandler(this._handleShowMoreClick);
+      // console.log(comments);
 
       this._cardDetailsComponent.setFavoriteLabelClickHandler(this._handleFavoriteClick);
       this._cardDetailsComponent.setAddToWatchlistLabelClickHandler(this._handleAddToWatchlistClick);
@@ -78,6 +85,38 @@ export default class Movie {
   destroy() {
     remove(this._cardComponent);
     remove(this._cardDetailsComponent);
+  }
+
+  setSaving() {
+    this._cardDetailsComponent.updateData({
+      isDisabled: true
+    });
+  }
+
+  setViewState(state) {
+    const resetFormState = () => {
+      this._cardDetailsComponent.updateData({
+        isDisabled: false,
+        isDeleting: false
+      });
+    };
+
+    switch (state) {
+      case State.SAVING:
+        this._cardDetailsComponent.updateData({
+          isDisabled: true
+        });
+        break;
+      case State.DELETING:
+        this._cardDetailsComponent.updateData({
+          isDisabled: true,
+          isDeleting: true
+        });
+        break;
+      case State.ABORTING:
+        this._cardDetailsComponent.shake(resetFormState);
+        break;
+    }
   }
 
   resetView() {
@@ -170,13 +209,14 @@ export default class Movie {
     document.addEventListener(`keydown`, this._escKeyDownHandler);
   }
 
-  _handleDeleteClick(deletedComment) {
+  _handleDeleteClick(deletedComment, commentIndex) {
     this._changeData(
         UserAction.DELETE_COMMENT,
         UpdateType.PATCH,
         this._card,
-        this._comments,
-        deletedComment
+        this._card.comments,
+        deletedComment,
+        commentIndex
     );
   }
 
@@ -187,10 +227,10 @@ export default class Movie {
       const message = this._cardDetailsComponent.getMessage();
       if (emoji !== `` && message !== ``) {
         const addedComment = {
-          id: generateId(),
+          // id: generateId(),
           message: he.encode(message),
           emoji,
-          name,
+          // name,
           currentDate: new Date()
         };
 

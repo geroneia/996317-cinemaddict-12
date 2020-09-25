@@ -20,7 +20,9 @@ const createFilmDetailsCard = (data, comments) => {
     description,
     isAddedToWatchlist,
     isWatched,
-    isFavorite
+    isFavorite,
+    isDisabled,
+    isDeleting
   } = data;
 
   // получает разметку списка жанров
@@ -43,7 +45,7 @@ const createFilmDetailsCard = (data, comments) => {
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${name}</span>
         <span class="film-details__comment-day">${formatCommentDate(currentDate)}</span>
-        <button class="film-details__comment-delete" data-id="${id}">Delete</button>
+        <button class="film-details__comment-delete" data-id="${id}" ${isDisabled ? `disabled = "true"` : ``}>${isDeleting ? `Deleting...` : `Delete`}</button>
       </p>
     </div>
   </li>`).join(` `);
@@ -135,7 +137,7 @@ const createFilmDetailsCard = (data, comments) => {
                   <div for="add-emoji" class="film-details__add-emoji-label"></div>
 
                   <label class="film-details__comment-label">
-                    <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" value=""></textarea>
+                    <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" value="" ${isDisabled ? `disabled` : ``}></textarea>
                   </label>
 
                   <div class="film-details__emoji-list">
@@ -304,9 +306,11 @@ export default class FilmDetailsCard extends SmartView {
 
   _commentDeleteClickHandler(evt) {
     evt.preventDefault();
-    const currentCommentId = +evt.target.dataset.id;
+    const currentCommentId = evt.target.dataset.id;
     const deletedComment = this._commentsList.find(({id}) => id === currentCommentId);
-    this._callback.deleteClick(deletedComment);
+    const commentIndex = this._commentsList.indexOf(deletedComment);
+    // console.log(commentIndex);
+    this._callback.deleteClick(deletedComment, commentIndex);
   }
 
   _descriptionInputHandler(evt) {
@@ -321,7 +325,9 @@ export default class FilmDetailsCard extends SmartView {
         {
           isAddedToWatchlist: card.isAddedToWatchlist,
           isWatched: card.isWatched,
-          isFavorite: card.isFavorite
+          isFavorite: card.isFavorite,
+          isDisabled: false,
+          isDeleting: false
         }
     );
   }
@@ -332,6 +338,8 @@ export default class FilmDetailsCard extends SmartView {
     delete editableCard.isAddedToWatchlist;
     delete editableCard.isWatched;
     delete editableCard.isFavorite;
+    delete editableCard.isDisabled;
+    delete editableCard.isDeleting;
 
     return editableCard;
   }
