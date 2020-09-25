@@ -1,3 +1,4 @@
+
 export const UserAction = {
   UPDATE_CARD: `UPDATE_CARD`,
   ADD_COMMENT: `ADD_COMMENT`,
@@ -8,7 +9,8 @@ export const UpdateType = {
   DISABLED: `disabled`,
   PATCH: `PATCH`,
   MINOR: `MINOR`,
-  MAJOR: `MAJOR`
+  MAJOR: `MAJOR`,
+  INIT: `INIT`
 };
 
 export const FilterType = {

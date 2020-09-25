@@ -10,7 +10,15 @@ export default class SiteMenu extends AbstractView {
   }
 
   getTemplate() {
-    return `<nav class="main-navigation"></nav>`;
+    return `<nav class="main-navigation"><a href="#stats" class="main-navigation__additional">Stats</a></nav>`;
+  }
+
+  removeActive() {
+    this.getElement().classList.remove(`main-navigation__item--active`);
+  }
+
+  addActive() {
+    this.getElement().classList.add(`main-navigation__item--active`);
   }
 
   setMenuClickHandler(callback) {
@@ -19,12 +27,22 @@ export default class SiteMenu extends AbstractView {
   }
 
   _menuClickHandler(evt) {
-    evt.preventDefault();
-    if (evt.target.className === `main-navigation__additional`) {
+
+    if (evt.target.classList.contains(`main-navigation__item--active`)
+    || evt.target.classList.contains(`main-navigation__item-count`)
+    || ((evt.target.classList.contains(`main-navigation__item`)
+    && this._menuItem === MenuItem.MOVIES))) {
+
+      return;
+    }
+
+    if (evt.target.classList.contains(`main-navigation__additional`)) {
       this._menuItem = MenuItem.STATS;
-    } else if (evt.target.className === `main-navigation__item `) {
+
+    } else if (evt.target.classList.contains(`main-navigation__item`) && this._menuItem !== ``) {
       this._menuItem = MenuItem.MOVIES;
     }
+
     this._callback.menuClick(this._menuItem);
   }
 }

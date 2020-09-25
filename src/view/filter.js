@@ -1,4 +1,5 @@
 import AbstractView from "./abstract.js";
+import {MenuItem} from "../const.js";
 
 // разметка одного из фильтров
 const createFilterItemTemplate = ({type, name, count}, currentType) => {
@@ -38,6 +39,10 @@ export default class Filter extends AbstractView {
   }
 
   _typeChangeHandler(evt) {
+    if (evt.target.classList.contains(`main-navigation__item-count`)) {
+      return;
+    }
+    this._menuItem = MenuItem.MOVIES;
     evt.preventDefault();
     this._callback.typeChange(evt.target.dataset.id);
   }

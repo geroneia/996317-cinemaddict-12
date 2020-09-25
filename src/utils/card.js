@@ -1,9 +1,7 @@
 import moment from "moment";
 
-const MILLISECONDS_IN_MINUTE = 60000;
+export const sortByDate = (a, b) => moment(b.releaseDate).diff(a.releaseDate, `day`);
 
-export const sortByDate = (a, b) =>
-  b.releaseDate.getTime() - a.releaseDate.getTime();
 
 export const sortByRating = (a, b) => b.rating - a.rating;
 
@@ -13,7 +11,7 @@ export const formatCardReleaseYear = (releaseDate) => moment(releaseDate).format
 
 export const formatCardReleaseDate = (releaseDate) => moment(releaseDate).format(`DD MMMM YYYY`);
 
-export const formatCardRuntime = (runtime) => moment(runtime * MILLISECONDS_IN_MINUTE).format(`h[h] mm[m]`);
+export const formatCardRuntime = (runtime) => moment.utc(moment.duration(runtime, `minutes`).asMilliseconds()).format(`h[h] mm[m]`);
 
 export const formatCommentDate = (commentsDate) => moment(commentsDate).fromNow();
 
@@ -26,10 +24,7 @@ export const getCurrentDate = () => {
   return new Date(currentDate);
 };
 
-export const getEarliestDate = () => {
-  const earliestDate = new Date(0);
-  return new Date(earliestDate);
-};
+export const getEarliestDate = () => new Date(0);
 
 export const isDatesEqual = (dateA, dateB) => {
   if (dateA === null && dateB === null) {
@@ -40,7 +35,9 @@ export const isDatesEqual = (dateA, dateB) => {
 };
 
 export const getOverallDuration = (movies) => {
-  const duration = movies.map((movie) => movie.runtime).reduce((a, b) => a + b);
+  const duration = movies.length !== 0 ?
+    movies.map((movie) => movie.runtime).reduce((a, b) => a + b) : 0;
+
   const lengthInHours = Math.floor(duration / 60);
   const lengthInMinutes = duration % 60;
   const hours = lengthInHours > 0 ? lengthInHours + `h` : `0`;
@@ -49,3 +46,26 @@ export const getOverallDuration = (movies) => {
   return `${hours} ${minutes}`;
 };
 
+const Ranks = {
+  NOVICE: `novice`,
+  FAN: `fan`,
+  MOVIE_BUFF: `movie buff`
+};
+
+const getWatchedFilmsCount = (films) =>
+  films.filter((film) => film.isWatched).length;
+
+export const generateUserRank = (cards) => {
+
+  const watchedFilmsCount = getWatchedFilmsCount(cards);
+  let userRank = ``;
+
+  if (watchedFilmsCount > 0 && watchedFilmsCount <= 10) {
+    userRank = Ranks.NOVICE;
+  } else if (watchedFilmsCount > 10 && watchedFilmsCount <= 20) {
+    userRank = Ranks.FAN;
+  } else if (watchedFilmsCount > 20) {
+    userRank = Ranks.MOVIE_BUFF;
+  }
+  return userRank;
+};

@@ -4,10 +4,11 @@ import {formatCardReleaseYear, formatCardRuntime} from "../utils/card.js";
 const MAX_SIMBOL_COUNT = 140;
 
 // разметка карточки фильма
-const createCardTemplate = (card, commentsList) => {
+const createCardTemplate = (card) => {
   const {
     poster,
     title,
+    comments,
     releaseDate,
     runtime,
     genres,
@@ -19,7 +20,7 @@ const createCardTemplate = (card, commentsList) => {
   } = card;
 
   // получает количество комментариев
-  const commentsCount = () => `${commentsList.length} comment` + (commentsList.length > 1 ? `s` : ``);
+  const commentsCount = () => `${comments.length} comment` + (comments.length > 1 ? `s` : ``);
 
   // получает описание для краткого отображения
   const getDescription = () => {
@@ -39,7 +40,7 @@ const createCardTemplate = (card, commentsList) => {
             <span class="film-card__duration">${formatCardRuntime(runtime)}</span>
             <span class="film-card__genre">${genres[0]}</span>
         </p>
-        <img src="./images/posters/${poster}" alt="${title}(${formatCardReleaseYear(releaseDate)})" class="film-card__poster">
+        <img src="./${poster}" alt="${title}(${formatCardReleaseYear(releaseDate)})" class="film-card__poster">
         <p class="film-card__description">${getDescription()}</p>
         <a class="film-card__comments">${commentsCount()}</a>
         <form class="film-card__controls">
@@ -51,10 +52,10 @@ const createCardTemplate = (card, commentsList) => {
 };
 
 export default class Movie extends AbstractView {
-  constructor(card, commentsList) {
+  constructor(card) {
     super();
     this._card = card;
-    this._commentsList = commentsList;
+    this._commentsList = card.comments;
     this._clickHandler = this._clickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
     this._addToWatchlistClickHandler = this._addToWatchlistClickHandler.bind(this);
