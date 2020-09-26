@@ -4,7 +4,7 @@ import FilmsCounterView from "./view/films-counter.js";
 import MoviesModel from "./model/movies.js";
 import FilterModel from "./model/filter.js";
 
-import {generateUserRank, getWatchedFilmsCount} from "./utils/card.js";
+import {generateUserRank} from "./utils/card.js";
 import MovieListPresenter from "./presenter/movie-list.js";
 import FilterPresenter from "./presenter/filter.js";
 import UserStatisticPresenter from "./presenter/user-statistic.js";
@@ -35,7 +35,7 @@ api.getMovies()
     cardsModel.setCards(UpdateType.INIT, movies);
 
     // рисует звание пользователя на странице
-    render(siteHeaderElement, new ProfileRatingView(generateUserRank(getWatchedFilmsCount(cardsModel.getCards()))), RenderPosition.BEFOREEND);
+    render(siteHeaderElement, new ProfileRatingView(generateUserRank(userStatisticPresenter.getWatchedFilmsCount())), RenderPosition.BEFOREEND);
 
     movieListPresenter.renderFilmsListContainer();
 

@@ -15,8 +15,6 @@ export const formatCardRuntime = (runtime) => moment.utc(moment.duration(runtime
 
 export const formatCommentDate = (commentsDate) => moment(commentsDate).fromNow();
 
-// export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
-
 export const getCurrentDate = () => {
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
@@ -57,7 +55,6 @@ export const getWatchedFilmsCount = (films) =>
 
 export const generateUserRank = (watchedFilmsCount) => {
 
-  // const watchedFilmsCount = getWatchedFilmsCount(cards);
   let userRank = ``;
 
   if (watchedFilmsCount > 0 && watchedFilmsCount <= 10) {

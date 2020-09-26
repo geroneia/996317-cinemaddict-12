@@ -30,7 +30,6 @@ export default class SiteMenu extends AbstractView {
     const clickedItem = evt.target.tagName === `A` ? evt.target : evt.target.closest(`a`);
 
     if (clickedItem.classList.contains(`main-navigation__item--active`)
-    || clickedItem.classList.contains(`main-navigation__item-count`)
     || ((clickedItem.classList.contains(`main-navigation__item`)
     && this._menuItem === MenuItem.MOVIES))) {
 

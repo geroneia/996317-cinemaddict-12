@@ -91,38 +91,6 @@ export default class Movie {
     remove(this._cardDetailsComponent);
   }
 
-  // setSaving() {
-  //   this._cardDetailsComponent.updateData({
-  //     isDisabled: true
-  //   });
-  // }
-
-  // setViewState(state) {
-  //   const resetFormState = () => {
-  //     this._cardDetailsComponent.updateData({
-  //       isDisabled: false,
-  //       isDeleting: false
-  //     });
-  //   };
-
-  //   switch (state) {
-  //     case State.SAVING:
-  //       this._cardDetailsComponent.updateData({
-  //         isDisabled: true
-  //       });
-  //       break;
-  //     case State.DELETING:
-  //       this._cardDetailsComponent.updateData({
-  //         isDisabled: true,
-  //         isDeleting: true
-  //       });
-  //       break;
-  //     case State.ABORTING:
-  //       this._cardDetailsComponent.shake(resetFormState);
-  //       break;
-  //   }
-  // }
-
   resetView() {
     if (this._mode !== Mode.DEFAULT) {
       remove(this._cardDetailsComponent);
@@ -230,10 +198,8 @@ export default class Movie {
       const message = this._cardDetailsComponent.getMessage();
       if (emoji !== `` && message !== ``) {
         const addedComment = {
-          // id: generateId(),
           message: he.encode(message),
           emoji,
-          // name,
           currentDate: new Date()
         };
 
@@ -246,6 +212,7 @@ export default class Movie {
         );
       }
       this._cardDetailsComponent.clearCommentForm();
+      this._cardDetailsComponent.blockTextInput();
     }
   }
 }

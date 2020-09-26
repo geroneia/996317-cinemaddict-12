@@ -20,9 +20,7 @@ const createFilmDetailsCard = (data, comments) => {
     description,
     isAddedToWatchlist,
     isWatched,
-    isFavorite,
-    isDisabled,
-    isDeleting
+    isFavorite
   } = data;
 
   // получает разметку списка жанров
@@ -45,7 +43,7 @@ const createFilmDetailsCard = (data, comments) => {
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${name}</span>
         <span class="film-details__comment-day">${formatCommentDate(currentDate)}</span>
-        <button class="film-details__comment-delete" data-id="${id}" ${isDisabled ? `disabled = "true"` : ``}>${isDeleting ? `Deleting...` : `Delete`}</button>
+        <button class="film-details__comment-delete" data-id="${id}">Delete</button>
       </p>
     </div>
   </li>`).join(` `);
@@ -137,7 +135,7 @@ const createFilmDetailsCard = (data, comments) => {
                   <div for="add-emoji" class="film-details__add-emoji-label"></div>
 
                   <label class="film-details__comment-label">
-                    <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" value="" ${isDisabled ? `disabled` : ``}></textarea>
+                    <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" value=""></textarea>
                   </label>
 
                   <div class="film-details__emoji-list">
@@ -260,6 +258,11 @@ export default class FilmDetailsCard extends SmartView {
   .addEventListener(`input`, this._descriptionInputHandler);
   }
 
+  blockTextInput() {
+    this.getElement().querySelector(`.film-details__comment-input`)
+    .disabled = true;
+  }
+
   _addToWatchlistToggleHandler(evt) {
     evt.preventDefault();
     this._callback.addToWatchlistClick(FilmDetailsCard.parseEditableCardToCard(this._editableCard));
@@ -306,8 +309,14 @@ export default class FilmDetailsCard extends SmartView {
 
   _commentDeleteClickHandler(evt) {
     evt.preventDefault();
+    evt.target.innerHTML = `Deleting...`;
+    evt.target.disabled = true;
     const deletedCommentId = evt.target.dataset.id;
     this._callback.deleteClick(deletedCommentId);
+  }
+
+  _setFailureOfActionEffect(target) {
+    target.shake();
   }
 
   _descriptionInputHandler(evt) {
