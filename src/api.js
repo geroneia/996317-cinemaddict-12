@@ -58,9 +58,9 @@ export default class Api {
       .then(CommentsModel.adaptToClient);
   }
 
-  deleteComment(id, index) {
+  deleteComment(id) {
     return this._load({
-      url: `${Url.COMMENTS}/${id}/${index}`,
+      url: `${Url.COMMENTS}/${id}`,
       method: Method.DELETE
     });
   }

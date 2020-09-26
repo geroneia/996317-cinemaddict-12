@@ -1,4 +1,5 @@
 import MovieView from "../view/movie.js";
+import CommentsModel from "../model/comments.js";
 import FilmDetailsCardView from "../view/film-details-card.js";
 import {render, RenderPosition, remove, replace} from "../utils/render.js";
 import {UserAction, UpdateType} from "../const.js";
@@ -30,6 +31,8 @@ export default class Movie {
     this._cardDetailsComponent = null;
     this._mode = Mode.DEFAULT;
 
+    this.commentsModel = new CommentsModel();
+
     this._handleShowMoreClick = this._handleShowMoreClick.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handleAddToWatchlistClick = this._handleAddToWatchlistClick.bind(this);
@@ -50,6 +53,7 @@ export default class Movie {
 
     this._api.getComments(card.id)
     .then((comments) => {
+      this.commentsModel.set(comments);
       this._cardDetailsComponent = new FilmDetailsCardView(card, comments);
       this._cardComponent.setClickHandler(this._handleShowMoreClick);
       // console.log(comments);
@@ -87,37 +91,37 @@ export default class Movie {
     remove(this._cardDetailsComponent);
   }
 
-  setSaving() {
-    this._cardDetailsComponent.updateData({
-      isDisabled: true
-    });
-  }
+  // setSaving() {
+  //   this._cardDetailsComponent.updateData({
+  //     isDisabled: true
+  //   });
+  // }
 
-  setViewState(state) {
-    const resetFormState = () => {
-      this._cardDetailsComponent.updateData({
-        isDisabled: false,
-        isDeleting: false
-      });
-    };
+  // setViewState(state) {
+  //   const resetFormState = () => {
+  //     this._cardDetailsComponent.updateData({
+  //       isDisabled: false,
+  //       isDeleting: false
+  //     });
+  //   };
 
-    switch (state) {
-      case State.SAVING:
-        this._cardDetailsComponent.updateData({
-          isDisabled: true
-        });
-        break;
-      case State.DELETING:
-        this._cardDetailsComponent.updateData({
-          isDisabled: true,
-          isDeleting: true
-        });
-        break;
-      case State.ABORTING:
-        this._cardDetailsComponent.shake(resetFormState);
-        break;
-    }
-  }
+  //   switch (state) {
+  //     case State.SAVING:
+  //       this._cardDetailsComponent.updateData({
+  //         isDisabled: true
+  //       });
+  //       break;
+  //     case State.DELETING:
+  //       this._cardDetailsComponent.updateData({
+  //         isDisabled: true,
+  //         isDeleting: true
+  //       });
+  //       break;
+  //     case State.ABORTING:
+  //       this._cardDetailsComponent.shake(resetFormState);
+  //       break;
+  //   }
+  // }
 
   resetView() {
     if (this._mode !== Mode.DEFAULT) {
@@ -209,14 +213,13 @@ export default class Movie {
     document.addEventListener(`keydown`, this._escKeyDownHandler);
   }
 
-  _handleDeleteClick(deletedComment, commentIndex) {
+  _handleDeleteClick(deletedCommentId) {
     this._changeData(
         UserAction.DELETE_COMMENT,
         UpdateType.PATCH,
         this._card,
-        this._card.comments,
-        deletedComment,
-        commentIndex
+        this.commentsModel.get(),
+        deletedCommentId
     );
   }
 
