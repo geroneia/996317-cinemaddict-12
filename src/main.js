@@ -32,19 +32,19 @@ const api = new Api(END_POINT, AUTHORIZATION);
 
 api.getMovies()
   .then((movies) => {
-    cardsModel.setCards(UpdateType.INIT, movies);
+    cardsModel.set(UpdateType.INIT, movies);
 
     // рисует звание пользователя на странице
-    render(siteHeaderElement, new ProfileRatingView(generateUserRank(userStatisticPresenter.getWatchedFilmsCount())), RenderPosition.BEFOREEND);
+    render(siteHeaderElement, new ProfileRatingView(generateUserRank(cardsModel.getWatchedFilmsCount())), RenderPosition.BEFOREEND);
 
     movieListPresenter.renderFilmsListContainer();
 
     menuComponent.setMenuClickHandler(handleSiteMenuClick);
     // рисует счетчик фильмов в футере
-    render(footerStatElement, new FilmsCounterView(cardsModel.getCards()), RenderPosition.BEFOREEND);
+    render(footerStatElement, new FilmsCounterView(cardsModel.get()), RenderPosition.BEFOREEND);
   })
   .catch(() => {
-    cardsModel.setCards(UpdateType.INIT, []);
+    cardsModel.set(UpdateType.INIT, []);
 
 
   });

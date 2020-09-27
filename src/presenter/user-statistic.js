@@ -31,10 +31,6 @@ export default class UserStatistic {
     this._statisticsComponent = null;
   }
 
-  getWatchedFilmsCount() {
-    return this._cardsModel.getCards().filter((film) => film.isWatched).length;
-  }
-
   _getStatisticsData() {
     const filteredFilms = this._getWatchedFilms();
     const genresCounter = this._getGenresCounter(filteredFilms);
@@ -70,7 +66,7 @@ export default class UserStatistic {
   }
 
   _getWatchedFilms() {
-    const watchedMovies = this._cardsModel.getCards().filter((card) => card.isWatched);
+    const watchedMovies = this._cardsModel.get().filter((card) => card.isWatched);
     return this._getListOfWatchedFilmsInDateRange(watchedMovies, this._getDateFrom(), new Date());
   }
 
@@ -103,7 +99,7 @@ export default class UserStatistic {
   }
 
   _getUserRank() {
-    return generateUserRank(this.getWatchedFilmsCount());
+    return generateUserRank(this._cardsModel.getWatchedFilmsCount());
   }
 
   _getTotalDuration(cards) {

@@ -2,9 +2,9 @@ import MovieView from "../view/movie.js";
 import CommentsModel from "../model/comments.js";
 import FilmDetailsCardView from "../view/film-details-card.js";
 import {render, RenderPosition, remove, replace} from "../utils/render.js";
+import {shake} from "../utils/card.js";
 import {UserAction, UpdateType} from "../const.js";
 
-// import {generateId} from "../utils/card.js";
 import he from "he";
 
 const Mode = {
@@ -181,13 +181,14 @@ export default class Movie {
     document.addEventListener(`keydown`, this._escKeyDownHandler);
   }
 
-  _handleDeleteClick(deletedCommentId) {
+  _handleDeleteClick(deletedCommentId, onErrorCallback) {
     this._changeData(
         UserAction.DELETE_COMMENT,
         UpdateType.PATCH,
         this._card,
         this.commentsModel.get(),
-        deletedCommentId
+        deletedCommentId,
+        onErrorCallback
     );
   }
 
@@ -202,17 +203,24 @@ export default class Movie {
           emoji,
           currentDate: new Date()
         };
+        this._cardDetailsComponent.blockTextInput();
+
+        const onErrorCallback = () => {
+          this._cardDetailsComponent.unBlockTextInput();
+          shake(this._cardDetailsComponent.getElement());
+        };
 
         this._changeData(
             UserAction.ADD_COMMENT,
             UpdateType.PATCH,
             this._card,
             this._comments,
-            addedComment
+            addedComment,
+            onErrorCallback
         );
       }
       this._cardDetailsComponent.clearCommentForm();
-      this._cardDetailsComponent.blockTextInput();
+
     }
   }
 }

@@ -1,6 +1,6 @@
 import SmartView from "./smart.js";
 
-import {formatCardReleaseDate, formatCardRuntime, formatCardReleaseYear, formatCommentDate} from "../utils/card.js";
+import {formatCardReleaseDate, formatCardRuntime, formatCardReleaseYear, formatCommentDate, shake} from "../utils/card.js";
 
 // разметка дополнительной информации о фильме
 const createFilmDetailsCard = (data, comments) => {
@@ -263,6 +263,11 @@ export default class FilmDetailsCard extends SmartView {
     .disabled = true;
   }
 
+  unBlockTextInput() {
+    this.getElement().querySelector(`.film-details__comment-input`)
+    .disabled = false;
+  }
+
   _addToWatchlistToggleHandler(evt) {
     evt.preventDefault();
     this._callback.addToWatchlistClick(FilmDetailsCard.parseEditableCardToCard(this._editableCard));
@@ -311,12 +316,15 @@ export default class FilmDetailsCard extends SmartView {
     evt.preventDefault();
     evt.target.innerHTML = `Deleting...`;
     evt.target.disabled = true;
-    const deletedCommentId = evt.target.dataset.id;
-    this._callback.deleteClick(deletedCommentId);
-  }
 
-  _setFailureOfActionEffect(target) {
-    target.shake();
+    const onErrorCallback = () => {
+      evt.target.innerHTML = `Delete`;
+      evt.target.disabled = false;
+      const commentBlock = evt.target.closest(`.film-details__comment`);
+      shake(commentBlock);
+    };
+
+    this._callback.deleteClick(evt.target.dataset.id, onErrorCallback);
   }
 
   _descriptionInputHandler(evt) {
