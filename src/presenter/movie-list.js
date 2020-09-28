@@ -4,6 +4,7 @@ import FilmsListView from "../view/films-list.js";
 import BestFilmsView from "../view/best-films.js";
 import CommentedFilmsView from "../view/commented-films.js";
 import ShowMoreButtonView from "../view/show-more-button.js";
+import ProfileRatingView from "../view/profile-rating.js";
 import LoadingView from "../view/loading.js";
 import NoFilmsView from "../view/no-films.js";
 import MoviePresenter from "./movie.js";
@@ -11,7 +12,7 @@ import CommentsModel from "../model/comments.js";
 import {SortType} from "../view/sorting.js";
 import {render, RenderPosition, remove} from "../utils/render.js";
 import {filter} from "../utils/filter.js";
-import {sortByDate, sortByRating, sortByComments} from "../utils/card.js";
+import {sortByDate, sortByRating, sortByComments, generateUserRank} from "../utils/card.js";
 import {UpdateType, UserAction} from "../const.js";
 
 const FilmsCount = {
@@ -20,7 +21,8 @@ const FilmsCount = {
 };
 
 export default class MovieList {
-  constructor(movieListContainer, popupContainer, cardsModel, filterModel, api) {
+  constructor(movieListContainer, popupContainer, cardsModel, filterModel, api, siteHeaderElement) {
+    this.siteHeaderElement = siteHeaderElement;
     this._movieListContainer = movieListContainer;
     this._popupContainer = popupContainer;
     this._cardsModel = cardsModel;
@@ -40,6 +42,7 @@ export default class MovieList {
     this._sortedByRatingsFilms = {};
     this._sortedByCommentsFilms = {};
 
+    this._ratingComponent = new ProfileRatingView();
     this._boardComponent = new BoardView();
     this._filmsListComponent = new FilmsListView();
     this._bestFilmsComponent = new BestFilmsView();
@@ -83,6 +86,7 @@ export default class MovieList {
     this._cardPresenterBestFilmsList = {};
     this._cardPresenterMostCommentedFilmsList = {};
 
+    remove(this._ratingComponent);
     remove(this._bestFilmsComponent);
     remove(this._commentedFilmsComponent);
     remove(this._showMoreButtonComponent);
@@ -96,6 +100,11 @@ export default class MovieList {
     render(this._boardComponent, this._filmsListComponent, RenderPosition.AFTERBEGIN);
     const filmsListContainer = this._filmsListComponent.getElement().querySelector(`.films-list .films-list__container`);
     this._renderFilmsList(filmsListContainer);
+  }
+
+  renderRating() {
+  // рисует звание пользователя на странице
+    render(this.siteHeaderElement, new ProfileRatingView(generateUserRank(this._cardsModel.getWatchedFilmsCount())), RenderPosition.BEFOREEND);
   }
 
   _getCards() {
@@ -126,7 +135,7 @@ export default class MovieList {
     }
   }
 
-  _handleViewAction(actionType, updateType, updateCard, updateComments, updateComment, onErrorCallback) {
+  _handleViewAction(actionType, updateType, updateCard, updateComment, onErrorCallback) {
     switch (actionType) {
       case UserAction.UPDATE_CARD:
 
@@ -169,6 +178,7 @@ export default class MovieList {
         break;
       case UpdateType.MINOR:
         this.destroy();
+        this.renderRating();
         this._renderSort();
         this.init();
         this.renderFilmsListContainer();
@@ -190,6 +200,7 @@ export default class MovieList {
       case UpdateType.INIT:
         this._isLoading = false;
         remove(this._loadingComponent);
+        this.renderRating();
         this._renderSort();
         this.init();
         this.renderExtraFilmsLists();
