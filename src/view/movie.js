@@ -1,5 +1,6 @@
 import AbstractView from "./abstract.js";
 import {formatCardReleaseYear, formatCardRuntime} from "../utils/card.js";
+import {MIN_SIMBOL_COUNT, SINGULAR_DETERMINANT} from "../const.js";
 
 const MAX_SIMBOL_COUNT = 140;
 
@@ -20,10 +21,13 @@ const createCardTemplate = (card) => {
   } = card;
 
   // получает количество комментариев
-  const commentsCount = () => `${comments.length} comment` + (comments.length > 1 ? `s` : ``);
+  const commentsCount = () => `${comments.length} ${comments.length > SINGULAR_DETERMINANT ? `comments` : `comment`}`;
 
   // получает описание для краткого отображения
   const getDescription = () => {
+    if (description.length < MIN_SIMBOL_COUNT) {
+      return ``;
+    }
     return description.length < MAX_SIMBOL_COUNT ?
       description :
       `${description.slice(0, MAX_SIMBOL_COUNT)}... `;
@@ -38,7 +42,7 @@ const createCardTemplate = (card) => {
         <p class="film-card__info">
             <span class="film-card__year">${formatCardReleaseYear(releaseDate)}</span>
             <span class="film-card__duration">${formatCardRuntime(runtime)}</span>
-            <span class="film-card__genre">${genres[0]}</span>
+            <span class="film-card__genre">${genres.length > 0 ? genres[0] : ``}</span>
         </p>
         <img src="./${poster}" alt="${title}(${formatCardReleaseYear(releaseDate)})" class="film-card__poster">
         <p class="film-card__description">${getDescription()}</p>

@@ -72,7 +72,7 @@ export default class MovieList {
   }
 
   destroy() {
-    this._clearBoard({resetRenderedCardCount: true, resetSortType: true});
+    this._clearBoard({resetRenderedCardCount: false, resetSortType: true});
 
     [
       ...Object.values(this._cardPresenterBestFilmsList),
@@ -152,7 +152,7 @@ export default class MovieList {
           const newCard = Object.assign({}, updateCard, {
             comments: newComments
           });
-          this._cardsModel.updateCard(updateType, newCard, updateComments);
+          this._cardsModel.updateCard(updateType, newCard, newComments);
         }).catch(() => {
           onErrorCallback();
         });
@@ -273,11 +273,9 @@ export default class MovieList {
     remove(this._loadingComponent);
     remove(this._showMoreButtonComponent);
 
-    if (resetRenderedCardCount) {
-      this._renderedCardCount = FilmsCount.PER_STEP;
-    } else {
-      this._renderedCardCount = Math.min(cardCount, this._renderedCardCount);
-    }
+    this._renderedCardCount = resetRenderedCardCount ?
+      FilmsCount.PER_STEP :
+      Math.min(cardCount, this._renderedCardCount);
 
     if (resetSortType) {
       this._currentSortType = SortType.DEFAULT;
@@ -304,9 +302,9 @@ export default class MovieList {
 
     this._sortedByRatingsFilms = this._cardsModel.get().sort(sortByRating);
 
-    for (let i = 0; i < FilmsCount.EXTRA; i++) {
-      this._renderCard(bestFilmsListElement, this._sortedByRatingsFilms[i], this._cardPresenterBestFilmsList);
-    }
+    this._sortedByRatingsFilms.slice(0, FilmsCount.EXTRA).forEach((film) => {
+      this._renderCard(bestFilmsListElement, film, this._cardPresenterBestFilmsList);
+    });
   }
 
   _renderMostCommentedFilmsList() {
@@ -316,9 +314,9 @@ export default class MovieList {
 
     this._sortedByCommentsFilms = this._cardsModel.get().sort(sortByComments);
 
-    for (let i = 0; i < FilmsCount.EXTRA; i++) {
-      this._renderCard(commentedFilmsListElement, this._sortedByCommentsFilms[i], this._cardPresenterMostCommentedFilmsList);
-    }
+    this._sortedByCommentsFilms.slice(0, FilmsCount.EXTRA).forEach((film) => {
+      this._renderCard(commentedFilmsListElement, film, this._cardPresenterMostCommentedFilmsList);
+    });
   }
 
   _renderBoard() {

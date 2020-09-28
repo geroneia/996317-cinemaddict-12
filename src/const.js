@@ -33,3 +33,7 @@ export const DateInterval = {
   MONTH: `month`,
   YEAR: `year`
 };
+
+export const MIN_SIMBOL_COUNT = 3;
+
+export const SINGULAR_DETERMINANT = 1;

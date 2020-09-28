@@ -2,6 +2,10 @@ import SmartView from "./smart.js";
 
 import {formatCardReleaseDate, formatCardRuntime, formatCardReleaseYear, formatCommentDate, shake} from "../utils/card.js";
 
+import {MIN_SIMBOL_COUNT} from "../const.js";
+
+const SINGULAR_DETERMINANT = 1;
+
 // разметка дополнительной информации о фильме
 const createFilmDetailsCard = (data, comments) => {
   const {
@@ -26,6 +30,16 @@ const createFilmDetailsCard = (data, comments) => {
   // получает разметку списка жанров
   const createGenresTemplate = (genresList) => {
     return genresList.map((genre) => `<span class="film-details__genre">${genre}</span>`).join(` `);
+  };
+
+  const getGenresTerm = (count) => {
+    let term = ``;
+    if (count === SINGULAR_DETERMINANT) {
+      term = `Genre`;
+    } else if (count > SINGULAR_DETERMINANT) {
+      term = `Genres`;
+    }
+    return term;
   };
 
   // отмечает чекбоксы
@@ -100,13 +114,13 @@ const createFilmDetailsCard = (data, comments) => {
                       <td class="film-details__cell">${country}</td>
                     </tr>
                     <tr class="film-details__row">
-                      <td class="film-details__term">Genres</td>
+                      <td class="film-details__term">${getGenresTerm(genres.length)}</td>
                       <td class="film-details__cell">${createGenresTemplate(genres)}</td>
                     </tr>
                   </table>
 
                   <p class="film-details__film-description">
-                    ${description}
+                    ${description.length > MIN_SIMBOL_COUNT ? description : ``}
                   </p>
                 </div>
               </div>

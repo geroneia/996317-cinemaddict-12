@@ -16,6 +16,14 @@ export const formatCommentDate = (commentsDate) => moment(commentsDate).fromNow(
 
 const SHAKE_ANIMATION_TIMEOUT = 600;
 
+const MINUTES_IN_HOUR = 60;
+
+const MILLISECONDS_IN_SECOND = 1000;
+
+const MAX_FILMS_COUNT_FOR_NOVICE = 10;
+
+const MAX_FILMS_COUNT_FOR_FAN = 20;
+
 export const getCurrentDate = () => {
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
@@ -29,8 +37,8 @@ export const getOverallDuration = (movies) => {
   const duration = movies.length !== 0 ?
     movies.map((movie) => movie.runtime).reduce((a, b) => a + b) : 0;
 
-  const lengthInHours = Math.floor(duration / 60);
-  const lengthInMinutes = duration % 60;
+  const lengthInHours = Math.floor(duration / MINUTES_IN_HOUR);
+  const lengthInMinutes = duration % MINUTES_IN_HOUR;
   const hours = lengthInHours > 0 ? lengthInHours + `h` : `0`;
   const minutes = lengthInMinutes > 0 ? lengthInMinutes + `m` : ``;
 
@@ -47,18 +55,18 @@ export const generateUserRank = (watchedFilmsCount) => {
 
   let userRank = ``;
 
-  if (watchedFilmsCount > 0 && watchedFilmsCount <= 10) {
+  if (watchedFilmsCount > 0 && watchedFilmsCount <= MAX_FILMS_COUNT_FOR_NOVICE) {
     userRank = Ranks.NOVICE;
-  } else if (watchedFilmsCount > 10 && watchedFilmsCount <= 20) {
+  } else if (watchedFilmsCount > MAX_FILMS_COUNT_FOR_NOVICE && watchedFilmsCount <= MAX_FILMS_COUNT_FOR_FAN) {
     userRank = Ranks.FAN;
-  } else if (watchedFilmsCount > 20) {
+  } else if (watchedFilmsCount > MAX_FILMS_COUNT_FOR_FAN) {
     userRank = Ranks.MOVIE_BUFF;
   }
   return userRank;
 };
 
 export const shake = (target) => {
-  target.style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+  target.style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / MILLISECONDS_IN_SECOND}s`;
   setTimeout(() => {
     target.style.animation = ``;
   }, SHAKE_ANIMATION_TIMEOUT);

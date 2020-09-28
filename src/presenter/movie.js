@@ -50,7 +50,6 @@ export default class Movie {
       this.commentsModel.set(comments);
       this._cardDetailsComponent = new FilmDetailsCardView(card, comments);
       this._cardComponent.setClickHandler(this._handleShowMoreClick);
-      // console.log(comments);
 
       this._cardDetailsComponent.setFavoriteLabelClickHandler(this._handleFavoriteClick);
       this._cardDetailsComponent.setAddToWatchlistLabelClickHandler(this._handleAddToWatchlistClick);
