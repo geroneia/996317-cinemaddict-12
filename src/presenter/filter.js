@@ -50,7 +50,7 @@ export default class Filter {
   }
 
   _get() {
-    const cards = this._cardsModel.getCards();
+    const cards = this._cardsModel.get();
 
     return [
       {

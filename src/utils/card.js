@@ -2,7 +2,6 @@ import moment from "moment";
 
 export const sortByDate = (a, b) => moment(b.releaseDate).diff(a.releaseDate, `day`);
 
-
 export const sortByRating = (a, b) => b.rating - a.rating;
 
 export const sortByComments = (a, b) => b.comments.length - a.comments.length;
@@ -15,7 +14,7 @@ export const formatCardRuntime = (runtime) => moment.utc(moment.duration(runtime
 
 export const formatCommentDate = (commentsDate) => moment(commentsDate).fromNow();
 
-export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+const SHAKE_ANIMATION_TIMEOUT = 600;
 
 export const getCurrentDate = () => {
   const currentDate = new Date();
@@ -52,12 +51,8 @@ const Ranks = {
   MOVIE_BUFF: `movie buff`
 };
 
-const getWatchedFilmsCount = (films) =>
-  films.filter((film) => film.isWatched).length;
+export const generateUserRank = (watchedFilmsCount) => {
 
-export const generateUserRank = (cards) => {
-
-  const watchedFilmsCount = getWatchedFilmsCount(cards);
   let userRank = ``;
 
   if (watchedFilmsCount > 0 && watchedFilmsCount <= 10) {
@@ -68,4 +63,11 @@ export const generateUserRank = (cards) => {
     userRank = Ranks.MOVIE_BUFF;
   }
   return userRank;
+};
+
+export const shake = (target) => {
+  target.style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+  setTimeout(() => {
+    target.style.animation = ``;
+  }, SHAKE_ANIMATION_TIMEOUT);
 };

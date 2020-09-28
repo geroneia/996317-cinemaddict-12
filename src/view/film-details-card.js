@@ -1,6 +1,6 @@
 import SmartView from "./smart.js";
 
-import {formatCardReleaseDate, formatCardRuntime, formatCardReleaseYear, formatCommentDate} from "../utils/card.js";
+import {formatCardReleaseDate, formatCardRuntime, formatCardReleaseYear, formatCommentDate, shake} from "../utils/card.js";
 
 // разметка дополнительной информации о фильме
 const createFilmDetailsCard = (data, comments) => {
@@ -258,6 +258,16 @@ export default class FilmDetailsCard extends SmartView {
   .addEventListener(`input`, this._descriptionInputHandler);
   }
 
+  blockTextInput() {
+    this.getElement().querySelector(`.film-details__comment-input`)
+    .disabled = true;
+  }
+
+  unBlockTextInput() {
+    this.getElement().querySelector(`.film-details__comment-input`)
+    .disabled = false;
+  }
+
   _addToWatchlistToggleHandler(evt) {
     evt.preventDefault();
     this._callback.addToWatchlistClick(FilmDetailsCard.parseEditableCardToCard(this._editableCard));
@@ -304,9 +314,17 @@ export default class FilmDetailsCard extends SmartView {
 
   _commentDeleteClickHandler(evt) {
     evt.preventDefault();
-    const currentCommentId = +evt.target.dataset.id;
-    const deletedComment = this._commentsList.find(({id}) => id === currentCommentId);
-    this._callback.deleteClick(deletedComment);
+    evt.target.innerHTML = `Deleting...`;
+    evt.target.disabled = true;
+
+    const onErrorCallback = () => {
+      evt.target.innerHTML = `Delete`;
+      evt.target.disabled = false;
+      const commentBlock = evt.target.closest(`.film-details__comment`);
+      shake(commentBlock);
+    };
+
+    this._callback.deleteClick(evt.target.dataset.id, onErrorCallback);
   }
 
   _descriptionInputHandler(evt) {
@@ -321,7 +339,9 @@ export default class FilmDetailsCard extends SmartView {
         {
           isAddedToWatchlist: card.isAddedToWatchlist,
           isWatched: card.isWatched,
-          isFavorite: card.isFavorite
+          isFavorite: card.isFavorite,
+          isDisabled: false,
+          isDeleting: false
         }
     );
   }
@@ -332,6 +352,8 @@ export default class FilmDetailsCard extends SmartView {
     delete editableCard.isAddedToWatchlist;
     delete editableCard.isWatched;
     delete editableCard.isFavorite;
+    delete editableCard.isDisabled;
+    delete editableCard.isDeleting;
 
     return editableCard;
   }

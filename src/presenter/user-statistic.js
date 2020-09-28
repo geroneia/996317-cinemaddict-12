@@ -8,9 +8,9 @@ import {generateUserRank} from "../utils/card.js";
 const DAYS_TO_FULL_WEEK = 6;
 
 export default class UserStatistic {
-  constructor(userStatisticContainer, cards) {
+  constructor(userStatisticContainer, cardsModel) {
     this._container = userStatisticContainer;
-    this._cards = cards;
+    this._cardsModel = cardsModel;
     this._currentDateInterval = DateInterval.ALL_TIME;
 
     this._statisticsComponent = null;
@@ -66,7 +66,8 @@ export default class UserStatistic {
   }
 
   _getWatchedFilms() {
-    return this._getListOfWatchedFilmsInDateRange(this._cards, this._getDateFrom(), new Date());
+    const watchedMovies = this._cardsModel.get().filter((card) => card.isWatched);
+    return this._getListOfWatchedFilmsInDateRange(watchedMovies, this._getDateFrom(), new Date());
   }
 
   _getGenresCount(genres) {
@@ -98,7 +99,7 @@ export default class UserStatistic {
   }
 
   _getUserRank() {
-    return generateUserRank(this._cards);
+    return generateUserRank(this._cardsModel.getWatchedFilmsCount());
   }
 
   _getTotalDuration(cards) {

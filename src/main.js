@@ -32,39 +32,19 @@ const api = new Api(END_POINT, AUTHORIZATION);
 
 api.getMovies()
   .then((movies) => {
-    cardsModel.setCards(UpdateType.INIT, movies);
+    cardsModel.set(UpdateType.INIT, movies);
 
     // рисует звание пользователя на странице
-    render(siteHeaderElement, new ProfileRatingView(generateUserRank(cardsModel.getCards())), RenderPosition.BEFOREEND);
+    render(siteHeaderElement, new ProfileRatingView(generateUserRank(cardsModel.getWatchedFilmsCount())), RenderPosition.BEFOREEND);
 
     movieListPresenter.renderFilmsListContainer();
 
-    const userStatisticPresenter = new UserStatisticPresenter(siteMainElement, cardsModel.getCards());
-
-    const handleSiteMenuClick = (menuItem) => {
-      switch (menuItem) {
-        case MenuItem.MOVIES:
-          menuComponent.removeActive();
-          userStatisticPresenter.removeStatistics();
-          movieListPresenter.init();
-          movieListPresenter.renderExtraFilmsLists();
-          break;
-
-        case MenuItem.STATS:
-          menuComponent.addActive();
-          movieListPresenter.destroy();
-          filterModel.set(UpdateType.DISABLED, FilterType.DISABLED);
-          userStatisticPresenter.init();
-          break;
-      }
-    };
-
     menuComponent.setMenuClickHandler(handleSiteMenuClick);
     // рисует счетчик фильмов в футере
-    render(footerStatElement, new FilmsCounterView(cardsModel.getCards()), RenderPosition.BEFOREEND);
+    render(footerStatElement, new FilmsCounterView(cardsModel.get()), RenderPosition.BEFOREEND);
   })
   .catch(() => {
-    cardsModel.setCards(UpdateType.INIT, []);
+    cardsModel.set(UpdateType.INIT, []);
 
 
   });
@@ -72,7 +52,26 @@ api.getMovies()
 // рисует меню
 render(siteMainElement, menuComponent, RenderPosition.BEFOREEND);
 
+const userStatisticPresenter = new UserStatisticPresenter(siteMainElement, cardsModel);
+const handleSiteMenuClick = (menuItem) => {
+  switch (menuItem) {
+    case MenuItem.MOVIES:
+      menuComponent.removeActive();
+      userStatisticPresenter.removeStatistics();
+      movieListPresenter.init();
+      movieListPresenter.renderExtraFilmsLists();
+      break;
+
+    case MenuItem.STATS:
+      menuComponent.addActive();
+      movieListPresenter.destroy();
+      filterModel.set(UpdateType.DISABLED, FilterType.DISABLED);
+      userStatisticPresenter.init();
+      break;
+  }
+};
+
 const filterPresenter = new FilterPresenter(menuComponent, filterModel, cardsModel);
 const movieListPresenter = new MovieListPresenter(siteMainElement, footerElement, cardsModel, filterModel, api, commentInput);
-// movieListPresenter.init();
+
 filterPresenter.init();

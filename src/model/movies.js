@@ -6,13 +6,13 @@ export default class Movies extends Observer {
     this._cards = [];
   }
 
-  setCards(updateType, cards) {
+  set(updateType, cards) {
     this._cards = cards.slice();
 
     this._notify(updateType);
   }
 
-  getCards() {
+  get() {
     return this._cards;
   }
 
@@ -32,12 +32,15 @@ export default class Movies extends Observer {
     this._notify(updateType, update, comments);
   }
 
+  getWatchedFilmsCount() {
+    return this._cards.filter((film) => film.isWatched).length;
+  }
+
   static adaptToClient(card) {
     const adaptedCard = Object.assign(
         {},
         card,
         {
-        // id: card.film_info.id,
           title: card.film_info.title,
           alternativeTitle: card.film_info.alternative_title,
           poster: card.film_info.poster,
@@ -51,7 +54,6 @@ export default class Movies extends Observer {
           genres: card.film_info.genre,
           description: card.film_info.description,
           ageRating: card.film_info.age_rating,
-          // comments:
           isAddedToWatchlist: card.user_details.watchlist,
           isWatched: card.user_details.already_watched,
           isFavorite: card.user_details.favorite,

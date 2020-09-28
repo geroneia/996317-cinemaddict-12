@@ -1,14 +1,21 @@
 import MovieView from "../view/movie.js";
+import CommentsModel from "../model/comments.js";
 import FilmDetailsCardView from "../view/film-details-card.js";
 import {render, RenderPosition, remove, replace} from "../utils/render.js";
+import {shake} from "../utils/card.js";
 import {UserAction, UpdateType} from "../const.js";
 
-import {generateId} from "../utils/card.js";
 import he from "he";
 
 const Mode = {
   DEFAULT: `DEFAULT`,
   EDITING: `EDITING`
+};
+
+export const State = {
+  SAVING: `SAVING`,
+  DELETING: `DELETING`,
+  ABORTING: `ABORTING`
 };
 
 export default class Movie {
@@ -23,6 +30,8 @@ export default class Movie {
     this._cardComponent = null;
     this._cardDetailsComponent = null;
     this._mode = Mode.DEFAULT;
+
+    this.commentsModel = new CommentsModel();
 
     this._handleShowMoreClick = this._handleShowMoreClick.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
@@ -44,8 +53,10 @@ export default class Movie {
 
     this._api.getComments(card.id)
     .then((comments) => {
+      this.commentsModel.set(comments);
       this._cardDetailsComponent = new FilmDetailsCardView(card, comments);
       this._cardComponent.setClickHandler(this._handleShowMoreClick);
+      // console.log(comments);
 
       this._cardDetailsComponent.setFavoriteLabelClickHandler(this._handleFavoriteClick);
       this._cardDetailsComponent.setAddToWatchlistLabelClickHandler(this._handleAddToWatchlistClick);
@@ -170,13 +181,14 @@ export default class Movie {
     document.addEventListener(`keydown`, this._escKeyDownHandler);
   }
 
-  _handleDeleteClick(deletedComment) {
+  _handleDeleteClick(deletedCommentId, onErrorCallback) {
     this._changeData(
         UserAction.DELETE_COMMENT,
         UpdateType.PATCH,
         this._card,
-        this._comments,
-        deletedComment
+        this.commentsModel.get(),
+        deletedCommentId,
+        onErrorCallback
     );
   }
 
@@ -187,11 +199,15 @@ export default class Movie {
       const message = this._cardDetailsComponent.getMessage();
       if (emoji !== `` && message !== ``) {
         const addedComment = {
-          id: generateId(),
           message: he.encode(message),
           emoji,
-          name,
           currentDate: new Date()
+        };
+        this._cardDetailsComponent.blockTextInput();
+
+        const onErrorCallback = () => {
+          this._cardDetailsComponent.unBlockTextInput();
+          shake(this._cardDetailsComponent.getElement());
         };
 
         this._changeData(
@@ -199,10 +215,12 @@ export default class Movie {
             UpdateType.PATCH,
             this._card,
             this._comments,
-            addedComment
+            addedComment,
+            onErrorCallback
         );
       }
       this._cardDetailsComponent.clearCommentForm();
+
     }
   }
 }

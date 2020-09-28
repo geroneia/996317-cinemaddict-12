@@ -101,7 +101,7 @@ export default class MovieList {
 
   _getCards() {
     const filterType = this._filterModel.get();
-    const cards = this._cardsModel.getCards();
+    const cards = this._cardsModel.get();
     const filtredCards = filter[filterType](cards);
 
     switch (this._currentSortType) {
@@ -127,18 +127,36 @@ export default class MovieList {
     }
   }
 
-  _handleViewAction(actionType, updateType, updateCard, updateComments, updateComment) {
+  _handleViewAction(actionType, updateType, updateCard, updateComments, updateComment, onErrorCallback) {
     switch (actionType) {
       case UserAction.UPDATE_CARD:
+
         this._api.updateMovie(updateCard).then((response) => {
           this._cardsModel.updateCard(updateType, response);
         });
         break;
       case UserAction.ADD_COMMENT:
-        this._commentsModel.add(updateType, updateCard, updateComments, updateComment);
+
+        this._api.addComment(updateCard, updateComment).then((response) => {
+          const newComments = response.movie.comments;
+          const newCard = Object.assign({}, updateCard, {
+            comments: newComments
+          });
+          this._cardsModel.updateCard(updateType, newCard, newComments);
+        }).catch(() => {
+          onErrorCallback();
+        });
         break;
       case UserAction.DELETE_COMMENT:
-        this._commentsModel.delete(updateType, updateCard, updateComments, updateComment);
+        this._api.deleteComment(updateComment).then(() => {
+          const newComments = updateCard.comments.filter((comment) => comment !== updateComment);
+          const newCard = Object.assign({}, updateCard, {
+            comments: newComments
+          });
+          this._cardsModel.updateCard(updateType, newCard, updateComments);
+        }).catch(() => {
+          onErrorCallback();
+        });
         break;
     }
   }
@@ -284,7 +302,7 @@ export default class MovieList {
 
     const bestFilmsListElement = this._boardComponent.getElement().querySelector(`.films-list--extra .films-list__container`);
 
-    this._sortedByRatingsFilms = this._cardsModel.getCards().sort(sortByRating);
+    this._sortedByRatingsFilms = this._cardsModel.get().sort(sortByRating);
 
     for (let i = 0; i < FilmsCount.EXTRA; i++) {
       this._renderCard(bestFilmsListElement, this._sortedByRatingsFilms[i], this._cardPresenterBestFilmsList);
@@ -296,7 +314,7 @@ export default class MovieList {
 
     const commentedFilmsListElement = this._boardComponent.getElement().querySelector(`.films-list--extra:last-of-type .films-list__container`);
 
-    this._sortedByCommentsFilms = this._cardsModel.getCards().sort(sortByComments);
+    this._sortedByCommentsFilms = this._cardsModel.get().sort(sortByComments);
 
     for (let i = 0; i < FilmsCount.EXTRA; i++) {
       this._renderCard(commentedFilmsListElement, this._sortedByCommentsFilms[i], this._cardPresenterMostCommentedFilmsList);
