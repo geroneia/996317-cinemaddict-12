@@ -25,14 +25,6 @@ export const getCurrentDate = () => {
 
 export const getEarliestDate = () => new Date(0);
 
-export const isDatesEqual = (dateA, dateB) => {
-  if (dateA === null && dateB === null) {
-    return true;
-  }
-
-  return moment(dateA).isSame(dateB, `day`);
-};
-
 export const getOverallDuration = (movies) => {
   const duration = movies.length !== 0 ?
     movies.map((movie) => movie.runtime).reduce((a, b) => a + b) : 0;

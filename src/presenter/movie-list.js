@@ -63,7 +63,6 @@ export default class MovieList {
       this._renderNoFilms();
       return;
     }
-    // this._renderSort();
     this._renderBoard();
   }
 
@@ -170,6 +169,7 @@ export default class MovieList {
         break;
       case UpdateType.MINOR:
         this.destroy();
+        this._renderSort();
         this.init();
         this.renderFilmsListContainer();
         this.renderExtraFilmsLists();

@@ -12,12 +12,6 @@ const Mode = {
   EDITING: `EDITING`
 };
 
-export const State = {
-  SAVING: `SAVING`,
-  DELETING: `DELETING`,
-  ABORTING: `ABORTING`
-};
-
 export default class Movie {
   constructor(container, popupContainer, changeData, changeMode, api) {
     this._container = container;
@@ -107,7 +101,7 @@ export default class Movie {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       this._mode = Mode.DEFAULT;
       evt.preventDefault();
-      this._cardDetailsComponent.reset(this._card, this._comments);
+      this._cardDetailsComponent.reset(this._card);
       remove(this._cardDetailsComponent);
       document.removeEventListener(`keydown`, this._escKeyDownHandler);
     }
@@ -124,8 +118,7 @@ export default class Movie {
             {
               isFavorite: !this._card.isFavorite
             }
-        ),
-        this._comments
+        )
     );
   }
 
@@ -140,8 +133,7 @@ export default class Movie {
             {
               isAddedToWatchlist: !this._card.isAddedToWatchlist
             }
-        ),
-        this._comments
+        )
     );
   }
 
@@ -156,8 +148,7 @@ export default class Movie {
             {
               isWatched: !this._card.isWatched
             }
-        ),
-        this._comments
+        )
     );
   }
 
@@ -167,8 +158,7 @@ export default class Movie {
     this._changeData(
         UserAction.UPDATE_CARD,
         UpdateType.MINOR,
-        this._card,
-        this._comments
+        this._card
     );
     remove(this._cardDetailsComponent);
   }
@@ -214,7 +204,6 @@ export default class Movie {
             UserAction.ADD_COMMENT,
             UpdateType.PATCH,
             this._card,
-            this._comments,
             addedComment,
             onErrorCallback
         );
