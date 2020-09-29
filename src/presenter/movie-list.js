@@ -98,7 +98,7 @@ export default class MovieList {
 
   renderFilmsListContainer() {
     render(this._boardComponent, this._filmsListComponent, RenderPosition.AFTERBEGIN);
-    const filmsListContainer = this._filmsListComponent.getElement().querySelector(`.films-list .films-list__container`);
+    const filmsListContainer = this._filmsListComponent.getContainer();
     this._renderFilmsList(filmsListContainer);
   }
 
@@ -252,7 +252,7 @@ export default class MovieList {
     const newRenderedCardCount = Math.min(cardCount, this._renderedCardCount + FilmsCount.PER_STEP);
     const cards = this._getCards().slice(this._renderedCardCount, newRenderedCardCount);
 
-    this._renderCards(this._filmsListComponent.getElement().querySelector(`.films-list .films-list__container`), cards);
+    this._renderCards(this._filmsListComponent.getContainer(), cards);
     this._renderedCardCount = newRenderedCardCount;
 
     if (this._renderedCardCount >= cardCount) {
@@ -310,7 +310,7 @@ export default class MovieList {
     // рисует дополнительные списки фильмов
     render(this._boardComponent, this._bestFilmsComponent, RenderPosition.BEFOREEND);
 
-    const bestFilmsListElement = this._boardComponent.getElement().querySelector(`.films-list--extra .films-list__container`);
+    const bestFilmsListElement = this._boardComponent.getBestFilmsContainer();
 
     this._sortedByRatingsFilms = this._cardsModel.get().sort(sortByRating);
 
@@ -322,7 +322,7 @@ export default class MovieList {
   _renderMostCommentedFilmsList() {
     render(this._boardComponent, this._commentedFilmsComponent, RenderPosition.BEFOREEND);
 
-    const commentedFilmsListElement = this._boardComponent.getElement().querySelector(`.films-list--extra:last-of-type .films-list__container`);
+    const commentedFilmsListElement = this._boardComponent.getMostCommentedFilmsContainer();
 
     this._sortedByCommentsFilms = this._cardsModel.get().sort(sortByComments);
 
