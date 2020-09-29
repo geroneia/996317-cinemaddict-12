@@ -14,11 +14,13 @@ export default class SiteMenu extends AbstractView {
   }
 
   removeActive() {
-    this.getElement().classList.remove(`main-navigation__item--active`);
+    const statsSwitcher = this.getElement().querySelector(`.main-navigation__additional`);
+    statsSwitcher.classList.remove(`main-navigation__item--active`);
   }
 
   addActive() {
-    this.getElement().classList.add(`main-navigation__item--active`);
+    const statsSwitcher = this.getElement().querySelector(`.main-navigation__additional`);
+    statsSwitcher.classList.add(`main-navigation__item--active`);
   }
 
   setMenuClickHandler(callback) {

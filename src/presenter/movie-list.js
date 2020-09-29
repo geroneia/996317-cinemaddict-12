@@ -36,13 +36,13 @@ export default class MovieList {
     this._isLoading = true;
     this._api = api;
 
+    this._ratingComponent = null;
     this._sortComponent = null;
     this._showMoreButtonComponent = null;
 
     this._sortedByRatingsFilms = {};
     this._sortedByCommentsFilms = {};
 
-    this._ratingComponent = new ProfileRatingView();
     this._boardComponent = new BoardView();
     this._filmsListComponent = new FilmsListView();
     this._bestFilmsComponent = new BestFilmsView();
@@ -103,8 +103,9 @@ export default class MovieList {
   }
 
   renderRating() {
-  // рисует звание пользователя на странице
-    render(this.siteHeaderElement, new ProfileRatingView(generateUserRank(this._cardsModel.getWatchedFilmsCount())), RenderPosition.BEFOREEND);
+    // рисует звание пользователя на странице
+    this._ratingComponent = new ProfileRatingView(generateUserRank(this._cardsModel.getWatchedFilmsCount()));
+    render(this.siteHeaderElement, this._ratingComponent, RenderPosition.BEFOREEND);
   }
 
   _getCards() {

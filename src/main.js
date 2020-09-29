@@ -1,10 +1,8 @@
-// import ProfileRatingView from "./view/profile-rating.js";
 import SiteMenuView from "./view/site-menu.js";
 import FilmsCounterView from "./view/films-counter.js";
 import MoviesModel from "./model/movies.js";
 import FilterModel from "./model/filter.js";
 
-// import {generateUserRank} from "./utils/card.js";
 import MovieListPresenter from "./presenter/movie-list.js";
 import FilterPresenter from "./presenter/filter.js";
 import UserStatisticPresenter from "./presenter/user-statistic.js";
@@ -61,6 +59,7 @@ const handleSiteMenuClick = (menuItem) => {
     case MenuItem.STATS:
       menuComponent.addActive();
       movieListPresenter.destroy();
+      movieListPresenter.renderRating();
       filterModel.set(UpdateType.DISABLED, FilterType.DISABLED);
       userStatisticPresenter.init();
       break;

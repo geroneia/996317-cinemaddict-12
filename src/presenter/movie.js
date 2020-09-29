@@ -175,7 +175,6 @@ export default class Movie {
         UserAction.DELETE_COMMENT,
         UpdateType.PATCH,
         this._card,
-        this.commentsModel.get(),
         deletedCommentId,
         onErrorCallback
     );
