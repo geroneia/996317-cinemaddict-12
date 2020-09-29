@@ -89,7 +89,7 @@ export default class UserStatistic {
   _getFavoriteGenre(genresCounter) {
     const counter = Math.max(...Object.values(genresCounter));
     let favoriteGenre = ``;
-    for (let genre in genresCounter) {
+    for (const genre in genresCounter) {
       if (genresCounter[genre] === counter) {
         favoriteGenre = genre;
       }

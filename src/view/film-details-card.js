@@ -312,7 +312,7 @@ export default class FilmDetailsCard extends SmartView {
   }
 
   _emojiInputHandler(evt) {
-    let id = evt.target.id;
+    const id = evt.target.id;
     this._emoji = id.slice(6);
     this.getElement().querySelector(`.film-details__add-emoji-label`)
       .innerHTML = `<img src="./images/emoji/${this._emoji}.png" width="55" height="55" alt="${id}" data-value="${this._emoji}">`;
