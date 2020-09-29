@@ -231,6 +231,7 @@ export default class FilmDetailsCard extends SmartView {
     this.setClickHandler(this._callback.click);
     this._setEmojiInputHandler();
     this.setDeleteClickHandler(this._callback.deleteClick);
+    this.setDescriptionInputHandler();
   }
 
   setAddToWatchlistLabelClickHandler(callback) {

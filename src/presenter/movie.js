@@ -98,11 +98,14 @@ export default class Movie {
 
   _escKeyDownHandler(evt) {
     if (evt.key === `Escape` || evt.key === `Esc`) {
+      evt.preventDefault();
       this._mode = Mode.DEFAULT;
+      document.removeEventListener(`keydown`, this._escKeyDownHandler);
+      this._cardDetailsComponent.clearCommentForm();
       evt.preventDefault();
       this._cardDetailsComponent.reset(this._card);
       remove(this._cardDetailsComponent);
-      document.removeEventListener(`keydown`, this._escKeyDownHandler);
+
     }
   }
 
@@ -154,6 +157,7 @@ export default class Movie {
   _handleCloseCardClick() {
     this._mode = Mode.DEFAULT;
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
+    this._cardDetailsComponent.clearCommentForm();
     this._changeData(
         UserAction.UPDATE_CARD,
         UpdateType.MINOR,
